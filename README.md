@@ -2,9 +2,9 @@
 
 Portal web para gestión de citas y teleasistencia en el sector salud, con integración de historiales médicos (EHR) y videollamadas seguras. Este repositorio contiene el código fuente de la aplicación frontend, construida con React y Vite.
 
-![GitHub issues](https://img.shields.io/github/issues/tu-usuario/medilink-frontend)
-![GitHub forks](https://img.shields.io/github/forks/tu-usuario/medilink-frontend)
-![GitHub stars](https://img.shields.io/github/stars/tu-usuario/medilink-frontend)
+![GitHub issues](https://img.shields.io/github/issues/anchundiatech/medilink-frontend)
+![GitHub forks](https://img.shields.io/github/forks/anchundiatech/medilink-frontend)
+![GitHub stars](https://img.shields.io/github/stars/anchundiatech/medilink-frontend)
 
 ## Índice
 
@@ -51,7 +51,7 @@ Sigue estos pasos para levantar el entorno de desarrollo local.
 
 1.  **Clonar el repositorio**
     ```bash
-    git clone [https://github.com/tu-usuario/MediLink-Frontend.git](https://github.com/tu-usuario/MediLink-Frontend.git)
+    git clone [https://github.com/anchundiatech/MediLink-Frontend.git](https://github.com/anchundiatech/MediLink-Frontend.git)
     cd MediLink-Frontend
     ```
 
