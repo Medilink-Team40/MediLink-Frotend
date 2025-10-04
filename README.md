@@ -1,10 +1,11 @@
 # MediLink-Frontend 🩺✨
 
 <div align="center">
+
   <img alt="License" src="https://img.shields.io/github/license/anchundiatech/MediLink-Frontend?style=for-the-badge">
   <img alt="Last commit" src="https://img.shields.io/github/last-commit/anchundiatech/MediLink-Frontend?style=for-the-badge">
   <img alt="GitHub stars" src="https://img.shields.io/github/stars/anchundiatech/MediLink-Frontend?style=for-the-badge&logo=github">
-  
+
   ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -13,6 +14,7 @@
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
+
 </div>
 
 
@@ -33,7 +35,7 @@ Documentación del frontend para la plataforma de telemedicina MediLink.
 5.  [Estructura del Proyecto](#estructura-del-proyecto-)
 6.  [Scripts Disponibles](#scripts-disponibles-)
 7.  [Cómo Contribuir](#cómo-contribuir-)
-8.  [Licencia](#licencia-)
+
 
 ## Descripción del Proyecto 🗒️
 
@@ -138,7 +140,3 @@ src/
 5.  Abre un **Pull Request**.
 
 Por favor, asegúrate de que tu código siga las guías de estilo del proyecto y pase el linter.
-
-## Licencia 📄
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
