@@ -44,11 +44,6 @@ Este proyecto utiliza un stack moderno y escalable, separado en frontend y backe
 * **Routing:** [React Router DOM](https://reactrouter.com/)
 * **Gestor de Paquetes:** [pnpm](https://pnpm.io/)
 
-#### **Backend**
-* **Framework:** [NestJS](https://nestjs.com/) con TypeScript
-* **Arquitectura:** Microservicios
-* **Base de Datos:** PostgreSQL
-* **Automatizaciones:** N8N
 
 ## Puesta en Marcha 🏁
 
