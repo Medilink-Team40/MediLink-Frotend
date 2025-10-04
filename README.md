@@ -103,9 +103,9 @@ Sigue estos pasos para levantar el entorno de desarrollo local.
     ```
     La aplicación estará disponible en `http://localhost:5173` (o el puerto que indique Vite).
 
-## Estructura del Proyecto 📁
+## Arquitectura del Frontend 🏛️
 
-El proyecto sigue una estructura organizada por funcionalidades para facilitar la mantenibilidad y escalabilidad.
+El frontend sigue una **Arquitectura Modular por Funcionalidad (Feature-Based Architecture)**, donde el código se organiza en función de las características del negocio (citas, pacientes, autenticación) para mejorar la escalabilidad y mantenibilidad.
 
 ```
 src/
