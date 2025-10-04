@@ -1,13 +1,28 @@
 # MediLink-Frontend 🩺✨
 
+<div align="center">
+  <img alt="License" src="https://img.shields.io/github/license/anchundiatech/MediLink-Frontend?style=for-the-badge">
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/anchundiatech/MediLink-Frontend?style=for-the-badge">
+  <img alt="GitHub stars" src="https://img.shields.io/github/stars/anchundiatech/MediLink-Frontend?style=for-the-badge&logo=github">
+  
+  ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
+</div>
 
-![License](https://img.shields.io/github/license/anchundiatech/MediLink-Frontend)
 
-![Last Commit](https://img.shields.io/github/last-commit/anchundiatech/MediLink-Frontend)
+<!--
+<div align="center">
+  <img src="URL_DEL_LOGO_O_SCREENSHOT" alt="MediLink" width="600"/>
+</div>
+-->
 
-![Stars](https://img.shields.io/github/stars/anchundiatech/MediLink-Frontend)
-
-Documentación del frontend
+Documentación del frontend para la plataforma de telemedicina MediLink.
 
 ## Índice
 
@@ -15,8 +30,10 @@ Documentación del frontend
 2.  [Características Principales](#características-principales-)
 3.  [Tecnologías Utilizadas](#tecnologías-utilizadas-)
 4.  [Puesta en Marcha](#puesta-en-marcha-)
-5.  [Scripts Disponibles](#scripts-disponibles-)
-
+5.  [Estructura del Proyecto](#estructura-del-proyecto-)
+6.  [Scripts Disponibles](#scripts-disponibles-)
+7.  [Cómo Contribuir](#cómo-contribuir-)
+8.  [Licencia](#licencia-)
 
 ## Descripción del Proyecto 🗒️
 
@@ -26,26 +43,30 @@ El proyecto busca resolver la fragmentación de los sistemas actuales, ofreciend
 
 ## Características Principales 🚀
 
-- 👤 **Portal de Pacientes:** Agendar, modificar y cancelar citas. Ver historial clínico y recibir recordatorios.
-- 👨‍⚕️ **Portal de Profesionales:** Gestionar agenda con disponibilidad en tiempo real. Consultar historiales y lanzar teleconsultas.
-- 🔐 **Autenticación Segura:** Sistema de registro y login con autenticación multifactor y control de permisos por rol.
-- 📹 **Teleconsulta Integrada:** Videollamadas y chat seguro directamente en la plataforma.
-- 🔄 **Integración con EHR (FHIR):** Capacidad para leer y escribir datos en sistemas de historias clínicas electrónicas compatibles con el estándar FHIR.
-- 📱 **Diseño Responsivo:** Experiencia de usuario optimizada para dispositivos móviles, tablets y escritorio bajo el enfoque "Mobile First".
+-   👤 **Portal de Pacientes:** Agendar, modificar y cancelar citas. Ver historial clínico y recibir recordatorios.
+-   👨‍⚕️ **Portal de Profesionales:** Gestionar agenda con disponibilidad en tiempo real. Consultar historiales y lanzar teleconsultas.
+-   🔐 **Autenticación Segura:** Sistema de registro y login con autenticación multifactor y control de permisos por rol.
+-   📹 **Teleconsulta Integrada:** Videollamadas y chat seguro directamente en la plataforma.
+-   🔄 **Integración con EHR (FHIR):** Capacidad para leer y escribir datos en sistemas de historias clínicas electrónicas compatibles con el estándar FHIR.
+-   📱 **Diseño Responsivo:** Experiencia de usuario optimizada para dispositivos móviles, tablets y escritorio bajo el enfoque "Mobile First".
 
 ## Tecnologías Utilizadas 🛠️
 
-Este proyecto utiliza un stack moderno y escalable, separado en frontend y backend.
+Este proyecto utiliza un stack moderno y escalable.
 
-#### **Frontend**
-- **Framework:** [React](https://reactjs.org/) con [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool:** [Vite](https://vitejs.dev/)
-- **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
-- **Gestión de Estado del Servidor:** [TanStack Query (React Query)](https://tanstack.com/query)
-- **Cliente HTTP:** [Axios](https://axios-http.com/)
-- **Routing:** [React Router DOM](https://reactrouter.com/)
-- **Gestor de Paquetes:** [pnpm](https://pnpm.io/)
 
+<div align="center">
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
+
+</div>
 
 ## Puesta en Marcha 🏁
 
@@ -80,13 +101,44 @@ Sigue estos pasos para levantar el entorno de desarrollo local.
     ```
     La aplicación estará disponible en `http://localhost:5173` (o el puerto que indique Vite).
 
+## Estructura del Proyecto 📁
+
+El proyecto sigue una estructura organizada por funcionalidades para facilitar la mantenibilidad y escalabilidad.
+
+```
+src/
+├── assets/         # Imágenes, fuentes y otros activos estáticos
+├── components/     # Componentes de UI reutilizables (Botones, Inputs, etc.)
+├── config/         # Configuración de la aplicación (ej. Axios, i18n)
+├── features/       # Módulos de la aplicación (ej. auth, appointments)
+├── hooks/          # Hooks personalizados de React
+├── lib/            # Clientes de API, helpers y utilidades
+├── pages/          # Vistas principales de la aplicación
+├── providers/      # Context Providers de React
+├── routes/         # Configuración del enrutado
+├── styles/         # Estilos globales
+└── App.tsx         # Componente raíz de la aplicación
+```
+
 ## Scripts Disponibles 📜
 
-- `pnpm dev`: Inicia el servidor de desarrollo.
-- `pnpm build`: Compila la aplicación para producción en la carpeta `dist/`.
-- `pnpm lint`: (Recomendado) Ejecuta el linter para revisar la calidad del código.
-- `pnpm preview`: Sirve localmente el contenido de la carpeta `dist/` para previsualizar la build de producción.
+-   `pnpm dev`: Inicia el servidor de desarrollo con Hot-Reload.
+-   `pnpm build`: Compila la aplicación para producción en la carpeta `dist/`.
+-   `pnpm lint`: Ejecuta ESLint para analizar el código en busca de errores y problemas de estilo.
+-   `pnpm preview`: Sirve localmente el contenido de `dist/` para previsualizar la build de producción.
 
-## Contacto
+## Cómo Contribuir 🤝
 
-Si tienes dudas, contacta a los responsables del repositorio.
+¡Las contribuciones son bienvenidas! Si deseas colaborar, por favor sigue estos pasos:
+
+1.  Haz un **Fork** de este repositorio.
+2.  Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
+3.  Realiza tus cambios y haz **Commit** (`git commit -m 'Añade nueva funcionalidad'`).
+4.  Haz **Push** a tu rama (`git push origin feature/nueva-funcionalidad`).
+5.  Abre un **Pull Request**.
+
+Por favor, asegúrate de que tu código siga las guías de estilo del proyecto y pase el linter.
+
+## Licencia 📄
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
