@@ -1,13 +1,14 @@
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './features/landing/page/LandingPage';
 
 function App() {
-
-
   return (
-   <div>
-    <p>Portal de Salud</p>
-   </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

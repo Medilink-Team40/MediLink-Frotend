@@ -1,27 +1,40 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
+const colors = require('tailwindcss/colors');
 
-export default{
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './src/**/*.{js,jsx,ts,tsx}',
   ],
-
   theme: {
-    extend:{
-      colors:{
-        'brand-primary': '#007BFF',
-        'brand-secondary': '#6C757D', // Color secundario
-        'accent': '#FFC107', // Color de acento para botones o alertas
+    extend: {
+      colors: {
+        primary: colors.blue,
+        secondary: colors.gray,
+        success: colors.green,
+        warning: colors.amber,
+        error: colors.rose,
       },
-       fontFamily: {
-        // Define tus familias de fuentes. 'sans' es la por defecto.
+      fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        serif: ['Merriweather', 'serif'],
       },
-      spacing: {
-        // Define espaciados personalizados si es necesario.
-        '128': '32rem',
-      }
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.5s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
     },
-  }
-}
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+};
