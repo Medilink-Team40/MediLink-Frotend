@@ -1,29 +1,22 @@
-import React, {createContext, useEffect, useState, ReactNode} from "react";
-import Keycloak, { initKeycloak, logout } from './keycloak';
+import React, { createContext, useEffect, useState, ReactNode } from "react";
+// Asegúrate de que la ruta sea correcta
+import { initKeycloak, getKeycloakInstance, login, logout } from './keycloak';
 
-
+// ... (tus tipos User y AuthContextType se mantienen igual)
 type User = {
     id?: string;
     email?: string;
     firstName?: string;
     lastName?: string;
-    roles?: string[];
 } | null;
 
 type AuthContextType = {
-    isAuthenticated : boolean;
+    isAuthenticated: boolean;
     user: User;
     loading: boolean;
     login: () => void;
     logout: () => void;
-
-}
-
-
-
-
-
-
+};
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -42,47 +35,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const authenticated = await initKeycloak();
                 setIsAuthenticated(authenticated);
                 
-                if (authenticated && Keycloak.tokenParsed) {
+                if (authenticated) {
+                    const kc = getKeycloakInstance();
                     setUser({
-                        id: Keycloak.subject,
-                        email: Keycloak.tokenParsed.email,
-                        firstName: Keycloak.tokenParsed.given_name,
-                        lastName: Keycloak.tokenParsed.family_name
+                        id: kc.subject,
+                        email: kc.tokenParsed?.email,
+                        firstName: kc.tokenParsed?.given_name,
+                        lastName: kc.tokenParsed?.family_name,
                     });
                 }
             } catch (error) {
-                console.error('Error initializing auth:', error);
+                console.error('Error en AuthProvider durante la inicialización:', error);
+                setIsAuthenticated(false);
             } finally {
                 setLoading(false);
             }
         };
-
+    
         initializeAuth();
-    }, []);
-
-    const handleLogin = () => {
-        Keycloak.login();
-    };
-
-    const handleLogout = () => {
-        Keycloak.logout();
-        setIsAuthenticated(false);
-        setUser(null);
-    };
+    }, []); // El array de dependencias vacío es correcto
 
     const value = {
         isAuthenticated,
         user,
         loading,
-        login: handleLogin,
-        logout: handleLogout,
+        login, // Llama directamente a la función importada
+        logout, // Llama directamente a la función importada
     };
+
+    if (loading) {
+        return <div>Cargando autenticación...</div>;
+    }
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };
-
-export default AuthProvider;
