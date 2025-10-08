@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState, ReactNode} from "react";
 import Keycloak, { initKeycloak, logout } from './keycloak';
-import { console } from "inspector/promises";
+
 
 type User = {
     id?: string;
