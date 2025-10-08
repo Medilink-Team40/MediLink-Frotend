@@ -1,86 +1,56 @@
 import Keycloak from 'keycloak-js';
 
-// Definir la interfaz para el token parseado
-interface KeycloakTokenParsedExtended {
-  email?: string;
-  given_name?: string;
-  family_name?: string;
-  roles?: string[];
-  [key: string]: any; // Para otras propiedades que pueda tener el token
-}
-
-// Configuración de Keycloak
+// 1. Configuración centralizada
 const keycloakConfig = {
   url: "http://localhost:8080",
   realm: "medi-link",
   clientId: "medi-link-frontend",
-  onLoad: 'login-required' as const,
-  checkLoginIframe: false,
-  enableLogging: process.env.NODE_ENV === 'development',
 };
 
-// Crear una instancia de Keycloak
+// 2. UNA SOLA instancia de Keycloak para toda la app
 const keycloak = new Keycloak(keycloakConfig);
 
-// Inicializar Keycloak
-export const initKeycloak = (onAuthenticatedCallback?: () => void): Promise<boolean> => {
-  return keycloak.init({
-    onLoad: keycloakConfig.onLoad,
-    checkLoginIframe: keycloakConfig.checkLoginIframe,
-  }).then((authenticated: boolean) => {
-    if (authenticated) {
-      console.log("Usuario autenticado");
-      onAuthenticatedCallback?.();
-    } else {
-      console.log("Usuario no autenticado");
-      keycloak.login();
-    }
-    return authenticated;
-  }).catch((error: Error) => {
-    console.error('Error al inicializar keycloak:', error);
-    return false;
-  });
-};
+// 3. (LA CLAVE) Guardamos la promesa de inicialización para evitar llamarla dos veces
+let initializationPromise: Promise<boolean> | null = null;
 
-// Obtener token JWT
-export const getToken = (): string | undefined => keycloak.token;
-
-// Obtener información del usuario
-export const getUserInfo = () => {
-  if (keycloak.authenticated && keycloak.tokenParsed) {
-    const tokenParsed = keycloak.tokenParsed as KeycloakTokenParsedExtended;
-    return {
-      id: keycloak.subject,
-      email: tokenParsed.email,
-      firstName: tokenParsed.given_name,
-      lastName: tokenParsed.family_name,
-      roles: tokenParsed.roles || [],
-    };
+/**
+ * Función idempotente para inicializar Keycloak.
+ * Si se llama varias veces, solo ejecutará la inicialización una vez
+ * y devolverá la misma promesa a todas las llamadas.
+ */
+export const initKeycloak = (): Promise<boolean> => {
+  // Si la promesa de inicialización no existe, la creamos.
+  if (!initializationPromise) {
+    console.log("Creando nueva promesa de inicialización de Keycloak...");
+    initializationPromise = new Promise((resolve, reject) => {
+      keycloak.init({
+        onLoad: 'check-sso', // No fuerza el login al cargar
+        checkLoginIframe: false,
+      })
+      .then((authenticated) => {
+        console.log(authenticated ? "Usuario autenticado" : "Usuario no autenticado");
+        resolve(authenticated);
+      })
+      .catch((error) => {
+        console.error("Fallo al inicializar Keycloak", error);
+        // Rechazamos la promesa para que el AuthProvider pueda capturar el error
+        reject(error);
+      });
+    });
   }
-  return null;
+
+  // Siempre devolvemos la promesa (ya sea la nueva o la existente)
+  return initializationPromise;
 };
 
-// Cerrar sesión
+// --- Funciones de Ayuda ---
+
+export const getKeycloakInstance = (): Keycloak => keycloak;
+
+export const login = (): void => {
+  keycloak.login();
+};
+
 export const logout = (): void => {
   keycloak.logout({ redirectUri: window.location.origin });
 };
-
-// Actualizar token
-export const updateToken = (): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    keycloak.updateToken(5) // 5 segundos de margen
-      .then(() => {
-        if (keycloak.token) {
-          resolve(keycloak.token);
-        } else {
-          reject(new Error('No se pudo actualizar el token'));
-        }
-      })
-      .catch((err: Error) => {
-        console.error('Error al actualizar el token:', err);
-        reject(err);
-      });
-  });
-};
-
-export default keycloak;
