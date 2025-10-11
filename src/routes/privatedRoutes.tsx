@@ -2,8 +2,9 @@ import { lazy } from 'react';
 import { RouteObject } from 'react-router-dom';
 import ProtectedRoute from '@/routes/ProtectRoute';
 import AppLayout from '@/components/layout/AppLayout';
+import DashboardPrueba from '@/features/dashboard';
 
-//const DashboardPage = lazy(() => import('@/features/dashboard/page/DashboardPage'));
+//const DashboardPage = lazy(() => import('@/features/DashboardPage'));
 // Importa otras páginas protegidas aquí
 
 const privateRoutes: RouteObject[] = [
@@ -14,7 +15,7 @@ const privateRoutes: RouteObject[] = [
         path: '/dashboard',
         element: (
           <ProtectedRoute>
-            <div >Dashboard aqui iria la ruta protegida</div>
+            <DashboardPrueba/>
           </ProtectedRoute>
         ),
       },

@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             try {
                 const authenticated = await initKeycloak();
                 setIsAuthenticated(authenticated);
-                
+
                 if (authenticated) {
                     const kc = getKeycloakInstance();
                     setUser({
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setLoading(false);
             }
         };
-    
+
         initializeAuth();
     }, []); // El array de dependencias vacío es correcto
 
@@ -63,9 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         logout, // Llama directamente a la función importada
     };
 
-    if (loading) {
-        return <div>Cargando autenticación...</div>;
-    }
+   
 
     return (
         <AuthContext.Provider value={value}>

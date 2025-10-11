@@ -7,7 +7,9 @@ import privateRoutes from './routes/privatedRoutes';
 function App() {
   return (
     <AuthProvider>
-      <Suspense fallback={<div>Cargando...</div>}>
+      <Suspense fallback={ <div className='min-h-screen flex items-center justify-center bg-gray-50'>
+          <div className='text-2xl text-blue-600'>Cargando...</div>
+        </div>}>
         <Routes>
           {/* Mapeamos las rutas públicas desde el archivo publicRoute.tsx */}
           {publicRoutes.map((route, index) => (

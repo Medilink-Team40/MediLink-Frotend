@@ -2,9 +2,9 @@ import Keycloak from 'keycloak-js';
 
 // 1. Configuración centralizada
 const keycloakConfig = {
-  url: "http://localhost:8080",
-  realm: "medi-link",
-  clientId: "medi-link-frontend",
+  url: "https://keycloak-production-2d31.up.railway.app/",
+  realm: "MediLink",
+  clientId: "medilink-frontend",
 };
 
 // instancia de Keycloak para toda la app
@@ -20,6 +20,8 @@ export const initKeycloak = (): Promise<boolean> => {
       keycloak.init({
         onLoad: 'check-sso', 
         checkLoginIframe: false,
+        pkceMethod:'S256',
+        redirectUri: window.location.origin + '/dashboard'
       })
       .then((authenticated) => {
         resolve(authenticated);
