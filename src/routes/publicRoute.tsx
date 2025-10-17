@@ -1,25 +1,33 @@
 import { lazy } from 'react';
 import { RouteObject } from 'react-router-dom';
 import PublicLayout from '@/components/layout/PublicLayout';
-import TestConexionApi from '@/features/Test/testContecntion';
+import TestConection from '@/features/Test/TestContection';
+
+
 
 const LandingPage = lazy(() => import('@/features/landing/page/LandingPage'));
+const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPractitionerPage'));
+
 
 const publicRoutes: RouteObject[] = [
   {
+
     path: '/',
     element: <PublicLayout />,
     children: [
+      { index: true, element: <LandingPage /> },
+      { path: "test", element:<TestConection/>},
+      
       {
-        index: true,
-        element: <LandingPage />,
+        path: "register",
+        element: <RegisterPage />
       },
-     {
-      path: 'test',
-      element: <TestConexionApi/>
-     }
-    ],
-  },
+     
+      
+    ]
+  }
 ];
+
+
 
 export default publicRoutes;
