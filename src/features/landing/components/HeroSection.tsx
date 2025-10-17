@@ -26,12 +26,20 @@ const HeroSetion = () => {
       <div className='flex flex-col sm:flex-row gap-4 justify-center'  >
       <Button
        className="transform rounded-full  cursor-pointer bg-green-500 px-8 py-4 font-bold text-white transition-transform duration-300 hover:scale-105 hover:bg-green-600">
-      Soy Paciente
+       <Link
+        to='register'
+        >
+        Soy Paciente
+        </Link>
       </Button>
       <Button
       className='transform rounded-full cursor-pointer bg-blue-600 px-8 py-4 font-bold text-white transition-transform duration-300 hover:scale-105 hover:bg-blue-500'
       >
-      Soy Doctor
+        <Link
+        to='register'
+        >
+        Soy Doctor
+        </Link>
       </Button>
       </div>
 
