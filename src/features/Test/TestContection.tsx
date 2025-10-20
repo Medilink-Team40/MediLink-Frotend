@@ -1,10 +1,11 @@
-'use client';
 
-import React, { useState } from 'react';
+
+import React, {  useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/Card';
 import { Loader2, CheckCircle, AlertCircle, User, Stethoscope, UserCog } from 'lucide-react';
+
 
 interface TestResult {
   success: boolean;
@@ -13,13 +14,16 @@ interface TestResult {
   status?: number;
 }
 
-export default function MediLinkApiTester() {
+const TestConection = () => {
   const [endpoint, setEndpoint] = useState<string>('/api/');
   const [method, setMethod] = useState<string>('GET');
   const [requestBody, setRequestBody] = useState<string>('{}');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [token, setToken] = useState<string>('');
+ 
+
+ 
 
   const testEndpoint = async () => {
     if (!endpoint) {
@@ -312,3 +316,6 @@ export default function MediLinkApiTester() {
     </div>
   );
 }
+
+
+ export default TestConection

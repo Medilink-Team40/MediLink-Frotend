@@ -1,14 +1,15 @@
 import Keycloak from 'keycloak-js';
 
+
 // 1. Configuración centralizada
 const keycloakConfig = {
-  url: "https://keycloak-production-2d31.up.railway.app/",
-  realm: "MediLink",
-  clientId: "medilink-frontend",
+  url: import.meta.env.VITE_KEYCLOAK_URL,
+  realm: import.meta.env.VITE_KEYCLOAK_REALM,
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 };
 
 // instancia de Keycloak para toda la app
-const keycloak = new Keycloak(keycloakConfig);
+export const keycloak = new Keycloak(keycloakConfig);
 
 
 let initializationPromise: Promise<boolean> | null = null;
@@ -48,3 +49,5 @@ export const login = (): void => {
 export const logout = (): void => {
   keycloak.logout({ redirectUri: window.location.origin });
 };
+
+

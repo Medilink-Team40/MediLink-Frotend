@@ -1,63 +1,45 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import {getKeycloakInstance} from '@/auth/keycloak';
+// src/components/ProtectRoute.tsx
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthProvider';
+import { Spinner } from '@/components/ui/spinner';
 
-
-interface ProtectedRouteProps {
-  children: ReactNode;
-  redirectPath?: string;
-}
-
-// En ProtectedRoute.tsx
-const ProtectedRoute = ({ 
-  children,
-  redirectPath = '/',
-}: ProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [keycloak] = useState(getKeycloakInstance());
+export const ProtectRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        // Verificar si ya está autenticado
-        if (keycloak.authenticated) {
-          console.log("Usuario autenticado")
-          setIsAuthenticated(true);
-          return;
+      if (!loading) {
+        if (!isAuthenticated) {
+         
+          navigate('/', {
+            state: { from: location },
+            replace: true
+          });
         }
-
-        // Intentar actualizar el token
-        const tokenExpiration = keycloak.tokenParsed?.exp;
-        const isTokenValid = tokenExpiration &&
-                            tokenExpiration > Date.now() / 1000;
-
-        const authenticated = keycloak.authenticated || isTokenValid === true
-        
-        console.log("Token: ", keycloak.token ? "Presente": "Ausente")
-        
-       setIsAuthenticated(!!authenticated)
-
-       if(!authenticated){
-        
-       }
-      } catch (error) {
-        console.error('Error al verificar autenticación:', error);
-        setIsAuthenticated(false);
+        setIsCheckingAuth(false);
       }
     };
 
     checkAuth();
-  }, [keycloak]);
+  }, [isAuthenticated, loading, navigate, location]);
 
-  if (isAuthenticated === null) {
-    return null; // O un spinner sutil
+  if (loading || isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner className='6' />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={redirectPath} replace />;
+    return null; // O un componente de redirección
   }
 
   return <>{children}</>;
 };
 
-  export default ProtectedRoute;
+export default ProtectRoute

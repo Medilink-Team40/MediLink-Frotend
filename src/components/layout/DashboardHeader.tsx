@@ -2,34 +2,102 @@ import { Button } from "@/components/ui/button";
 import { getKeycloakInstance } from "@/auth/keycloak";
 import { useNavigate } from "react-router-dom";
 import { AwardIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
-type DashboardHeaderProps = {
-  userType: 'patient' | 'doctor' | 'admin';
-  userName: string;
+type UserRole = 'patient' | 'doctor' | 'admin';
+
+interface DashboardHeaderProps {
   onLogout: () => void;
-};
+}
 
-export const DashboardHeader = ({ userType, userName, onLogout }: DashboardHeaderProps) => {
+interface NavItem {
+  label: string;
+  path: string;
+  roles?: UserRole[]; 
+}
+
+export const DashboardHeader = ({ onLogout }: DashboardHeaderProps) => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState<string>('');
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
+  const keycloak = getKeycloakInstance();
 
-  // Navegación según el rol
-  const navItems = {
-    patient: [
-      { label: 'Inicio', path: '/patient/dashboard' },
-      { label: 'Mis Citas', path: '/patient/appointments' },
-      { label: 'Médicos', path: '/patient/doctors' }
-    ],
-    doctor: [
-      { label: 'Inicio', path: '/doctor/dashboard' },
-      { label: 'Agenda', path: '/doctor/schedule' },
-      { label: 'Pacientes', path: '/doctor/patients' }
-    ],
-    admin: [
-      { label: 'Panel', path: '/admin/dashboard' },
-      { label: 'Usuarios', path: '/admin/users' },
-      { label: 'Configuración', path: '/admin/settings' }
-    ]
+ 
+  const navItems: NavItem[] = [
+    // Navegacion del paciente
+    { label: 'Inicio', path: '/patient/dashboard', roles: ['patient'] },
+    { label: 'Mis Citas', path: '/patient/appointments', roles: ['patient'] },
+    { label: 'Médicos', path: '/patient/doctors', roles: ['patient'] },
+    
+    // Doctor navegacion
+    { label: 'Inicio', path: '/doctor/dashboard', roles: ['doctor'] },
+    { label: 'Agenda', path: '/doctor/schedule', roles: ['doctor'] },
+    { label: 'Pacientes', path: '/doctor/patients', roles: ['doctor'] },
+    
+    // Admin navegacion
+    { label: 'Panel', path: '/admin/dashboard', roles: ['admin'] },
+    { label: 'Usuarios', path: '/admin/users', roles: ['admin'] },
+    { label: 'Configuración', path: '/admin/settings', roles: ['admin'] }
+  ];
+
+useEffect(() => {
+  if (keycloak.authenticated && keycloak.tokenParsed) {
+    console.log('Token completo:', keycloak.tokenParsed);
+    setUserName(keycloak.tokenParsed.name || keycloak.tokenParsed.preferred_username || '');
+    
+    // Obtener el correo electrónico
+    const email = (keycloak.tokenParsed.email || '').toLowerCase();
+    console.log('Correo electrónico del usuario:', email);
+    
+    // Asignar rol basado en el correo electrónico
+    let clientRoles: string[] = [];
+    
+    if (email.includes('admin')) {
+      clientRoles = ['admin'];
+    } else if (email.includes('doctor') || email.includes('medico') || email.includes('dr.')) {
+      clientRoles = ['doctor'];
+    } else {
+      // Por defecto, asumimos  que es paciente
+      clientRoles = ['patient'];
+    }
+    
+    console.log('Roles asignados:', clientRoles);
+    setUserRoles(clientRoles as UserRole[]);
+  }
+}, [keycloak.authenticated, keycloak.tokenParsed]);
+
+  // Filter nav items based on user roles
+  const filteredNavItems = navItems.filter(item => 
+    !item.roles || item.roles.some(role => userRoles.includes(role))
+  );
+
+const getUserType = (): string => {
+  // Si no hay roles, retornar 'Usuario'
+  if (userRoles.length === 0) {
+    return 'Usuario';
+  }
+
+  // Mapear roles de Keycloak a roles de la aplicación
+  const roleMap: Record<string, string> = {
+    'manage-account': 'Paciente',  
+    'manage-account-links': 'Paciente',
+    'view-profile': 'Paciente',
+    'admin': 'Administrador',
+    'doctor': 'Médico',
+    'patient': 'Paciente'
   };
+
+  // Buscar el primer rol que coincida
+  for (const role of userRoles) {
+    const normalizedRole = role.toLowerCase();
+    if (roleMap[normalizedRole]) {
+      return roleMap[normalizedRole];
+    }
+  }
+
+  // Si no coincide con ningún rol conocido, retornar el primer rol (para depuración)
+  return `Usuario (${userRoles[0]})`;
+};
 
   return (
     <header className="bg-white shadow-sm border-b border-blue-100">
@@ -41,7 +109,7 @@ export const DashboardHeader = ({ userType, userName, onLogout }: DashboardHeade
               <span className="ml-2 text-xl font-bold text-blue-800">MediLink</span>
             </div>
             <nav className="ml-10 flex space-x-1">
-              {navItems[userType].map((item) => (
+              {filteredNavItems.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
@@ -54,15 +122,16 @@ export const DashboardHeader = ({ userType, userName, onLogout }: DashboardHeade
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex flex-col items-end">
-              <span className="text-sm font-medium text-blue-900">
-                {userName}
-              </span>
-              <span className="text-xs text-blue-600">
-                {userType === 'patient' ? 'Paciente' : 
-                 userType === 'doctor' ? 'Médico' : 'Administrador'}
-              </span>
-            </div>
+            {userName && (
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-medium text-blue-900">
+                  {userName}
+                </span>
+                <span className="text-xs text-blue-600">
+                  {getUserType()}
+                </span>
+              </div>
+            )}
             <Button 
               onClick={onLogout}
               variant="outline"
