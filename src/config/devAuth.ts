@@ -5,13 +5,13 @@ export const devAuthData = () => {
     user: {
       name: "Usuario de Desarrollo",
       email: "dev@example.com",
-      roles: ["doctor"] 
+      roles: ["paciente"]
     },
     login: () => Promise.resolve(true),
     logout: () => Promise.resolve()
   };
 };
-
+  
 export const useDevAuth = () => {
   return devAuthData;
 };
