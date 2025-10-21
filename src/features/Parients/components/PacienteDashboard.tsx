@@ -1,118 +1,250 @@
-const PacientesDashboard = () => {
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
-            {/* Columna principal */}
-            <div className="lg:col-span-2 space-y-6">
-                {/* Próxima cita */}
-                <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Próximas Citas</h3>
-                    <div className="bg-white p-6 rounded-xl border border-gray-200">
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                            <div className="flex-1">
-                                <p className="text-lg font-bold text-gray-800">Consulta con Dr. Emily Carter</p>
-                                <p className="text-gray-600">Revisión General</p>
-                                <p className="text-sm text-gray-500 mt-2">Hoy, 2:00 PM - 2:30 PM</p>
-                                <button className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors">
-                                    <span>Unirse a la Llamada</span>
-                                </button>
-                            </div>
-                            <div className="w-full md:w-1/3 h-40 bg-blue-50 rounded-lg flex items-center justify-center">
-                                <div className="text-blue-600">
-                                    <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { 
+  Calendar, 
+  Stethoscope, 
+  FileText, 
+  User, 
+  Clock,
+  ChevronRight,
+  Plus,
+  Bell,
+  FileSearch,
+  HeartPulse,
+  Video
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContenxt";
+import { cn } from "@/lib/utils";
 
-                {/* Actividad Reciente */}
-                <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Actividad Reciente</h3>
-                    <div className="space-y-4">
-                        {[
-                            {
-                                icon: '📝',
-                                title: 'Receta Médica',
-                                description: 'Receta renovada',
-                                time: 'Hace 2 días'
-                            },
-                            {
-                                icon: '🔬',
-                                title: 'Resultados de Laboratorio',
-                                description: 'Nuevos resultados disponibles',
-                                time: 'Hace 1 semana'
-                            },
-                            {
-                                icon: '📅',
-                                title: 'Cita con Dr. Carter',
-                                description: 'Cita completada',
-                                time: 'Hace 2 semanas'
-                            }
-                        ].map((item, index) => (
-                            <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200">
-                                <div className="p-3 bg-blue-100 rounded-full text-blue-600">
-                                    {item.icon}
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-medium text-gray-800">{item.title}</p>
-                                    <p className="text-sm text-gray-600">{item.description}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{item.time}</p>
-                                </div>
-                                <button className="text-gray-400 hover:text-gray-600">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+interface DashboardAction {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  path: string;
+  description: string;
+  color: string;
+  hoverColor: string;
+}
 
-            {/* Barra lateral */}
-            <div className="space-y-6">
-                {/* Recordatorios */}
-                <div className="bg-white p-6 rounded-xl border border-gray-200">
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Recordatorios</h3>
-                    <div className="space-y-4">
-                        <div className="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-                            <div className="flex items-start gap-3">
-                                <span className="text-red-500">⚠️</span>
-                                <div>
-                                    <p className="font-medium text-red-700">Alta Prioridad</p>
-                                    <p className="text-sm text-gray-600 mt-1">Tu examen físico anual está pendiente. Por favor programa una cita pronto.</p>
-                                    <button className="mt-2 text-sm font-medium text-blue-600 hover:underline">Agendar Ahora</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+export const PacienteDashboard = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
-                {/* Acciones Rápidas */}
-                <div className="bg-white p-6 rounded-xl border border-gray-200">
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Acciones Rápidas</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        {[
-                            { icon: '📅', label: 'Nueva Cita' },
-                            { icon: '💬', label: 'Mensaje al Doctor' },
-                            { icon: '🔄', label: 'Renovar Receta' },
-                            { icon: '💳', label: 'Ver Facturas' }
-                        ].map((action, index) => (
-                            <button 
-                                key={index}
-                                className="flex flex-col items-center justify-center p-4 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors"
-                            >
-                                <span className="text-2xl mb-2">{action.icon}</span>
-                                <span className="text-sm font-medium text-center text-gray-700">{action.label}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+  const actions: DashboardAction[] = [
+    {
+      id: "agendar-cita",
+      label: "Agendar Cita",
+      icon: <Plus className="h-6 w-6" />,
+      path: "/agendar-cita",
+      description: "Solicita una cita con nuestros especialistas",
+      color: "bg-blue-50 text-blue-600",
+      hoverColor: "hover:bg-blue-100"
+    },
+    {
+      id: "mis-citas",
+      label: "Mis Citas",
+      icon: <Calendar className="h-6 w-6" />,
+      path: "/citas",
+      description: "Revisa y gestiona tus citas programadas",
+      color: "bg-emerald-50 text-emerald-600",
+      hoverColor: "hover:bg-emerald-100"
+    },
+    {
+      id: "historial",
+      label: "Historial Clínico",
+      icon: <FileText className="h-6 w-6" />,
+      path: "/historial-clinico",
+      description: "Accede a tu historial médico completo",
+      color: "bg-purple-50 text-purple-600",
+      hoverColor: "hover:bg-purple-100"
+    },
+    {
+      id: "recetas",
+      label: "Recetas Médicas",
+      icon: <FileText className="h-6 w-6" />,
+      path: "/recetas",
+      description: "Consulta tus recetas y medicamentos",
+      color: "bg-amber-50 text-amber-600",
+      hoverColor: "hover:bg-amber-100"
+    },
+    {
+      id: "doctores",
+      label: "Médicos",
+      icon: <Stethoscope className="h-6 w-6" />,
+      path: "/doctores",
+      description: "Conoce a nuestro equipo médico",
+      color: "bg-cyan-50 text-cyan-600",
+      hoverColor: "hover:bg-cyan-100"
+    },
+    {
+      id: "perfil",
+      label: "Mi Perfil",
+      icon: <User className="h-6 w-6" />,
+      path: "/perfil",
+      description: "Gestiona tu información personal",
+      color: "bg-rose-50 text-rose-600",
+      hoverColor: "hover:bg-rose-100"
+    }
+  ];
+
+  // Próxima cita (datos de ejemplo)
+  const nextAppointment = {
+    date: "Marte, 22 de Agosto",
+    time: "10:30 AM",
+    doctor: "Dra. Ana López",
+    specialty: "Cardiología",
+    type: "Presencial"
+  };
+
+  return (
+    <div className="container mx-auto p-4 space-y-6">
+      {/* Bienvenida */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            Hola, {user?.nombre || "Paciente"}
+          </h1>
+          <p className="text-muted-foreground">
+            Bienvenido a tu portal de salud
+          </p>
         </div>
-    );
+        <Button variant="outline" className="gap-2">
+          <Bell className="h-4 w-4" />
+          Notificaciones
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Tarjeta de próxima cita */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Clock className="h-5 w-5 text-primary" />
+                Próxima cita
+              </CardTitle>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary"
+                onClick={() => navigate("/citas")}
+              >
+                Ver todas
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {nextAppointment ? (
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="bg-primary/10 p-3 rounded-lg">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{nextAppointment.doctor}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {nextAppointment.specialty}
+                    </p>
+                    <div className="mt-2 flex items-center gap-4 text-sm">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        {nextAppointment.date}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        {nextAppointment.time}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="gap-2">
+                    <Video className="h-4 w-4" />
+                    Unirse a videollamada
+                  </Button>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <FileSearch className="h-4 w-4" />
+                    Ver detalles
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <Calendar className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+                <p className="text-muted-foreground mb-4">
+                  No tienes citas programadas
+                </p>
+                <Button onClick={() => navigate("/agendar-cita")}>
+                  Agendar cita
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Estado de salud */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <HeartPulse className="h-5 w-5 text-rose-500" />
+              Estado de salud
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Última actualización</span>
+                <span className="font-medium">Hoy</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full" 
+                  style={{ width: '100%' }}
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Tu salud está en buen estado. Próximo chequeo en 2 meses.
+              </p>
+            </div>
+            <Button variant="outline" className="w-full">
+              Ver informe completo
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Acciones rápidas */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Servicios</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {actions.map((action) => (
+            <button
+              key={action.id}
+              onClick={() => navigate(action.path)}
+              className={cn(
+                "flex items-start p-4 rounded-xl border transition-all hover:shadow-md",
+                action.hoverColor
+              )}
+            >
+              <div className={cn("p-3 rounded-lg mr-4", action.color)}>
+                {action.icon}
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium text-foreground">{action.label}</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {action.description}
+                </p>
+              </div>
+              <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground mt-1" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default PacientesDashboard;
+
+export default PacienteDashboard
