@@ -11,6 +11,7 @@ import Login from '@/features/auth/pages/Login';
 import Dashboard from '@/features/Dashboard/page/Dashboard';
 import PacienteProfile from '@/features/Parients/components/PacientesProfile';
 import DoctorProfile from '@/features/Doctor/components/DoctorProfile';
+import DoctorAgenda from '@/features/Doctor/components/DoctorAgenda';
 import Unauthorized from '@/components/common/Unauthorized';
 import NotFound from '@/components/common/NotFound';
 
@@ -36,7 +37,8 @@ export const AppRoutes = () => {
                     {/* Doctor Routes */}
                     <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
                         <Route path="/doctor/perfil" element={<DoctorProfile />} />
-                        <Route path="/doctor/citas" element={<div>Gestión de Citas</div>} />
+                        <Route path="/doctor/citas" element={<DoctorAgenda/>} />
+
                     </Route>
                 </Route>
 
