@@ -26,8 +26,9 @@ export const DashboardHeader = ({ onLogout }: DashboardHeaderProps) => {
   const navItems: NavItem[] = [
     // Navegacion del paciente
     { label: 'Inicio', path: '/patient/dashboard', roles: ['patient'] },
-    { label: 'Mis Citas', path: '/patient/appointments', roles: ['patient'] },
+    { label: 'Mis Citas', path: '/patient/mis-citas', roles: ['patient'] },
     { label: 'Médicos', path: '/patient/doctors', roles: ['patient'] },
+    
 
     // Doctor navegacion
     { label: 'Inicio', path: '/doctor/dashboard', roles: ['doctor'] },
