@@ -1,45 +1,25 @@
-// src/components/ProtectRoute.tsx
-import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthProvider';
-import { Spinner } from '@/components/ui/spinner';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '@/config/AuthProvider';
+import { ROLES } from './roles';
 
-export const ProtectRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+}
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (!loading) {
-        if (!isAuthenticated) {
-         
-          navigate('/', {
-            state: { from: location },
-            replace: true
-          });
-        }
-        setIsCheckingAuth(false);
-      }
-    };
+export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+  const { isAuthenticated, user, loading } = useAuth();
 
-    checkAuth();
-  }, [isAuthenticated, loading, navigate, location]);
-
-  if (loading || isCheckingAuth) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner className='6' />
-      </div>
-    );
+  if (loading) {
+    return <div>Cargando...</div>;
   }
 
   if (!isAuthenticated) {
-    return null; // O un componente de redirección
+    return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
-};
+  if (allowedRoles && !allowedRoles.some(role => user?.roles.includes(role))) {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
-export default ProtectRoute
+  return <Outlet />;
+};
