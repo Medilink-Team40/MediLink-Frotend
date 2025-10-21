@@ -1,9 +1,9 @@
 
 
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { Loader2, CheckCircle, AlertCircle, User, Stethoscope, UserCog } from 'lucide-react';
 
 
@@ -21,9 +21,9 @@ const TestConection = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [token, setToken] = useState<string>('');
- 
 
- 
+
+
 
   const testEndpoint = async () => {
     if (!endpoint) {
@@ -91,16 +91,16 @@ const TestConection = () => {
   };
 
   const presetEndpoints = [
-    { 
-      name: 'Login', 
-      method: 'POST', 
-      endpoint: '/api/auth/login', 
-      body: JSON.stringify({ email: 'usuario@ejemplo.com', password: 'contraseña' }, null, 2) 
+    {
+      name: 'Login',
+      method: 'POST',
+      endpoint: '/api/auth/login',
+      body: JSON.stringify({ email: 'usuario@ejemplo.com', password: 'contraseña' }, null, 2)
     },
-    { 
-      name: 'Registro Paciente', 
-      method: 'POST', 
-      endpoint: '/api/auth/register/patient', 
+    {
+      name: 'Registro Paciente',
+      method: 'POST',
+      endpoint: '/api/auth/register/patient',
       body: JSON.stringify({
         firstName: 'Nombre',
         lastName: 'Apellido',
@@ -110,10 +110,10 @@ const TestConection = () => {
         gender: 'male'
       }, null, 2)
     },
-    { 
-      name: 'Registro Doctor', 
-      method: 'POST', 
-      endpoint: '/api/auth/register/doctor', 
+    {
+      name: 'Registro Doctor',
+      method: 'POST',
+      endpoint: '/api/auth/register/doctor',
       body: JSON.stringify({
         firstName: 'Doctor',
         lastName: 'Apellido',
@@ -123,9 +123,9 @@ const TestConection = () => {
         licenseNumber: '123456'
       }, null, 2)
     },
-    { 
-      name: 'Obtener Perfil', 
-      method: 'GET', 
+    {
+      name: 'Obtener Perfil',
+      method: 'GET',
       endpoint: '/api/users/me'
     }
   ];
@@ -154,7 +154,7 @@ const TestConection = () => {
         {/* Configuración */}
         <Card className="p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Configuración de la Solicitud</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div className="md:col-span-1">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -172,7 +172,7 @@ const TestConection = () => {
                 <option value="PATCH">PATCH</option>
               </select>
             </div>
-            
+
             <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Endpoint
@@ -243,8 +243,8 @@ const TestConection = () => {
           <h2 className="text-xl font-semibold mb-4">Endpoints Predefinidos</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {presetEndpoints.map((preset, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="p-4 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => applyPreset(preset)}
               >
@@ -271,7 +271,7 @@ const TestConection = () => {
                 </span>
               )}
             </div>
-            
+
             <div className="bg-gray-50 p-4 rounded-lg">
               <pre className="text-sm overflow-auto max-h-96">
                 {JSON.stringify(result, null, 2)}
@@ -292,7 +292,7 @@ const TestConection = () => {
                 <li>• POST /api/auth/logout</li>
               </ul>
             </div>
-            
+
             <div className="p-4 bg-green-50 rounded-lg">
               <h3 className="font-semibold text-green-800 mb-2">Pacientes</h3>
               <ul className="text-sm space-y-1 text-green-700">
@@ -301,7 +301,7 @@ const TestConection = () => {
                 <li>• POST /api/patients</li>
               </ul>
             </div>
-            
+
             <div className="p-4 bg-purple-50 rounded-lg">
               <h3 className="font-semibold text-purple-800 mb-2">Doctores</h3>
               <ul className="text-sm space-y-1 text-purple-700">
@@ -318,4 +318,4 @@ const TestConection = () => {
 }
 
 
- export default TestConection
+export default TestConection

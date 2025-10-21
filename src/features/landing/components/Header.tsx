@@ -1,9 +1,9 @@
 // src/features/landing/components/Header.tsx
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/auth/AuthProvider";
+import { useAuth } from "@/config/AuthProvider";
 
 const Header = () => {
-  const { isAuthenticated, login, logout} = useAuth();
+  const { isAuthenticated, login, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -20,7 +20,7 @@ const Header = () => {
             </a>
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
-                
+
                 <Button variant="outline" onClick={logout}>
                   Cerrar Sesión
                 </Button>

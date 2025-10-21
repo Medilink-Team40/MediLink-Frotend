@@ -1,5 +1,5 @@
 // src/features/auth/authService.ts
-import { getKeycloakInstance, initKeycloak, login, logout } from '@/auth/keycloak';
+import { getKeycloakInstance, initKeycloak, login, logout } from '@/config/keycloak';
 
 // Re-exportar las funciones de keycloak.ts
 export { getKeycloakInstance, login, logout };
