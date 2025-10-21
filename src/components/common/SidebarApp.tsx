@@ -1,8 +1,9 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { HomeIcon, Calendar1Icon, UserIcon, LogOutIcon, MessageCircle, VideoIcon } from "lucide-react";
+import { HomeIcon, Calendar1Icon, UserIcon, LogOutIcon, MessageCircle, VideoIcon,  Dock } from "lucide-react";
 import { useAuth } from "@/config/AuthProvider";
 import { ROLES } from "@/routes/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 const SidebarApp = () => {
     const { user, logout } = useAuth();
@@ -23,7 +24,10 @@ const SidebarApp = () => {
     const patientItems = [
         { path: '/', label: 'Inicio', icon: <HomeIcon size={20} /> },
         { path: '/citas', label: 'Mis Citas', icon: <Calendar1Icon size={20} /> },
+        {path: '/agendar-cita', label: 'Agendar Cita', icon: <Calendar1Icon size={20} /> },
+       {path: '/historial-clinico', label: 'Historial Clinico', icon: <Dock size={20}/>}, 
         { path: '/perfil', label: 'Perfil', icon: <UserIcon size={20} /> }
+
     ];
 
     const doctorItems = [
