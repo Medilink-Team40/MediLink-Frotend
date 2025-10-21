@@ -1,11 +1,11 @@
 // src/features/auth/pages/RegisterPractitionerPage.tsx
 import { PractitionerRegisterForm } from '@/features/auth/components/PractitionerRegisterForm';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { keycloak } from '@/auth/keycloak';
+import { keycloak } from '@/config/keycloak';
 import React from 'react';
 import { ToggleGroup } from '@/components/ui/toggle-group';
-import {PacienteRegisterForm} from '@/features/auth/components/PacienteRegisterForm';
+import { PacienteRegisterForm } from '@/features/auth/components/PacienteRegisterForm';
 
 
 
@@ -24,9 +24,9 @@ const RegisterPractitionerPage = () => {
               Completa el formulario para crear una cuenta
             </CardDescription>
           </div>
-          
+
           <div className="space-y-2">
-            <ToggleGroup 
+            <ToggleGroup
               value={userType}
               onValueChange={setUserType}
               options={[
@@ -37,18 +37,18 @@ const RegisterPractitionerPage = () => {
             />
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {userType === "practitioner" ? (
             <PractitionerRegisterForm />
           ) : (
-           <PacienteRegisterForm />
+            <PacienteRegisterForm />
           )}
-          
+
           <div className="pt-4 text-center text-sm border-t border-gray-100">
             ¿Ya tienes una cuenta?{' '}
-            <Link 
-              to="#" 
+            <Link
+              to="#"
               onClick={(e) => {
                 e.preventDefault();
                 keycloak.login();
