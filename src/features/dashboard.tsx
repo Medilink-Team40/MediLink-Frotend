@@ -1,5 +1,5 @@
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { getKeycloakInstance } from "@/auth/keycloak";
+import { getKeycloakInstance } from "@/config/keycloak";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -18,11 +18,11 @@ const DashboardPrueba = () => {
     if (keycloak.tokenParsed) {
       // ✅ Obtener roles del realm
       const realmRoles = keycloak.tokenParsed.realm_access?.roles || [];
-      
+
       // ✅ Obtener roles del cliente
       const clientRoles: string[] = [];
       const resourceAccess = keycloak.tokenParsed.resource_access;
-      
+
       if (resourceAccess) {
         // Iterar sobre todos los clientes
         Object.keys(resourceAccess).forEach(clientId => {
@@ -33,10 +33,10 @@ const DashboardPrueba = () => {
 
       // ✅ Combinar todos los roles (realm + cliente)
       const allRoles = [...realmRoles, ...clientRoles];
-      
+
       // ✅ Filtrar roles del sistema (opcional)
-      const filteredRoles = allRoles.filter(role => 
-        !role.startsWith('default-') && 
+      const filteredRoles = allRoles.filter(role =>
+        !role.startsWith('default-') &&
         !role.startsWith('uma_') &&
         role !== 'offline_access' &&
         role !== 'uma_authorization'
@@ -59,8 +59,8 @@ const DashboardPrueba = () => {
 
   const handleLogout = async () => {
     try {
-      await keycloak.logout({ 
-        redirectUri: window.location.origin 
+      await keycloak.logout({
+        redirectUri: window.location.origin
       });
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
@@ -80,7 +80,7 @@ const DashboardPrueba = () => {
 
       <main className="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-xl shadow-lg border border-blue-100">
         <h1 className="text-2xl font-bold mb-6 text-blue-800">Panel de Prueba de Autenticación</h1>
-        
+
         <div className="space-y-6">
           <div className="p-5 bg-blue-50 border border-blue-100 rounded-lg">
             <h2 className="font-semibold text-blue-700 mb-3">Información del Usuario</h2>
@@ -91,7 +91,7 @@ const DashboardPrueba = () => {
               <p className="text-blue-900">
                 <span className="font-medium">Email:</span> {userInfo.email}
               </p>
-              
+
               <p className="text-blue-900">
                 <span className="font-medium">Rol Principal:</span>{' '}
                 {userInfo.roles.length > 0 ? userInfo.roles[0] : 'Sin rol asignado'}
@@ -105,8 +105,8 @@ const DashboardPrueba = () => {
               <h2 className="font-semibold text-green-700 mb-3">Roles del Realm</h2>
               <div className="flex flex-wrap gap-2">
                 {userInfo.realmRoles.map((role, index) => (
-                  <span 
-                    key={index} 
+                  <span
+                    key={index}
                     className="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full"
                   >
                     {role}
@@ -122,8 +122,8 @@ const DashboardPrueba = () => {
               <h2 className="font-semibold text-purple-700 mb-3">Roles del Cliente</h2>
               <div className="flex flex-wrap gap-2">
                 {userInfo.clientRoles.map((role, index) => (
-                  <span 
-                    key={index} 
+                  <span
+                    key={index}
                     className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full"
                   >
                     {role}
@@ -139,8 +139,8 @@ const DashboardPrueba = () => {
               <h2 className="font-semibold text-blue-700 mb-3">Todos los Roles</h2>
               <div className="flex flex-wrap gap-2">
                 {userInfo.roles.map((role, index) => (
-                  <span 
-                    key={index} 
+                  <span
+                    key={index}
                     className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
                   >
                     {role}
@@ -159,7 +159,7 @@ const DashboardPrueba = () => {
                     {keycloak.token.substring(0, 50)}...
                   </code>
                 </div>
-                <button 
+                <button
                   onClick={handleCopyToken}
                   className="mt-3 text-sm text-blue-600 hover:text-blue-800 flex items-center"
                 >
