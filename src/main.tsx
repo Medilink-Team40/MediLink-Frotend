@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { AuthProvider } from '@/auth/AuthProvider';
+import { AuthProvider } from '@/config/AuthProvider';
 import App from './App';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import '@/style/index.css';
