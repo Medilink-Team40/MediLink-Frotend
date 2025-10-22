@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx"
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card.tsx"
 import { Calendar, Clock, MapPin, Stethoscope, User } from "lucide-react"
 
 const PacienteHome: React.FC = () => {

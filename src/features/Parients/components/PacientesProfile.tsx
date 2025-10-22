@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card.tsx";
 import { Button } from "@/components/ui/button";
 import { Pencil, Phone, Mail, MapPin, User, Calendar, Droplets, Bell, BellOff, LockIcon, Plus, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";

@@ -1,5 +1,5 @@
 // Importación de componentes necesarios
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card.tsx";
 import { useAuth } from "@/config/AuthProvider";
 import { useEffect, useState } from "react";
 import { Calendar1Icon } from "lucide-react";
