@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button";
-import { 
-  Calendar, 
-  Stethoscope, 
-  FileText, 
-  User, 
+import {
+  Calendar,
+  Stethoscope,
+  FileText,
+  User,
   Clock,
   ChevronRight,
   Plus,
@@ -124,9 +124,9 @@ export const PacienteDashboard = () => {
                 <Clock className="h-5 w-5 text-primary" />
                 Próxima cita
               </CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="text-primary"
                 onClick={() => navigate("/citas")}
               >
@@ -199,8 +199,8 @@ export const PacienteDashboard = () => {
                 <span className="font-medium">Hoy</span>
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full" 
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
                   style={{ width: '100%' }}
                 />
               </div>

@@ -1,8 +1,8 @@
 // Importación de componentes necesarios
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { useAuth } from "@/config/AuthProvider";
 import { useEffect, useState } from "react";
-import { Calendar1Icon  } from "lucide-react";
+import { Calendar1Icon } from "lucide-react";
 
 // Interfaz para el tipo de cita
 interface Cita {
@@ -16,7 +16,7 @@ interface Cita {
 const DoctorDashboard = () => {
   // Obtener información del usuario autenticado
   const { user } = useAuth();
-  
+
   // Estado para almacenar las citas del día
   const [citasHoy, setCitasHoy] = useState<Cita[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -28,13 +28,13 @@ const DoctorDashboard = () => {
         // Simulación de carga de datos
         // En una aplicación real, aquí iría una llamada a la API
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // Datos de ejemplo
         const citasEjemplo: Cita[] = [
           { id: 1, paciente: "María González", fecha: "2023-10-21", hora: "09:00", tipo: "Consulta" },
           { id: 2, paciente: "Carlos López", fecha: "2023-10-21", hora: "10:30", tipo: "Control" }
         ];
-        
+
         setCitasHoy(citasEjemplo);
       } catch (error) {
         console.error("Error al cargar las citas:", error);
@@ -55,7 +55,7 @@ const DoctorDashboard = () => {
     <div className="p-6">
       {/* Título del dashboard */}
       <h1 className="text-2xl font-bold mb-6">Panel del Doctor</h1>
-      
+
       {/* Sección de resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {/* Tarjeta de citas del día */}

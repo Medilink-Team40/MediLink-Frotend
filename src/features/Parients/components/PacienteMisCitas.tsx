@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Calendar, Clock, MapPin, User, Search, X, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -79,7 +79,7 @@ const citasEjemplo: Cita[] = [
 ];
 
 export const PacienteMisCitas = () => {
- 
+
   const [citas, setCitas] = useState<Cita[]>(citasEjemplo);
   const [filtroEstado, setFiltroEstado] = useState<string>("Todas");
   const [filtroTipo, setFiltroTipo] = useState<string>("Todas");
@@ -93,66 +93,66 @@ export const PacienteMisCitas = () => {
   // Filtrar citas según los filtros y búsqueda
   useEffect(() => {
     setCargando(true);
-    
+
     const timer = setTimeout(() => {
       let resultado = [...citas];
-      
+
       // Filtrar por estado
       if (filtroEstado !== "Todas") {
         resultado = resultado.filter(cita => cita.estado === filtroEstado);
       }
-      
+
       // Filtrar por tipo
       if (filtroTipo !== "Todas") {
         resultado = resultado.filter(cita => cita.tipo === filtroTipo);
       }
-      
+
       // Filtrar por búsqueda
       if (busqueda.trim() !== "") {
         const termino = busqueda.toLowerCase();
-        resultado = resultado.filter(cita => 
+        resultado = resultado.filter(cita =>
           cita.doctor.toLowerCase().includes(termino) ||
           cita.especialidad.toLowerCase().includes(termino) ||
           cita.motivo?.toLowerCase().includes(termino) ||
           cita.notas?.toLowerCase().includes(termino)
         );
       }
-      
+
       setCitasFiltradas(resultado);
       setCargando(false);
     }, 300); // Pequeño retraso para simular carga
-    
+
     return () => clearTimeout(timer);
   }, [citas, filtroEstado, filtroTipo, busqueda]);
 
   // Manejar cancelación de cita
   const handleCancelarCita = async () => {
     if (!citaSeleccionada) return;
-    
+
     setCancelando(true);
-    
+
     try {
       // Simular llamada a API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Actualizar estado local
-      const citasActualizadas = citas.map(cita => 
-        cita.id === citaSeleccionada.id 
-          ? { ...cita, estado: "Cancelada" as const, color: "bg-red-100 text-red-800" } 
+      const citasActualizadas = citas.map(cita =>
+        cita.id === citaSeleccionada.id
+          ? { ...cita, estado: "Cancelada" as const, color: "bg-red-100 text-red-800" }
           : cita
       );
-      
+
       setCitas(citasActualizadas);
       setMostrarModal(false);
       setCitaSeleccionada(null);
-      
-       toast.success("Cita cancelada", {
-      description: "La cita ha sido cancelada exitosamente."
-    });
+
+      toast.success("Cita cancelada", {
+        description: "La cita ha sido cancelada exitosamente."
+      });
     } catch (error) {
       toast.error("Error al cancelar la cita", {
-      description: "No se pudo cancelar la cita. Por favor, inténtalo de nuevo."
-    });
+        description: "No se pudo cancelar la cita. Por favor, inténtalo de nuevo."
+      });
     } finally {
       setCancelando(false);
     }
@@ -166,11 +166,11 @@ export const PacienteMisCitas = () => {
 
   // Formatear fecha en español
   const formatearFecha = (fechaStr: string) => {
-    const opciones: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const opciones: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     };
     const fecha = new Date(fechaStr);
     return fecha.toLocaleDateString('es-ES', opciones);
@@ -179,7 +179,7 @@ export const PacienteMisCitas = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <motion.h1 
+        <motion.h1
           className="text-2xl font-bold text-gray-800"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -187,7 +187,7 @@ export const PacienteMisCitas = () => {
         >
           Mis Citas
         </motion.h1>
-        <motion.div 
+        <motion.div
           className="relative w-full md:w-96"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -201,7 +201,7 @@ export const PacienteMisCitas = () => {
             onChange={(e) => setBusqueda(e.target.value)}
           />
           {busqueda && (
-            <button 
+            <button
               onClick={() => setBusqueda("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
@@ -213,7 +213,7 @@ export const PacienteMisCitas = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Filtros */}
-        <motion.div 
+        <motion.div
           className="space-y-4"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -228,8 +228,8 @@ export const PacienteMisCitas = () => {
                 <h3 className="font-medium mb-3 text-gray-700">Estado</h3>
                 <div className="space-y-3">
                   {["Todas", "Confirmada", "Pendiente", "Cancelada", "Completada"].map((estado) => (
-                    <motion.div 
-                      key={estado} 
+                    <motion.div
+                      key={estado}
                       className="flex items-center space-x-3 group"
                       whileHover={{ x: 5 }}
                       transition={{ type: "spring", stiffness: 300 }}
@@ -242,8 +242,8 @@ export const PacienteMisCitas = () => {
                         checked={filtroEstado === estado}
                         onChange={() => setFiltroEstado(estado)}
                       />
-                      <label 
-                        htmlFor={`estado-${estado}`} 
+                      <label
+                        htmlFor={`estado-${estado}`}
                         className="text-sm text-gray-600 cursor-pointer group-hover:text-blue-600 transition-colors"
                       >
                         {estado}
@@ -257,8 +257,8 @@ export const PacienteMisCitas = () => {
                 <h3 className="font-medium mb-3 text-gray-700">Tipo de Cita</h3>
                 <div className="space-y-3">
                   {["Todas", "Presencial", "Virtual"].map((tipo) => (
-                    <motion.div 
-                      key={tipo} 
+                    <motion.div
+                      key={tipo}
                       className="flex items-center space-x-3 group"
                       whileHover={{ x: 5 }}
                       transition={{ type: "spring", stiffness: 300 }}
@@ -271,8 +271,8 @@ export const PacienteMisCitas = () => {
                         checked={filtroTipo === tipo}
                         onChange={() => setFiltroTipo(tipo)}
                       />
-                      <label 
-                        htmlFor={`tipo-${tipo}`} 
+                      <label
+                        htmlFor={`tipo-${tipo}`}
                         className="text-sm text-gray-600 cursor-pointer group-hover:text-blue-600 transition-colors"
                       >
                         {tipo}
@@ -282,8 +282,8 @@ export const PacienteMisCitas = () => {
                 </div>
               </div>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full mt-4"
                 onClick={() => {
                   setFiltroEstado("Todas");
@@ -298,7 +298,7 @@ export const PacienteMisCitas = () => {
         </motion.div>
 
         {/* Lista de Citas */}
-        <motion.div 
+        <motion.div
           className="md:col-span-2 space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -313,13 +313,13 @@ export const PacienteMisCitas = () => {
               <Search className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900">No se encontraron citas</h3>
               <p className="mt-1 text-sm text-gray-500">
-                {busqueda 
-                  ? "No hay citas que coincidan con tu búsqueda." 
+                {busqueda
+                  ? "No hay citas que coincidan con tu búsqueda."
                   : "No tienes citas programadas con los filtros actuales."}
               </p>
               {busqueda && (
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="mt-4"
                   onClick={() => setBusqueda("")}
                 >
@@ -375,15 +375,15 @@ export const PacienteMisCitas = () => {
                           <span className="text-sm text-gray-500 bg-gray-50 px-2 py-1 rounded">
                             {cita.tipo}
                           </span>
-                          
+
                           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-2">
                             <motion.div
                               whileHover={{ scale: 1.03 }}
                               whileTap={{ scale: 0.98 }}
                               className="w-full sm:w-auto"
                             >
-                              <Button 
-                                variant="outline" 
+                              <Button
+                                variant="outline"
                                 size="sm"
                                 className="w-full justify-center sm:w-auto group relative overflow-hidden"
                                 onClick={() => handleVerDetalles(cita)}
@@ -398,15 +398,15 @@ export const PacienteMisCitas = () => {
                                 <span className="absolute inset-0 bg-blue-50 group-hover:bg-blue-100 transition-colors duration-200"></span>
                               </Button>
                             </motion.div>
-                            
+
                             {cita.estado === "Pendiente" && (
                               <motion.div
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="w-full sm:w-auto"
                               >
-                                <Button 
-                                  variant="destructive" 
+                                <Button
+                                  variant="destructive"
                                   size="sm"
                                   className="w-full justify-center sm:w-auto group relative overflow-hidden"
                                   onClick={() => {
@@ -444,8 +444,8 @@ export const PacienteMisCitas = () => {
               {citaSeleccionada?.estado === "Pendiente" ? "Cancelar Cita" : "Detalles de la Cita"}
             </DialogTitle>
             <DialogDescription>
-              {citaSeleccionada?.estado === "Pendiente" 
-                ? "¿Estás seguro de que deseas cancelar esta cita?" 
+              {citaSeleccionada?.estado === "Pendiente"
+                ? "¿Estás seguro de que deseas cancelar esta cita?"
                 : "Información detallada de tu cita."}
             </DialogDescription>
           </DialogHeader>
@@ -473,8 +473,8 @@ export const PacienteMisCitas = () => {
           )}
 
           <DialogFooter className="sm:justify-between">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setMostrarModal(false);
                 setCitaSeleccionada(null);
@@ -482,10 +482,10 @@ export const PacienteMisCitas = () => {
             >
               Cerrar
             </Button>
-            
+
             {citaSeleccionada?.estado === "Pendiente" && (
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={handleCancelarCita}
                 disabled={cancelando}
               >

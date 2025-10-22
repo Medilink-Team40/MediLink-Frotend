@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { FileText, Calendar, Stethoscope, Pill, Activity, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx"
 import { Calendar, Clock, MapPin, Stethoscope, User } from "lucide-react"
 
 const PacienteHome: React.FC = () => {
@@ -28,7 +28,7 @@ const PacienteHome: React.FC = () => {
                             <div className="flex-1">
                                 <h3 className="font-semibold text-lg">Dra. Ana López</h3>
                                 <p className="text-gray-600">Cardióloga</p>
-                                
+
                                 <div className="mt-4 space-y-2">
                                     <div className="flex items-center text-sm text-gray-600">
                                         <Calendar className="h-4 w-4 mr-2 text-gray-400" />
