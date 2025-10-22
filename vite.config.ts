@@ -14,5 +14,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true
+    }
   }
 })
