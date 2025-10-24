@@ -1,7 +1,8 @@
-import { createBrowserRouter, RouteObject } from "react-router-dom";
+import { createBrowserRouter, RouteObject, Outlet } from "react-router-dom";
 import publicRoute from "@/routes/publicRoute";
 import privateRoute from "@/routes/privatedRoutes";
 import RouteErrorBoundary from "@/components/common/RouteErrorBoundary";
+import { AuthProvider } from "@/config/AuthProvider";
 
 /**
  * Función recursiva para añadir un ErrorBoundary a cada una de las rutas.
@@ -31,6 +32,14 @@ const addErrorBoundary = (routes: RouteObject[]): RouteObject[] => {
     });
 };
 
+//Creamos un wrapper que provee el auth context a todas las rutas
+
+const RootLayout = () =>(
+    <AuthProvider>
+        <Outlet/>
+    </AuthProvider>
+)
+
 // Para evitar problemas de tipos, asegúrate de que tus archivos de rutas
 // exporten un array que cumpla con el tipo `RouteObject[]`.
 // Ejemplo en `publicRoute.ts`:
@@ -39,8 +48,15 @@ const addErrorBoundary = (routes: RouteObject[]): RouteObject[] => {
 // export default publicRoute;
 
 const appRoutes: RouteObject[] = [
-    ...publicRoute,
-    ...privateRoute
+    {
+        element: <RootLayout/>,
+        children: [
+             ...publicRoute,
+             ...privateRoute
+        ]
+
+    }
+
 ];
 
 const routesWithErrorBoundary = addErrorBoundary(appRoutes);
