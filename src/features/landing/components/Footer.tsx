@@ -32,10 +32,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link 
-                  to="/especialidades" 
+                  to="/features" 
                   className="text-gray-400 hover:text-white transition-colors duration-200 text-sm md:text-base"
                 >
-                  Especialidades
+                  Características
                 </Link>
               </li>
               <li>
