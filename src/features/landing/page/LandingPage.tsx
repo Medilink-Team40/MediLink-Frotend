@@ -9,24 +9,19 @@ import CtaSection from '@/features/landing/components/CtaSection';
 import Footer from '@/features/landing/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const LandingPage = () => {
 
 const { isAuthenticated, loading } = useAuth();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
- useEffect(() => {
-    // Si la autenticación no está cargando y el usuario está autenticado...
-    if (!loading && isAuthenticated) {
-      // ...redirígelo al dashboard.
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, loading, navigate]); // El efecto se ejecuta si estos valores cambian
-
-  // Mientras carga la autenticación o si ya se va a redirigir, no muestra nada
-  if (loading || isAuthenticated) {
+ // Eliminamos la redirección automática al dashboard para que la landing sea
+ // la página por defecto incluso cuando el usuario esté autenticado.
+ // Mostrar solo el estado de carga mientras se inicializa la autenticación.
+  if (loading) {
     return <div>Cargando...</div>;
   }
  
