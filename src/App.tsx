@@ -1,13 +1,13 @@
-
+import { RouterProvider } from 'react-router-dom';
+import { AuthProvider } from '@/config/AuthProvider';
+import { router } from '@/routes/router';
 
 function App() {
-
-
   return (
-   <div>
-    <p>Portal de Salud</p>
-   </div>
-  )
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

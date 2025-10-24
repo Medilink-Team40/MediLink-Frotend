@@ -1,0 +1,25 @@
+name: Kanban Task
+description: Crear una tarea para el tablero Kanban del proyecto
+title: "[TASK] "
+labels: ["kanban"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 📌 Descripción
+      description: Explica brevemente qué se debe hacer en esta tarea.
+      placeholder: Ej. Implementar formulario de registro en React con validación de contraseña.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: notes
+    attributes:
+      label: 📝 Notas técnicas / Librerías
+      description: Agrega detalles técnicos, librerías a usar o referencias.
+      placeholder: |
+        - React Hook Form + Zod
+        - JWT con expiración + refresh token
+        - Prisma migrations en PostgreSQL
+    validations:
+      required: false
