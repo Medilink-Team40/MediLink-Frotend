@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useDevAuth } from './devAuth'; // Asumimos que está en la misma carpeta
 import { getKeycloakInstance, initializeAuth } from '@/features/auth/authService';
+import { useLocation } from 'react-router';
 
 // --- Interfaces---
 interface User {
@@ -22,11 +23,12 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const publicRoutes = ['/login', '/register', '/tes'];
+
 // --- Componente AuthProvider ---
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  
-  // 1. Hook de Estado (Incondicional)
-  // Este estado unificado manejará tanto el mock de 'dev' como el estado real de 'prod'.
+
+  const location = useLocation();
   const [state, setState] = useState<{
     isAuthenticated: boolean;
     user: User | null;
@@ -37,21 +39,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading: true // Siempre empezamos asumiendo que estamos cargando
   });
 
-  
-  const devAuthData = useDevAuth();
 
-  // 3. Hook 'login' (Incondicional)
+  const devAuthData = useDevAuth();
+  const isDevelopment = import.meta.env.DEV;
+
+
   const login = useCallback(async () => {
-    // Lógica condicional DENTRO del hook
-    if (import.meta.env.DEV) {
+    if (isDevelopment) {
       console.log("Modo desarrollo: inicio de sesión simulado");
       const auth = devAuthData();
-      await auth.login(); 
-      setState({
-        isAuthenticated: auth.isAuthenticated,
-        user: auth.user,
-        loading: false
-      });
+
+      // Only set authenticated state if not on a public route
+      const currentIsPublicRoute = publicRoutes.some(route =>
+        location.pathname.startsWith(route)
+      );
+
+      if (currentIsPublicRoute) {
+        setState({
+          isAuthenticated: false,
+          user: null,
+          loading: false
+        });
+      } else {
+        setState({
+          isAuthenticated: auth.isAuthenticated,
+          user: auth.user,
+          loading: false
+        });
+      }
       return;
     }
 
@@ -64,12 +79,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }
-  }, [devAuthData]); // Dependemos de devAuthData para la simulación
+  }, [devAuthData, location]); // Dependemos de devAuthData para la simulación
 
   // 4. Hook 'logout' (Incondicional)
   const logout = useCallback(async () => {
     // Lógica condicional DENTRO del hook
-    if (import.meta.env.DEV) {
+    if (isDevelopment) {
       console.log("Modo desarrollo: cierrando sesión ...");
       const auth = devAuthData();
       await auth.logout(); // Llama a la simulación (Promise.resolve())
@@ -102,17 +117,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 5. Hook 'useEffect' para inicialización (Incondicional)
   useEffect(() => {
-    // Lógica condicional DENTRO del hook
-    if (import.meta.env.DEV) {
+    if (isDevelopment) {
       console.log("AuthProvider: Modo Desarrollo Activado.");
-      // En 'dev', simplemente aplicamos los datos mock y terminamos la carga
-      const auth = devAuthData();
-      setState({
-        isAuthenticated: auth.isAuthenticated,
-        user: auth.user,
-        loading: false
-      });
-      return; // No ejecutamos la lógica de Keycloak
+
+      const currentIsPublicRoute = publicRoutes.some(route =>
+        location.pathname.startsWith(route)
+      );
+
+      if (currentIsPublicRoute) {
+        setState({
+          isAuthenticated: false,
+          user: null,
+          loading: false
+        });
+      } else {
+        const auth = devAuthData();
+        setState({
+          isAuthenticated: auth.isAuthenticated,
+          user: auth.user,
+          loading: false
+        });
+      }
+      return;
     }
 
     // --- Lógica de Producción ---
@@ -144,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     initAuth();
-    
+
     // El array de dependencias vacío asegura que esto solo se ejecute una vez.
     // Incluimos devAuthData por completitud, aunque sabemos que es un objeto estable.
   }, [devAuthData]);

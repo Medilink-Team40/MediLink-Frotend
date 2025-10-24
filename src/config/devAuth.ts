@@ -8,7 +8,7 @@ export const devAuthData = () => {
       roles: ["paciente"]
     },
     login: () => Promise.resolve(true),
-    logout: () => Promise.resolve()
+    logout: () => Promise.resolve(false)
   };
 };
   

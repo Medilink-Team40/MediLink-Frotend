@@ -10,9 +10,12 @@ export default defineConfig({
     strictPort: true,
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    },
+    alias: [
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, 'src')
+      }
+    ],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
   },
   build: {

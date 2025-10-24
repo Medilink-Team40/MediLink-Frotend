@@ -362,7 +362,7 @@ export const PacienteMisCitas = () => {
                               <span>{cita.hora}</span>
                             </div>
                             <div className="flex items-start text-sm text-gray-600">
-                              <MapPin className="h-4 w-4 mr-2 mt-0.5 text-blue-400 flex-shrink-0" />
+                              <MapPin className="h-4 w-4 mr-2 mt-0.5 text-blue-400" />
                               <span>{cita.direccion}</span>
                             </div>
                           </div>

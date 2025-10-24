@@ -5,7 +5,7 @@ const AppLayout = () => {
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Sidebar */}
-            <div className="hidden md:flex md:flex-shrink-0">
+            <div className="hidden md:flex ">
                 <div className="w-64">
                     <SidebarApp />
                 </div>
