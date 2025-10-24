@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useDevAuth } from './devAuth'; // Asumimos que está en la misma carpeta
 import { getKeycloakInstance, initializeAuth } from '@/features/auth/authService';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 // --- Interfaces---
 interface User {
