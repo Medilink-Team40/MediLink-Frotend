@@ -13,9 +13,9 @@ const Header = () => {
           <Link to="/" className="text-2xl font-bold text-blue-600">MediLink</Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <Link to="/features" className="text-gray-600 hover:text-blue-600 transition-colors">
               Características
-            </a>
+            </Link>
             <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">
               Sobre Nosotros
             </Link>
