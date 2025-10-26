@@ -33,10 +33,10 @@ const iconFloatVariants: Variants = {
     transition: { duration: 0.5 }
   },
   float: {
-    y: [-10, 10, -10],
-    rotate: [-5, 5, -5],
+    y: [-5, 5, -5],
+    rotate: [-3, 3, -3],
     transition: {
-      duration: 3,
+      duration: 4,
       repeat: Infinity,
       ease: "easeInOut"
     }
@@ -51,138 +51,140 @@ const UnderConstruction = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen bg-blue-50 flex items-center justify-center p-4"
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4"
     >
-      <div className="max-w-4xl w-full">
+      <div className="max-w-2xl w-full relative">
 
-        {/* Iconos flotantes de fondo */}
+        {/* Iconos flotantes de fondo - Más pequeños y sutiles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
             variants={iconFloatVariants}
             initial="hidden"
             animate={["visible", "float"]}
-            className="absolute top-20 left-20 text-blue-200"
+            className="absolute top-10 left-10 text-blue-200/40"
           >
-            <Wrench className="h-12 w-12" />
+            <Wrench className="h-6 w-6" />
           </motion.div>
           <motion.div
             variants={iconFloatVariants}
             initial="hidden"
             animate={["visible", "float"]}
             transition={{ delay: 0.5 }}
-            className="absolute top-32 right-32 text-blue-200"
+            className="absolute top-16 right-16 text-blue-200/40"
           >
-            <Hammer className="h-10 w-10" />
+            <Hammer className="h-5 w-5" />
           </motion.div>
           <motion.div
             variants={iconFloatVariants}
             initial="hidden"
             animate={["visible", "float"]}
             transition={{ delay: 1 }}
-            className="absolute bottom-20 left-32 text-blue-200"
+            className="absolute bottom-16 left-16 text-blue-200/40"
           >
-            <Settings className="h-8 w-8" />
+            <Settings className="h-4 w-4" />
           </motion.div>
           <motion.div
             variants={iconFloatVariants}
             initial="hidden"
             animate={["visible", "float"]}
             transition={{ delay: 1.5 }}
-            className="absolute bottom-32 right-20 text-blue-200"
+            className="absolute bottom-10 right-10 text-blue-200/40"
           >
-            <Construction className="h-14 w-14" />
+            <Construction className="h-7 w-7" />
           </motion.div>
         </div>
 
-        <Card className="bg-white border-0 shadow-2xl relative z-10">
-          <CardContent className="p-12 text-center">
+        <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl relative z-10">
+          <CardContent className="p-8">
 
-            {/* Icono principal */}
+            {/* Icono principal - Más compacto */}
             <motion.div
               variants={itemVariants}
-              className="flex justify-center mb-8"
+              className="flex justify-center mb-6"
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-blue-100 rounded-full blur-xl"></div>
-                <div className="relative bg-blue-500 p-8 rounded-full">
-                  <Construction className="h-16 w-16 text-white" />
+                <div className="absolute inset-0 bg-blue-100 rounded-full blur-lg"></div>
+                <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-full">
+                  <Construction className="h-10 w-10 text-white" />
                 </div>
               </div>
             </motion.div>
 
-            {/* Título principal */}
+            {/* Título principal - Más pequeño */}
             <motion.h1
               variants={itemVariants}
-              className="text-4xl md:text-5xl font-bold text-blue-900 mb-4"
+              className="text-2xl md:text-3xl font-bold text-blue-900 mb-3 text-center"
             >
               Página en Construcción
             </motion.h1>
 
-            {/* Subtítulo */}
+            {/* Subtítulo - Más compacto */}
             <motion.p
               variants={itemVariants}
-              className="text-xl text-blue-700 mb-8 max-w-2xl mx-auto"
+              className="text-blue-700 mb-6 text-center text-sm md:text-base"
             >
-              Estamos trabajando duro para traerte una experiencia increíble.
+              Estamos trabajando para traerte una experiencia increíble.
+              <br className="hidden md:block" />
               Esta sección estará disponible muy pronto.
             </motion.p>
 
-            {/* Características que vienen */}
+            {/* Características que vienen - Más compacto */}
             <motion.div
               variants={itemVariants}
-              className="bg-blue-50 rounded-xl p-8 mb-8"
+              className="bg-blue-50 rounded-lg p-4 mb-6"
             >
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">
+              <h3 className="text-sm font-semibold text-blue-900 mb-3 text-center">
                 ¿Qué estamos preparando?
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="flex items-center gap-2 text-blue-700">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="grid grid-cols-1 gap-2 text-xs">
+                <div className="flex items-center gap-2 text-blue-700 justify-center">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                   <span>Nuevas funcionalidades</span>
                 </div>
-                <div className="flex items-center gap-2 text-blue-700">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex items-center gap-2 text-blue-700 justify-center">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                   <span>Mejor experiencia de usuario</span>
                 </div>
-                <div className="flex items-center gap-2 text-blue-700">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <div className="flex items-center gap-2 text-blue-700 justify-center">
+                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                   <span>Diseño optimizado</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Información de progreso */}
+            {/* Información de progreso - Más pequeño */}
             <motion.div
               variants={itemVariants}
-              className="flex items-center justify-center gap-4 mb-8 text-blue-600"
+              className="flex items-center justify-center gap-2 mb-4 text-blue-600"
             >
-              <Clock className="h-5 w-5" />
-              <span className="text-sm font-medium">
-                Tiempo estimado de finalización: Próximamente
+              <Clock className="h-4 w-4" />
+              <span className="text-xs font-medium">
+                Tiempo estimado: Próximamente
               </span>
             </motion.div>
 
-            {/* Barra de progreso simulada */}
+            {/* Barra de progreso - Más delgada */}
             <motion.div
               variants={itemVariants}
-              className="w-full bg-blue-100 rounded-full h-3 mb-8 overflow-hidden"
+              className="w-full bg-blue-100 rounded-full h-2 mb-6 overflow-hidden"
             >
               <motion.div
-                className="bg-blue-500 h-full rounded-full"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: "75%" }}
                 transition={{ duration: 2, delay: 1 }}
               />
             </motion.div>
 
-            {/* Botones de acción */}
+            {/* Botones de acción - Más compactos */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-3 justify-center"
             >
               <Button
                 onClick={() => navigate(-1)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-sm"
+                size="sm"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Volver Atrás
@@ -191,20 +193,20 @@ const UnderConstruction = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate('/')}
-                className="border-blue-500 text-blue-600 hover:bg-blue-50 px-8 py-3"
+                className="border-blue-500 text-blue-600 hover:bg-blue-50 px-6 py-2 text-sm"
+                size="sm"
               >
                 Ir al Inicio
               </Button>
             </motion.div>
 
-            {/* Información adicional */}
+            {/* Información adicional - Más pequeña */}
             <motion.div
               variants={itemVariants}
-              className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200"
+              className="mt-6 p-3 bg-blue-50/50 rounded-lg border border-blue-200/50"
             >
-              <p className="text-sm text-blue-700">
-                <strong>¿Necesitas ayuda?</strong> Contacta a nuestro equipo de soporte
-                mientras trabajamos en esta nueva funcionalidad.
+              <p className="text-xs text-blue-700 text-center">
+                <strong>¿Necesitas ayuda?</strong> Contacta a nuestro equipo mientras trabajamos en esta funcionalidad.
               </p>
             </motion.div>
 

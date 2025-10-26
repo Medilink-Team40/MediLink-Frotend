@@ -6,6 +6,8 @@ import AppLayout from '@/components/layout/AppLayout';
 import { ROLES } from './roles';
 import NotFound from '@/components/common/NotFound';
 import { ZoomApp } from '@/features/zoom/page/page';
+import ProtectedRoute from './ProtectedRoute';
+import UnderConstruction from '@/components/common/UnderContruction';
 
 // Lazy load components
 const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
@@ -71,6 +73,16 @@ const privateRoutes: RouteObject[] = [
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
             <Suspense fallback={<LoadingFallback />}>
               <PacienteProfile />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'Chat',
+        element:(
+          <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
+            <Suspense fallback={<LoadingFallback/>}>
+              <UnderConstruction/>
             </Suspense>
           </ProtectedRoute>
         )
@@ -181,6 +193,23 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'admin/manage-patients',
+        element:(
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'admin/manage-patients',
+        element:(
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
       },
 
       // Unauthorized
