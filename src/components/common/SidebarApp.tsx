@@ -70,6 +70,20 @@ const SidebarApp = () => {
             category: 'Citas'
         },
         {
+            path: 'Chat',
+            label: 'Mensajes',
+            icon: <MessageCircle size={20} />,
+            badge: 4,
+            category: 'Comunicación'
+
+        },
+        {
+            path: 'zoom',
+            label: 'Teleconsultas',
+            icon: <VideoIcon size={20} />,
+            
+        },
+        {
             path: '/agendar-cita',
             label: 'Agendar Cita',
             icon: <Calendar1Icon size={20} />,
