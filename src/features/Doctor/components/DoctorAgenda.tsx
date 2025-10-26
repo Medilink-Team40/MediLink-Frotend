@@ -22,9 +22,9 @@ const DoctorAgenda = () => {
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
+
     const days = [];
-    
+
     // Días del mes anterior
     const prevMonth = new Date(currentYear, currentMonth, 0);
     const daysInPrevMonth = prevMonth.getDate();
@@ -35,7 +35,7 @@ const DoctorAgenda = () => {
         hasAppointment: false
       });
     }
-    
+
     // Días del mes actual
     for (let day = 1; day <= daysInMonth; day++) {
       days.push({
@@ -44,7 +44,7 @@ const DoctorAgenda = () => {
         hasAppointment: [3, 6, 11, 17, 22].includes(day) // Días con citas de ejemplo
       });
     }
-    
+
     // Días del siguiente mes para completar la grilla
     const remainingDays = 42 - days.length; // 6 semanas * 7 días
     for (let day = 1; day <= remainingDays; day++) {
@@ -54,7 +54,7 @@ const DoctorAgenda = () => {
         hasAppointment: false
       });
     }
-    
+
     return days;
   };
 
@@ -201,7 +201,7 @@ const DoctorAgenda = () => {
                 Tipo de cita
               </label>
               <div className="grid grid-cols-2 gap-2">
-                <label className="flex items-center p-3 border rounded-lg cursor-pointer has-[:checked]:bg-[#1193d4]/10 has-[:checked]:border-[#1193d4] border-gray-300">
+                <label className="flex items-center p-3 border rounded-lg cursor-pointer has-:checked:bg-[#1193d4]/10 has-:checked:border-[#1193d4] border-gray-300">
                   <input
                     type="radio"
                     name="appointment-type"
@@ -212,7 +212,7 @@ const DoctorAgenda = () => {
                   />
                   <span className="ml-3 text-sm text-gray-700">Presencial</span>
                 </label>
-                <label className="flex items-center p-3 border rounded-lg cursor-pointer has-[:checked]:bg-[#1193d4]/10 has-[:checked]:border-[#1193d4] border-gray-300">
+                <label className="flex items-center p-3 border rounded-lg cursor-pointer has-:checked:bg-[#1193d4]/10 has-:checked:border-[#1193d4] border-gray-300">
                   <input
                     type="radio"
                     name="appointment-type"

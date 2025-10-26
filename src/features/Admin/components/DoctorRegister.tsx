@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { z } from 'zod';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { PatientRegisterFormData, patientRegisterSchema } from '@/features/auth/validations/patient-register.schema';
+import { FHIRExternalGender } from '@/types/practitioner.types';
+import { practitionerRegisterSchema, PractitionerRegisterFormData } from '@/features/auth/validations/practitioner-register.schema';
 import {
   Eye,
   EyeOff,
@@ -22,19 +24,12 @@ import {
   Shield,
   UserPlus,
   Loader2,
-  AlertCircle,
-  IdCard,
-  Users
+  AlertCircle
 } from 'lucide-react';
 import axios from '@/lib/api/axiosConfig';
 
-// Estados del formulario
-enum FormStatus {
-  IDLE = 'idle',
-  SUBMITTING = 'submitting',
-  SUCCESS = 'success',
-  ERROR = 'error'
-}
+// Tipo de datos para el registro de doctor
+type PractitionerRegisterData = z.infer<typeof practitionerRegisterSchema>;
 
 // Configuración de animaciones
 const containerVariants = {
@@ -54,7 +49,15 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 };
 
-export const PacienteRegisterForm = () => {
+// Estados del formulario
+enum FormStatus {
+  IDLE = 'idle',
+  SUBMITTING = 'submitting',
+  SUCCESS = 'success',
+  ERROR = 'error'
+}
+
+export const DoctorRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
@@ -69,25 +72,36 @@ export const PacienteRegisterForm = () => {
     setError,
     clearErrors,
     reset
-  } = useForm<PatientRegisterFormData>({
-    resolver: zodResolver(patientRegisterSchema),
+  } = useForm<PractitionerRegisterFormData>({
+    resolver: zodResolver(practitionerRegisterSchema),
     mode: 'onChange', // Validación en tiempo real
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      name: [{
+        use: 'official',
+        family: '',
+        given: [''],
+        prefix: [''],
+        suffix: [''],
+        text: '',
+      }],
+      telecom: [{
+        system: 'phone',
+        value: '',
+        use: 'work',
+        rank: 1
+      }],
+      gender: FHIRExternalGender.UNKNOWN,
       email: '',
-      phone: '',
-      birthDate: '',
-      gender: 'unknown',
-      dni: '',
       password: '',
-      confirmPassword: '',
+      repeatpassword: '',
+      birthDate: '',
     },
   });
 
+
   // Observar cambios en las contraseñas para validación en tiempo real
   const password = watch('password');
-  const confirmPassword = watch('confirmPassword');
+  const confirmPassword = watch('repeatpassword');
 
   // Validación de fortaleza de contraseña
   const getPasswordStrength = (password: string) => {
@@ -132,43 +146,45 @@ export const PacienteRegisterForm = () => {
   // Verificar si las contraseñas coinciden
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
-  // Validación de DNI chileno (básica)
-  const validateDNI = (dni: string) => {
-    const cleanDni = dni.replace(/\D/g, '');
-    return cleanDni.length >= 7 && cleanDni.length <= 8;
-  };
-
-  const dniValue = watch('dni');
-  const isDniValid = dniValue ? validateDNI(dniValue) : false;
-
-  const onSubmit: SubmitHandler<PatientRegisterFormData> = async (data) => {
+  const onSubmit: SubmitHandler<PractitionerRegisterFormData> = async (data) => {
     try {
       setFormStatus(FormStatus.SUBMITTING);
       clearErrors();
 
-      // Aquí irá la llamada a la API cuando tengas el endpoint
-      const payload = {
-        ...data,
-        // Transformar datos según el DTO cuando esté disponible
-        dni: data.dni.replace(/\D/g, ''), // Limpiar DNI
+      const payload: PractitionerRegisterData = {
+        email: data.email,
+        password: data.password,
+        repeatpassword: data.repeatpassword,
+        birthDate: data.birthDate,
+        gender: data.gender,
+        name: data.name.map((n) => ({
+          use: n.use ?? 'official',
+          family: n.family,
+          given: n.given,
+          prefix: n.prefix ?? [],
+          suffix: n.suffix ?? [],
+          text: n.text || `${n.given.join(' ')} ${n.family}`.trim()
+        })),
+        telecom: data.telecom.map((t) => ({
+          system: t.system ?? 'phone',
+          value: t.value,
+          use: t.use ?? 'work',
+          rank: t.rank ?? 1,
+        })),
       };
 
-      // Simular llamada a la API por ahora
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Cuando tengas el endpoint real, usar esto:
-      // const { data: response } = await axios.post(
-      //   `${import.meta.env.VITE_API_URL}/patients/register`,
-      //   payload,
-      //   {
-      //     headers: { "Content-Type": "application/json" },
-      //   }
-      // );
+      const { data: response } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/practitioners/register`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       setFormStatus(FormStatus.SUCCESS);
-      setSubmitMessage('¡Paciente registrado exitosamente!');
+      setSubmitMessage('¡Doctor registrado exitosamente!');
       reset(); // Limpiar formulario
-      console.log("Registro exitoso:", payload);
+      console.log("Registro exitoso:", response);
 
     } catch (error: any) {
       setFormStatus(FormStatus.ERROR);
@@ -202,15 +218,15 @@ export const PacienteRegisterForm = () => {
       <Card className="shadow-xl border-0 bg-linear-to-br from-white to-gray-50">
         <CardHeader className="text-center pb-8">
           <motion.div variants={itemVariants} className="flex items-center justify-center mb-4">
-            <div className="p-3 bg-green-500 rounded-full">
-              <Users className="h-8 w-8 text-white" />
+            <div className="p-3 bg-blue-500 rounded-full">
+              <UserPlus className="h-8 w-8 text-white" />
             </div>
           </motion.div>
           <CardTitle className="text-3xl font-bold text-gray-900">
-            Registro de Paciente
+            Registro de Doctor
           </CardTitle>
           <CardDescription className="text-lg text-gray-600">
-            Complete la información para crear su cuenta de paciente
+            Complete la información para registrar un nuevo doctor en el sistema
           </CardDescription>
         </CardHeader>
 
@@ -224,10 +240,11 @@ export const PacienteRegisterForm = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                 >
-                  <Alert className={`${formStatus === FormStatus.SUCCESS
+                  <Alert className={`${
+                    formStatus === FormStatus.SUCCESS
                       ? 'border-green-500 bg-green-50'
                       : 'border-red-500 bg-red-50'
-                    }`}>
+                  }`}>
                     {formStatus === FormStatus.SUCCESS ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
                     ) : (
@@ -246,146 +263,95 @@ export const PacienteRegisterForm = () => {
             {/* Información Personal */}
             <motion.div variants={itemVariants} className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
-                <User className="h-5 w-5 text-green-500" />
+                <User className="h-5 w-5 text-blue-500" />
                 <h3 className="text-xl font-semibold text-gray-900">Información Personal</h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Nombres */}
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-medium">
+                  <Label htmlFor="given" className="text-sm font-medium">
                     Nombres *
                   </Label>
                   <Input
-                    id="firstName"
+                    id="given"
                     type="text"
-                    {...register('firstName')}
+                    {...register('name.0.given.0')}
                     placeholder="Juan Carlos"
-                    className={`transition-all ${errors.firstName
+                    className={`transition-all ${
+                      errors.name?.[0]?.given?.[0]
                         ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.firstName
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                        : touchedFields.name?.[0]?.given?.[0]
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
+                    }`}
                   />
-                  {errors.firstName && (
+                  {errors.name?.[0]?.given?.[0] && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.firstName.message}
+                      {errors.name[0].given[0]?.message?.toString()}
                     </motion.p>
                   )}
                 </div>
 
-                {/* Apellidos */}
+                {/* Apellido */}
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-medium">
-                    Apellidos *
+                  <Label htmlFor="family" className="text-sm font-medium">
+                    Apellido *
                   </Label>
                   <Input
-                    id="lastName"
+                    id="family"
                     type="text"
-                    {...register('lastName')}
+                    {...register('name.0.family')}
                     placeholder="Pérez González"
-                    className={`transition-all ${errors.lastName
+                    className={`transition-all ${
+                      errors.name?.[0]?.family
                         ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.lastName
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                        : touchedFields.name?.[0]?.family
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
+                    }`}
                   />
-                  {errors.lastName && (
+                  {errors.name?.[0]?.family && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.lastName.message}
+                      {errors.name[0].family?.message?.toString()}
                     </motion.p>
                   )}
                 </div>
 
-                {/* DNI */}
+                {/* Título */}
                 <div className="space-y-2">
-                  <Label htmlFor="dni" className="text-sm font-medium">
-                    <IdCard className="h-4 w-4 inline mr-1" />
-                    DNI/RUT *
+                  <Label htmlFor="prefix" className="text-sm font-medium">
+                    Título/Especialidad
                   </Label>
                   <Input
-                    id="dni"
+                    id="prefix"
                     type="text"
-                    {...register('dni')}
-                    placeholder="12.345.678-9"
-                    className={`transition-all ${errors.dni
-                        ? 'border-red-500 focus:border-red-500'
-                        : dniValue && isDniValid
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                    {...register('name.0.prefix.0')}
+                    placeholder="Dr., Odontólogo, Cardiólogo"
                   />
-                  {dniValue && !errors.dni && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className={`text-sm flex items-center gap-1 ${isDniValid ? 'text-green-600' : 'text-orange-500'
-                        }`}
-                    >
-                      {isDniValid ? (
-                        <>
-                          <CheckCircle className="h-3 w-3" />
-                          DNI válido
-                        </>
-                      ) : (
-                        <>
-                          <AlertCircle className="h-3 w-3" />
-                          Verificar formato de DNI
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-                  {errors.dni && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-red-500 flex items-center gap-1"
-                    >
-                      <XCircle className="h-3 w-3" />
-                      {errors.dni.message}
-                    </motion.p>
-                  )}
                 </div>
 
-                {/* Fecha de Nacimiento */}
+                {/* Sufijo */}
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate" className="text-sm font-medium">
-                    <Calendar className="h-4 w-4 inline mr-1" />
-                    Fecha de Nacimiento *
+                  <Label htmlFor="suffix" className="text-sm font-medium">
+                    Sufijo
                   </Label>
                   <Input
-                    id="birthDate"
-                    type="date"
-                    {...register('birthDate')}
-                    className={`transition-all ${errors.birthDate
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.birthDate
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                    id="suffix"
+                    type="text"
+                    {...register('name.0.suffix.0')}
+                    placeholder="Jr., Sr., PhD, MD"
                   />
-                  {errors.birthDate && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-red-500 flex items-center gap-1"
-                    >
-                      <XCircle className="h-3 w-3" />
-                      {errors.birthDate.message}
-                    </motion.p>
-                  )}
                 </div>
               </div>
             </motion.div>
@@ -393,7 +359,7 @@ export const PacienteRegisterForm = () => {
             {/* Información de Contacto */}
             <motion.div variants={itemVariants} className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
-                <Mail className="h-5 w-5 text-green-500" />
+                <Mail className="h-5 w-5 text-blue-500" />
                 <h3 className="text-xl font-semibold text-gray-900">Información de Contacto</h3>
               </div>
 
@@ -407,13 +373,14 @@ export const PacienteRegisterForm = () => {
                     id="email"
                     type="email"
                     {...register('email')}
-                    placeholder="juan.perez@ejemplo.com"
-                    className={`transition-all ${errors.email
+                    placeholder="doctor@hospital.com"
+                    className={`transition-all ${
+                      errors.email
                         ? 'border-red-500 focus:border-red-500'
                         : touchedFields.email
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
+                    }`}
                   />
                   {errors.email && (
                     <motion.p
@@ -436,51 +403,87 @@ export const PacienteRegisterForm = () => {
                   <Input
                     id="phone"
                     type="tel"
-                    {...register('phone')}
-                    placeholder="+56 9 1234 5678"
-                    className={`transition-all ${errors.phone
+                    {...register('telecom.0.value')}
+                    placeholder="+01234567890"
+                    className={`transition-all ${
+                      errors.telecom?.[0]?.value
                         ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.phone
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
-                      }`}
+                        : touchedFields.telecom?.[0]?.value
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
+                    }`}
                   />
-                  {errors.phone && (
+                  {errors.telecom?.[0]?.value && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.phone.message}
+                      {errors.telecom[0].value?.message?.toString()}
+                    </motion.p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Información Personal Adicional */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="h-5 w-5 text-blue-500" />
+                <h3 className="text-xl font-semibold text-gray-900">Información Adicional</h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Fecha de Nacimiento */}
+                <div className="space-y-2">
+                  <Label htmlFor="birthDate" className="text-sm font-medium">
+                    Fecha de Nacimiento *
+                  </Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    {...register('birthDate')}
+                    className={`transition-all ${
+                      errors.birthDate
+                        ? 'border-red-500 focus:border-red-500'
+                        : touchedFields.birthDate
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
+                    }`}
+                  />
+                  {errors.birthDate && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-red-500 flex items-center gap-1"
+                    >
+                      <XCircle className="h-3 w-3" />
+                      {errors.birthDate.message}
                     </motion.p>
                   )}
                 </div>
 
                 {/* Género */}
-                <div className="space-y-2 md:col-span-2">
+                <div className="space-y-2">
                   <Label className="text-sm font-medium">Género *</Label>
                   <Controller
                     name="gender"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value} // Cambiar defaultValue por value
-                      >
-                        <SelectTrigger className={` bg-white transition-all ${errors.gender
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger className={` bg-white transition-all ${
+                          errors.gender
                             ? 'border-red-500 focus:border-red-500'
-                            : touchedFields.gender // Agregar validación visual para campo tocado
-                              ? 'border-green-500 focus:border-green-500'
-                              : ''
-                          }`}>
+                            : ''
+                        }`}>
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
-                        <SelectContent className='bg-white'>
-                          <SelectItem value="male">Masculino</SelectItem>
-                          <SelectItem value="female">Femenino</SelectItem>
-                          <SelectItem value="other">Otro</SelectItem>
-                          <SelectItem value="unknown">Prefiero no decirlo</SelectItem>
+                        <SelectContent className="bg-white">
+                          <SelectItem value={FHIRExternalGender.MALE}>Masculino</SelectItem>
+                          <SelectItem value={FHIRExternalGender.FEMALE}>Femenino</SelectItem>
+                          <SelectItem value={FHIRExternalGender.OTHER}>Otro</SelectItem>
+                          <SelectItem value={FHIRExternalGender.UNKNOWN}>Prefiero no decirlo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -492,7 +495,7 @@ export const PacienteRegisterForm = () => {
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.gender.message}
+                      {errors.gender.message?.toString()}
                     </motion.p>
                   )}
                 </div>
@@ -502,7 +505,7 @@ export const PacienteRegisterForm = () => {
             {/* Seguridad */}
             <motion.div variants={itemVariants} className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="h-5 w-5 text-green-500" />
+                <Shield className="h-5 w-5 text-blue-500" />
                 <h3 className="text-xl font-semibold text-gray-900">Configuración de Seguridad</h3>
               </div>
 
@@ -518,12 +521,13 @@ export const PacienteRegisterForm = () => {
                       type={showPassword ? "text" : "password"}
                       {...register('password')}
                       placeholder="••••••••"
-                      className={`pr-10 transition-all ${errors.password
+                      className={`pr-10 transition-all ${
+                        errors.password
                           ? 'border-red-500 focus:border-red-500'
                           : password && passwordStrength.strength >= 4
-                            ? 'border-green-500 focus:border-green-500'
-                            : ''
-                        }`}
+                          ? 'border-blue-500 focus:border-blue-500'
+                          : ''
+                      }`}
                     />
                     <button
                       type="button"
@@ -583,28 +587,29 @@ export const PacienteRegisterForm = () => {
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.password.message}
+                      {errors.password.message?.toString()}
                     </motion.p>
                   )}
                 </div>
 
                 {/* Confirmar Contraseña */}
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                  <Label htmlFor="repeatpassword" className="text-sm font-medium">
                     Confirmar Contraseña *
                   </Label>
                   <div className="relative">
                     <Input
-                      id="confirmPassword"
+                      id="repeatpassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      {...register('confirmPassword')}
+                      {...register('repeatpassword')}
                       placeholder="••••••••"
-                      className={`pr-10 transition-all ${errors.confirmPassword
+                      className={`pr-10 transition-all ${
+                        errors.repeatpassword
                           ? 'border-red-500 focus:border-red-500'
                           : passwordsMatch
-                            ? 'border-green-500 focus:border-green-500'
-                            : ''
-                        }`}
+                          ? 'border-green-500 focus:border-green-500'
+                          : ''
+                      }`}
                     />
                     <button
                       type="button"
@@ -620,8 +625,9 @@ export const PacienteRegisterForm = () => {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`text-sm flex items-center gap-1 ${passwordsMatch ? 'text-green-600' : 'text-red-500'
-                        }`}
+                      className={`text-sm flex items-center gap-1 ${
+                        passwordsMatch ? 'text-green-600' : 'text-red-500'
+                      }`}
                     >
                       {passwordsMatch ? (
                         <>
@@ -637,52 +643,36 @@ export const PacienteRegisterForm = () => {
                     </motion.div>
                   )}
 
-                  {errors.confirmPassword && (
+                  {errors.repeatpassword && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="text-sm text-red-500 flex items-center gap-1"
                     >
                       <XCircle className="h-3 w-3" />
-                      {errors.confirmPassword.message}
+                      {errors.repeatpassword.message?.toString()}
                     </motion.p>
                   )}
                 </div>
               </div>
             </motion.div>
 
-            {/* Información adicional
-            <motion.div variants={itemVariants} className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Información importante:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li>• Su información será tratada de forma confidencial</li>
-                    <li>• Recibirá un correo de confirmación después del registro</li>
-                    <li>• Podrá programar citas médicas una vez activada su cuenta</li>
-                  </ul>
-                </div>
-              </div>
-            </motion.div>
-            */}
-
             {/* Botón de Submit */}
             <motion.div variants={itemVariants} className="pt-6">
               <Button
                 type="submit"
-                className="w-full h-12 text-lg font-medium bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-[1.02]"
+                className="w-full h-12 text-lg font-medium bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-[1.02]"
                 disabled={isSubmitting || formStatus === FormStatus.SUBMITTING}
               >
                 {isSubmitting || formStatus === FormStatus.SUBMITTING ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Registrando...
+                    Registrando Doctor...
                   </>
                 ) : (
                   <>
                     <UserPlus className="mr-2 h-5 w-5" />
-                    Registrarse como Paciente
+                    Registrar Doctor
                   </>
                 )}
               </Button>
@@ -694,4 +684,4 @@ export const PacienteRegisterForm = () => {
   );
 };
 
-export default PacienteRegisterForm;
+export default DoctorRegister;

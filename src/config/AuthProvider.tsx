@@ -9,6 +9,11 @@ interface User {
   email: string;
   roles: string[];
   picture?: string;
+  // Campos adicionales para desarrollo
+  id?: string;
+  role?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 interface AuthContextType {
@@ -17,21 +22,20 @@ interface AuthContextType {
   loading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  setDevUser: (user: User) => Promise<void>; // Ahora obligatorio
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Rutas públicas que no requieren autenticación
-const PUBLIC_ROUTES = ['/', '/login', '/register', '/test', '/connection-test'];
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/test', '/connection-test', '/dev-login'];
 
 // Helper para verificar si una ruta es pública
 const isPublicRoute = (pathname: string): boolean => {
   return PUBLIC_ROUTES.some(route => {
-    // Exact match para la ruta raíz
     if (route === '/') {
       return pathname === '/';
     }
-    // StartsWith para otras rutas
     return pathname.startsWith(route);
   });
 };
@@ -55,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login function
   const login = useCallback(async () => {
     if (isDevelopment) {
-      console.log(' [DEV] Simulando inicio de sesión...');
+      console.log('[DEV] Simulando inicio de sesión...');
       const auth = devAuthData();
 
       setState({
@@ -73,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         redirectUri: `${window.location.origin}${window.location.pathname}`,
       });
     } catch (error) {
-      console.error(' [ERROR] Error al iniciar sesión:', error);
+      console.error('[ERROR] Error al iniciar sesión:', error);
       setState(prev => ({ ...prev, loading: false }));
     }
   }, [isDevelopment, devAuthData]);
@@ -81,9 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout function
   const logout = useCallback(async () => {
     if (isDevelopment) {
-      console.log(' [DEV] Cerrando sesión...');
-      const auth = devAuthData();
-      await auth.logout();
+      console.log('[DEV] Cerrando sesión...');
+
+      // Limpiar localStorage
+      localStorage.removeItem('dev_user');
+      localStorage.removeItem('dev_token');
+      localStorage.removeItem('dev_user_type');
 
       setState({
         isAuthenticated: false,
@@ -106,9 +113,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         redirectUri: window.location.origin,
       });
     } catch (error) {
-      console.error(' [ERROR] Error al cerrar sesión:', error);
+      console.error('[ERROR] Error al cerrar sesión:', error);
     }
-  }, [isDevelopment, devAuthData]);
+  }, [isDevelopment]);
+
+  // Función setDevUser para desarrollo
+  const setDevUser = useCallback(async (devUser: User): Promise<void> => {
+    console.log('[DEV] Estableciendo usuario de desarrollo:', devUser);
+
+    setState({
+      isAuthenticated: true,
+      user: devUser,
+      loading: false,
+    });
+
+    // Guardar en localStorage para persistencia
+    localStorage.setItem('dev_user', JSON.stringify(devUser));
+    localStorage.setItem('dev_token', `dev-token-${devUser.role}-${Date.now()}`);
+    localStorage.setItem('dev_user_type', devUser.role || '');
+
+    console.log('[DEV] Usuario configurado exitosamente');
+  }, []);
 
   // Inicialización de autenticación
   useEffect(() => {
@@ -117,8 +142,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const isPublic = isPublicRoute(currentPath);
 
       if (isDevelopment) {
-        console.log(` [DEV] Inicializando en ruta: ${currentPath}`);
-        console.log(` [DEV] ¿Es ruta pública? ${isPublic}`);
+        console.log(`[DEV] Inicializando en ruta: ${currentPath}`);
+        console.log(`[DEV] ¿Es ruta pública? ${isPublic}`);
+
+        // Verificar si hay un usuario de desarrollo guardado
+        const savedUser = localStorage.getItem('dev_user');
+        const savedToken = localStorage.getItem('dev_token');
+
+        if (savedUser && savedToken) {
+          try {
+            const user = JSON.parse(savedUser);
+            console.log('[DEV] Usuario encontrado en localStorage:', user);
+            setState({
+              isAuthenticated: true,
+              user,
+              loading: false,
+            });
+            return;
+          } catch (error) {
+            console.error('[DEV] Error al parsear usuario guardado:', error);
+            localStorage.removeItem('dev_user');
+            localStorage.removeItem('dev_token');
+            localStorage.removeItem('dev_user_type');
+          }
+        }
 
         // En rutas públicas, no autenticar automáticamente
         if (isPublic) {
@@ -130,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // En rutas privadas, autenticar con datos de desarrollo
+        // En rutas privadas sin usuario guardado, usar devAuthData como fallback
         const auth = devAuthData();
         setState({
           isAuthenticated: auth.isAuthenticated,
@@ -141,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // --- Producción: Keycloak ---
-      console.log(' [PROD] Inicializando autenticación con Keycloak...');
+      console.log('[PROD] Inicializando autenticación con Keycloak...');
 
       try {
         const authenticated = await initializeAuth();
@@ -168,7 +215,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
         }
       } catch (error) {
-        console.error(' Error al inicializar autenticación:', error);
+        console.error('Error al inicializar autenticación:', error);
         setState({
           isAuthenticated: false,
           user: null,
@@ -181,12 +228,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [location.pathname, isDevelopment, devAuthData]);
 
   // Provider value
-  const value = {
+  const value: AuthContextType = {
     isAuthenticated: state.isAuthenticated,
     user: state.user,
     loading: state.loading,
     login,
     logout,
+    setDevUser, // Incluir setDevUser
   };
 
   return (
