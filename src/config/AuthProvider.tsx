@@ -1,16 +1,14 @@
-// AuthProvider.tsx (Corregido)
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useDevAuth } from './devAuth'; // Asumimos que está en la misma carpeta
-import { getKeycloakInstance, initializeAuth } from '@/features/auth/authService';
 import { useLocation } from 'react-router-dom';
+import { useDevAuth } from './devAuth';
+import { getKeycloakInstance, initializeAuth } from '@/features/auth/authService';
 
-// --- Interfaces---
+// --- Interfaces ---
 interface User {
   name: string;
   email: string;
   roles: string[];
-  pinture?: string;
+  picture?: string;
 }
 
 interface AuthContextType {
@@ -23,12 +21,27 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const publicRoutes = ['/login', '/register', '/tes'];
+// Rutas públicas que no requieren autenticación
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/test', '/connection-test'];
+
+// Helper para verificar si una ruta es pública
+const isPublicRoute = (pathname: string): boolean => {
+  return PUBLIC_ROUTES.some(route => {
+    // Exact match para la ruta raíz
+    if (route === '/') {
+      return pathname === '/';
+    }
+    // StartsWith para otras rutas
+    return pathname.startsWith(route);
+  });
+};
 
 // --- Componente AuthProvider ---
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-
   const location = useLocation();
+  const devAuthData = useDevAuth();
+  const isDevelopment = import.meta.env.DEV;
+
   const [state, setState] = useState<{
     isAuthenticated: boolean;
     user: User | null;
@@ -36,116 +49,103 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }>({
     isAuthenticated: false,
     user: null,
-    loading: true // Siempre empezamos asumiendo que estamos cargando
+    loading: true,
   });
 
-
-  const devAuthData = useDevAuth();
-  const isDevelopment = import.meta.env.DEV;
-
-
+  // Login function
   const login = useCallback(async () => {
     if (isDevelopment) {
-      console.log("Modo desarrollo: inicio de sesión simulado");
+      console.log(' [DEV] Simulando inicio de sesión...');
       const auth = devAuthData();
 
-      // Only set authenticated state if not on a public route
-      const currentIsPublicRoute = publicRoutes.some(route =>
-        location.pathname.startsWith(route)
-      );
-
-      if (currentIsPublicRoute) {
-        setState({
-          isAuthenticated: false,
-          user: null,
-          loading: false
-        });
-      } else {
-        setState({
-          isAuthenticated: auth.isAuthenticated,
-          user: auth.user,
-          loading: false
-        });
-      }
+      setState({
+        isAuthenticated: auth.isAuthenticated,
+        user: auth.user,
+        loading: false,
+      });
       return;
     }
 
-    // Lógica de producción
+    // Producción: Keycloak login
     try {
       const keycloak = getKeycloakInstance();
       await keycloak.login({
-        redirectUri: `${window.location.origin}${window.location.pathname}`
+        redirectUri: `${window.location.origin}${window.location.pathname}`,
       });
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      console.error(' [ERROR] Error al iniciar sesión:', error);
+      setState(prev => ({ ...prev, loading: false }));
     }
-  }, [devAuthData, location]); // Dependemos de devAuthData para la simulación
+  }, [isDevelopment, devAuthData]);
 
-  // 4. Hook 'logout' (Incondicional)
+  // Logout function
   const logout = useCallback(async () => {
-    // Lógica condicional DENTRO del hook
     if (isDevelopment) {
-      console.log("Modo desarrollo: cierrando sesión ...");
+      console.log(' [DEV] Cerrando sesión...');
       const auth = devAuthData();
-      await auth.logout(); // Llama a la simulación (Promise.resolve())
-      // Simulamos el logout actualizando el estado
+      await auth.logout();
+
       setState({
         isAuthenticated: false,
         user: null,
-        loading: false
+        loading: false,
       });
       return;
     }
 
-    // Lógica de producción
+    // Producción: Keycloak logout
     try {
-      // Actualizamos el estado local primero para una UI reactiva
       setState({
         isAuthenticated: false,
         user: null,
-        loading: false
+        loading: false,
       });
+
       const keycloak = getKeycloakInstance();
-      // Keycloak se encargará de la redirección
       await keycloak.logout({
-        redirectUri: window.location.origin
+        redirectUri: window.location.origin,
       });
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error(' [ERROR] Error al cerrar sesión:', error);
     }
-  }, [devAuthData]); // Dependemos de devAuthData para la simulación
+  }, [isDevelopment, devAuthData]);
 
-  // 5. Hook 'useEffect' para inicialización (Incondicional)
+  // Inicialización de autenticación
   useEffect(() => {
-    if (isDevelopment) {
-      console.log("AuthProvider: Modo Desarrollo Activado.");
+    const initAuth = async () => {
+      const currentPath = location.pathname;
+      const isPublic = isPublicRoute(currentPath);
 
-      const currentIsPublicRoute = publicRoutes.some(route =>
-        location.pathname.startsWith(route)
-      );
+      if (isDevelopment) {
+        console.log(` [DEV] Inicializando en ruta: ${currentPath}`);
+        console.log(` [DEV] ¿Es ruta pública? ${isPublic}`);
 
-      if (currentIsPublicRoute) {
-        setState({
-          isAuthenticated: false,
-          user: null,
-          loading: false
-        });
-      } else {
+        // En rutas públicas, no autenticar automáticamente
+        if (isPublic) {
+          setState({
+            isAuthenticated: false,
+            user: null,
+            loading: false,
+          });
+          return;
+        }
+
+        // En rutas privadas, autenticar con datos de desarrollo
         const auth = devAuthData();
         setState({
           isAuthenticated: auth.isAuthenticated,
           user: auth.user,
-          loading: false
+          loading: false,
         });
+        return;
       }
-      return;
-    }
 
-    // --- Lógica de Producción ---
-    console.log("AuthProvider: Modo Producción Activado.");
-    const initAuth = async () => {
+      // --- Producción: Keycloak ---
+      console.log(' [PROD] Inicializando autenticación con Keycloak...');
+
       try {
         const authenticated = await initializeAuth();
+
         if (authenticated) {
           const keycloak = getKeycloakInstance();
           const roles = keycloak.tokenParsed?.realm_access?.roles || [];
@@ -155,45 +155,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             user: {
               name: keycloak.tokenParsed?.name || '',
               email: keycloak.tokenParsed?.email || '',
-              roles
+              roles,
+              picture: keycloak.tokenParsed?.picture,
             },
-            loading: false
+            loading: false,
           });
         } else {
-          // No autenticado, pero la inicialización terminó
-          setState(prev => ({ ...prev, isAuthenticated: false, user: null, loading: false }));
+          setState({
+            isAuthenticated: false,
+            user: null,
+            loading: false,
+          });
         }
       } catch (error) {
-        console.error('Error al inicializar autenticación:', error);
-        setState(prev => ({ ...prev, isAuthenticated: false, user: null, loading: false }));
+        console.error(' Error al inicializar autenticación:', error);
+        setState({
+          isAuthenticated: false,
+          user: null,
+          loading: false,
+        });
       }
     };
 
     initAuth();
+  }, [location.pathname, isDevelopment, devAuthData]);
 
-    // El array de dependencias vacío asegura que esto solo se ejecute una vez.
-    // Incluimos devAuthData por completitud, aunque sabemos que es un objeto estable.
-  }, [devAuthData]);
+  // Provider value
+  const value = {
+    isAuthenticated: state.isAuthenticated,
+    user: state.user,
+    loading: state.loading,
+    login,
+    logout,
+  };
 
-  // 6. Retorno del Provider (Incondicional)
-  // El valor del provider siempre se alimenta del 'state' unificado
-  // y de las funciones 'login'/'logout' que ya contienen la lógica condicional.
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated: state.isAuthenticated,
-        user: state.user,
-        loading: state.loading,
-        login,
-        logout
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// --- Hook useAuth---
+// --- Hook useAuth ---
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
