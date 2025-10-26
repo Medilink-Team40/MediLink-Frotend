@@ -3,6 +3,7 @@ import publicRoute from "@/routes/publicRoute";
 import privateRoute from "@/routes/privatedRoutes";
 import RouteErrorBoundary from "@/components/common/RouteErrorBoundary";
 import { AuthProvider } from "@/config/AuthProvider";
+import NotFound from "@/components/common/NotFound";
 
 /**
  * Función recursiva para añadir un ErrorBoundary a cada una de las rutas.
@@ -54,6 +55,11 @@ const appRoutes: RouteObject[] = [
              ...publicRoute,
              ...privateRoute
         ]
+
+    },
+    {
+        path: '*',
+        element: <NotFound />
 
     }
 
