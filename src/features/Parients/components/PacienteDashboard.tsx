@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -14,7 +14,7 @@ import {
   Video
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContenxt";
+import { useAuth } from "@/config/AuthProvider";
 import { cn } from "@/lib/utils";
 
 interface DashboardAction {
@@ -103,7 +103,7 @@ export const PacienteDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-            Hola, {user?.nombre || "Paciente"}
+            Hola, {user?.name || "Paciente"}
           </h1>
           <p className="text-muted-foreground">
             Bienvenido a tu portal de salud
@@ -200,7 +200,8 @@ export const PacienteDashboard = () => {
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
+                  className="h-full bg-linear-to-r
+                  from-blue-500 to-cyan-400 rounded-full"
                   style={{ width: '100%' }}
                 />
               </div>
