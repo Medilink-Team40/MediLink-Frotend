@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import App from './App';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
-import '@/style/index.css';
+import './index.css';
 
 const container = document.getElementById('root');
 
