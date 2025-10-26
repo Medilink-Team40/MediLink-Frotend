@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { HomeIcon, Calendar1Icon, UserIcon, LogOutIcon, MessageCircle, VideoIcon,  Dock } from "lucide-react";
+import { HomeIcon, Calendar1Icon, UserIcon, LogOutIcon, MessageCircle, VideoIcon,  Dock, BriefcaseMedicalIcon } from "lucide-react";
 import { useAuth } from "@/config/AuthProvider";
 import { ROLES } from "@/routes/roles";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,6 +10,7 @@ const SidebarApp = () => {
     const location = useLocation();
     const isPatient = user?.roles?.includes(ROLES.PACIENTE);
     const isDoctor = user?.roles?.includes(ROLES.DOCTOR);
+    const isAdmin = user?.roles?.includes(ROLES.ADMIN)
 
     // Get user initials for avatar fallback
     const getUserInitials = (name: string) => {
@@ -22,16 +23,16 @@ const SidebarApp = () => {
     };
 
     const patientItems = [
-        { path: '/', label: 'Inicio', icon: <HomeIcon size={20} /> },
+        { path: '/dashboard', label: 'Inicio', icon: <HomeIcon size={20} /> },
         { path: '/citas', label: 'Mis Citas', icon: <Calendar1Icon size={20} /> },
         {path: '/agendar-cita', label: 'Agendar Cita', icon: <Calendar1Icon size={20} /> },
-       {path: '/historial-clinico', label: 'Historial Clinico', icon: <Dock size={20}/>}, 
+       {path: '/historial-clinico', label: 'Historial Clinico', icon: <Dock size={20}/>},
         { path: '/perfil', label: 'Perfil', icon: <UserIcon size={20} /> }
 
     ];
 
     const doctorItems = [
-        { path: '/', label: 'Inicio', icon: <HomeIcon size={20} /> },
+        { path: '/doctor', label: 'Inicio', icon: <HomeIcon size={20} /> },
         { path: '/doctor/citas', label: 'Mi Agenda', icon: <Calendar1Icon size={20} /> },
         { path: '/doctor/paciente', label: 'Pacientes', icon: <UserIcon size={20} /> },
         { path: '/doctor/teleconsultas', label: 'Teleconsultas', icon: <VideoIcon size={20} /> },
@@ -39,7 +40,14 @@ const SidebarApp = () => {
         { path: '/doctor/perfil', label: 'Perfil', icon: <UserIcon size={20} /> }
     ];
 
-    const items = isPatient ? patientItems : isDoctor ? doctorItems : [];
+    const adminItems= [
+        { path: '/admin', label: 'Panel', icon: <HomeIcon size={20} /> },
+        { path: '/doctor/register', label: 'Registrar Doctor', icon: <BriefcaseMedicalIcon size={20} /> },
+        { path: '/admin/roles', label: 'Roles', icon: <UserIcon size={20} /> },
+        { path: '/admin/permisos', label: 'Permisos', icon: <UserIcon size={20} /> },
+    ]
+
+    const items = isPatient ? patientItems : isDoctor ? doctorItems : isAdmin ? adminItems : [];
     const userRole = isPatient ? 'Paciente' : isDoctor ? 'Doctor' : 'Usuario';
 
     const handleLogout = async (e: React.MouseEvent) => {
@@ -47,7 +55,7 @@ const SidebarApp = () => {
         try {
             await logout();
         } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+            console.error('[ERROR] Error al cerrar sesión:', error);
         }
     };
 
@@ -57,7 +65,7 @@ const SidebarApp = () => {
             <div className="p-4 border-b">
                 <div className="flex items-center space-x-3">
                     <Avatar>
-                        <AvatarImage src={user?.pinture} alt={user?.name} />
+                        <AvatarImage src={user?.picture} alt={user?.name} />
                         <AvatarFallback className="bg-blue-100 text-blue-600">
                             {user?.name ? getUserInitials(user.name) : 'US'}
                         </AvatarFallback>
@@ -79,10 +87,10 @@ const SidebarApp = () => {
                     <NavLink
                         key={item.path}
                         to={item.path}
-                        className={({ isActive }) => 
+                        className={({ isActive }) =>
                             `flex items-center px-4 py-2.5 rounded-md transition-colors ${
-                                isActive 
-                                    ? 'bg-blue-50 text-blue-700 font-medium' 
+                                isActive
+                                    ? 'bg-blue-50 text-blue-700 font-medium'
                                     : 'text-gray-700 hover:bg-gray-50'
                             }`
                         }
@@ -99,9 +107,9 @@ const SidebarApp = () => {
                     onClick={handleLogout}
                     className="flex items-center w-full px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 group"
                 >
-                    <LogOutIcon 
-                        size={20} 
-                        className="mr-3 text-gray-500 group-hover:text-gray-700" 
+                    <LogOutIcon
+                        size={20}
+                        className="mr-3 text-gray-500 group-hover:text-gray-700"
                     />
                     <span className="font-medium">Cerrar Sesión</span>
                 </button>
