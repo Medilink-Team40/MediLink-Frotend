@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/config/AuthProvider';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
@@ -10,7 +11,7 @@ export const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) 
   const { isAuthenticated, user, loading } = useAuth();
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return <Spinner />;
   }
 
   if (!isAuthenticated) {
