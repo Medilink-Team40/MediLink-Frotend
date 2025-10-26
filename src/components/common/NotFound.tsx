@@ -5,7 +5,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useState, useEffect } from "react";
 import NotFoundImage from '@/assets/404.png';
 
-const MotionButton = motion(Button);
+const MotionButton = motion.create(Button);
 
 // Componente de partículas flotantes para el fondo
 const FloatingParticles = () => {
@@ -115,7 +115,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       <FloatingParticles />
 
       {/* Efectos de fondo adicionales */}
@@ -135,7 +135,7 @@ const NotFound = () => {
           <div className="flex flex-col lg:flex-row">
             {/* Sección de la imagen con animación mejorada */}
             <motion.div
-              className="lg:w-1/2 p-8 flex items-center justify-center bg-gradient-to-br from-blue-50/50 to-indigo-100/50"
+              className="lg:w-1/2 p-8 flex items-center justify-center bg-linear-to-br from-blue-50/50 to-indigo-100/50"
               variants={itemVariants}
             >
               <motion.div
@@ -201,7 +201,7 @@ const NotFound = () => {
                 variants={itemVariants}
               >
                 ¡Ups! Página{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-purple-600">
                   no encontrada
                 </span>
               </motion.h1>
@@ -232,7 +232,7 @@ const NotFound = () => {
               >
                 <MotionButton
                   onClick={() => navigate(-1)}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
+                  className="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
                   whileHover={{
                     scale: 1.03,
                     boxShadow: "0 10px 25px rgba(0,0,0,0.1)"

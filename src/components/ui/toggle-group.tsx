@@ -28,7 +28,7 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
         {...props}
       >
         <div
-          className="absolute left-0 top-0 h-[calc(100%_-_0.5rem)] rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out"
+          className="absolute left-0 top-0 h-[calc(100%-0.5rem)] rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out"
           style={indicatorStyle}
           aria-hidden="true"
         />

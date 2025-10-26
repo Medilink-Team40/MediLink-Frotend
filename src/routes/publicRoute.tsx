@@ -42,7 +42,7 @@ const publicRoutes: RouteObject[] = [
         )
       },
       {
-        path: "login",
+        path: "dev-login",
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <DevLoginPage />

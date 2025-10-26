@@ -1,53 +1,152 @@
-// src/features/auth/pages/DevLoginPage.tsx
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/config/AuthProvider';
-import { setDevUserType } from '@/config/devAuth';
 import { User, Stethoscope, Shield } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const DevLoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setDevUser, isAuthenticated, user } = useAuth();
   const isDevelopment = import.meta.env.DEV;
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDevLogin = (userType: 'paciente' | 'doctor' | 'admin') => {
-    console.log(` [DEV] Login como ${userType}`);
-    setIsLoading(true);
-    
-    // Guardar el tipo de usuario en localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dev_user_type', userType);
+  // Efecto para redirigir cuando ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('[DEV] Usuario ya autenticado:', user);
+
+      // Determinar ruta según el rol del usuario
+      const userRole = user.role || (user.roles && user.roles[0]);
+
+      setTimeout(() => {
+        switch (userRole) {
+          case 'paciente':
+            navigate('/paciente');
+            break;
+          case 'doctor':
+            navigate('/doctor');
+            break;
+          case 'admin':
+            navigate('/admin');
+            break;
+          default:
+            navigate('/dashboard');
+        }
+      }, 1000); // Dar tiempo para que se vea el mensaje
     }
-    
-    // Navegar directamente al dashboard
-    // El AuthProvider detectará el cambio automáticamente
-    navigate('/dashboard');
+  }, [isAuthenticated, user, navigate]);
+
+  const handleDevLogin = async (userType: 'paciente' | 'doctor' | 'admin') => {
+    console.log(`[DEV] Login como ${userType}`);
+    setIsLoading(true);
+
+    try {
+      // Configurar usuario de desarrollo
+      const devUser = {
+        id: `dev-${userType}-001`,
+        name: userType === 'paciente' ? 'Juan Pérez' :
+              userType === 'doctor' ? 'Dra. María García' : 'Admin Sistema',
+        email: `${userType}@dev.com`,
+        role: userType,
+        roles: [userType],
+        firstName: userType === 'paciente' ? 'Juan' :
+                   userType === 'doctor' ? 'María' : 'Admin',
+        lastName: userType === 'paciente' ? 'Pérez' :
+                  userType === 'doctor' ? 'García' : 'Sistema'
+      };
+
+      // Usar setDevUser del contexto
+      await setDevUser(devUser);
+
+      // Navegar después de establecer el usuario
+      setTimeout(() => {
+        switch (userType) {
+          case 'paciente':
+            navigate('/patient/dashboard');
+            break;
+          case 'doctor':
+            navigate('/doctor/dashboard');
+            break;
+          case 'admin':
+            navigate('/admin/dashboard');
+            break;
+          default:
+            navigate('/dashboard');
+        }
+      }, 500);
+
+    } catch (error) {
+      console.error('[DEV] Error en login:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeycloakLogin = () => {
+    console.log('[DEV] Iniciando login con Keycloak...');
     // En producción, esto iniciará el flujo de Keycloak
-    console.log(' [DEV] Iniciando login con Keycloak...');
-    login();
   };
+
+  const handleLogout = () => {
+    // Función para cerrar sesión si ya está autenticado
+    localStorage.removeItem('dev_user');
+    localStorage.removeItem('dev_token');
+    localStorage.removeItem('dev_user_type');
+    window.location.reload();
+  };
+
+  // Si ya está autenticado, mostrar mensaje de redirección
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mb-4">
+            <Shield className="h-8 w-8 text-green-600" />
+          </div>
+
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Ya estás autenticado
+          </h2>
+
+          {user && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Usuario: <span className="font-semibold">{user.name}</span></p>
+              <p className="text-sm text-gray-600">Rol: <span className="font-semibold">{user.role || user.roles?.[0]}</span></p>
+            </div>
+          )}
+
+          <div className="mb-6">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-gray-600">Redirigiendo al dashboard...</p>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition"
+          >
+            Cerrar sesión y elegir otro usuario
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // En producción, redirigir automáticamente a Keycloak
   if (!isDevelopment) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-4">
             <Shield className="h-8 w-8 text-blue-600" />
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             MediLink
           </h1>
-          
+
           <p className="text-gray-600 mb-6">
             Redirigiendo al sistema de autenticación segura...
           </p>
-          
+
           <button
             onClick={handleKeycloakLogin}
             className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
@@ -61,22 +160,22 @@ const DevLoginPage = () => {
 
   // En desarrollo, mostrar opciones de login simulado
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-4">
             <Shield className="h-8 w-8 text-blue-600" />
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             MediLink
           </h1>
-          
+
           <div className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full mb-2">
-             MODO DESARROLLO
+            MODO DESARROLLO
           </div>
-          
+
           <p className="text-gray-600 text-sm">
             Selecciona un tipo de usuario para acceder
           </p>
@@ -155,8 +254,6 @@ const DevLoginPage = () => {
             En producción se usará Keycloak.
           </p>
         </div>
-
-       
       </div>
     </div>
   );

@@ -13,7 +13,8 @@ import {
     SettingsIcon,
     BellIcon,
     HelpCircleIcon,
-    ShieldCheckIcon
+    ShieldCheckIcon,
+    Stethoscope
 } from "lucide-react";
 import { useAuth } from "@/config/AuthProvider";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -137,9 +138,15 @@ const SidebarApp = () => {
             category: 'Principal'
         },
         {
-            path: '/doctor/register',
+            path: 'admin/doctor-register',
             label: 'Registrar Doctor',
             icon: <BriefcaseMedicalIcon size={20} />,
+            category: 'Gestión'
+        },
+        {
+            path: '/admin/manage-patients',
+            label: 'Gestión de Pacientes',
+            icon: <UserIcon size={20} />,
             category: 'Gestión'
         },
         {
@@ -147,6 +154,12 @@ const SidebarApp = () => {
             label: 'Gestión de Roles',
             icon: <ShieldCheckIcon size={20} />,
             category: 'Seguridad'
+        },
+        {
+            path: 'admin/manage-doctors',
+            label: 'Gestionar Doctores',
+            icon: <Stethoscope size={20} />,
+            category: 'Gestión'
         },
         {
             path: '/admin/permisos',
@@ -196,7 +209,7 @@ const SidebarApp = () => {
                 }
             >
                 <span className={cn(
-                    "flex-shrink-0 transition-colors",
+                    "shrink-0 transition-colors",
                     location.pathname === item.path ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700'
                 )}>
                     {item.icon}

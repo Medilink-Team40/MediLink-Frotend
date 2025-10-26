@@ -39,11 +39,14 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://medilink-backend-bivg.onrender.com',
+        target: 'https://medilink-backend-production-3d65.up.railway.app',
         changeOrigin: true,
         secure: false,
       }
     }
+  },
+  define:{
+     __DEV__: process.env.NODE_ENV === "development",
   },
   build: {
     // Aumentar el límite de advertencia
