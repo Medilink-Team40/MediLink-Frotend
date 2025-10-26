@@ -13,7 +13,7 @@ const CtaSection = () => {
           Únete a miles de personas que ya están cuidando su salud con MediLink.
         </p>
         <Button size="lg" className="text-lg bg-white text-blue-600 hover:bg-gray-100">
-          <Link to="/registro">Crear cuenta gratuita</Link>
+          <Link to="/register">Crear cuenta gratuita</Link>
         </Button>
       </div>
     </section>
