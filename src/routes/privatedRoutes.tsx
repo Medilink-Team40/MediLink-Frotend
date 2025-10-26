@@ -1,19 +1,31 @@
-// privatedRoutes.tsx
-import { Navigate, Outlet, RouteObject } from 'react-router-dom';
+// src/routes/privatedRoutes.tsx
+import { lazy, Suspense } from 'react';
+import { RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectRoute';
 import AppLayout from '@/components/layout/AppLayout';
-import Dashboard from '@/features/Dashboard/page/Dashboard';
-
-// Importaciones del rol paciente
-import PacienteProfile from '@/features/Parients/components/PacientesProfile';
-import PacienteMisCitas from '@/features/Parients/components/PacienteMisCitas';
-import AgendarCita from '@/features/Parients/components/AgendarCita';
-import HistorialClinico from '@/features/Parients/components/HistorialClinico';
-
-// Importaciones del rol doctor
-import DoctorProfile from '@/features/Doctor/components/DoctorProfile';
-
 import { ROLES } from './roles';
+
+// Lazy load components
+const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
+const PacienteDashboard = lazy(() => import('@/features/Parients/components/PacienteDashboard'));
+const PacienteProfile = lazy(() => import('@/features/Parients/components/PacientesProfile'));
+const PacienteMisCitas = lazy(() => import('@/features/Parients/components/PacienteMisCitas'));
+const AgendarCita = lazy(() => import('@/features/Parients/components/AgendarCita'));
+const HistorialClinico = lazy(() => import('@/features/Parients/components/HistorialClinico'));
+const DoctorDashboard = lazy(() => import('@/features/Doctor/components/DoctorDashboard'));
+const DoctorProfile = lazy(() => import('@/features/Doctor/components/DoctorProfile'));
+const AdminDashboard = lazy(() => import('@/features/Admin/components/AdminDashboard'));
+const Unauthorized = lazy(() => import('@/components/common/Unauthorized'));
+
+// Loading fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-center">
+      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <p className="mt-2 text-gray-600">Cargando...</p>
+    </div>
+  </div>
+);
 
 const privateRoutes: RouteObject[] = [
   {
@@ -24,17 +36,34 @@ const privateRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
     children: [
+      // Dashboard - Accesible para todos los usuarios autenticados
       {
         path: 'dashboard',
-        element: <Dashboard />
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <Dashboard />
+          </Suspense>
+        )
       },
 
-      // Rutas de paciente
+      // ============= RUTAS DE PACIENTE =============
+      {
+        path: 'paciente',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <PacienteDashboard />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
       {
         path: 'perfil',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <PacienteProfile />
+            <Suspense fallback={<LoadingFallback />}>
+              <PacienteProfile />
+            </Suspense>
           </ProtectedRoute>
         )
       },
@@ -42,7 +71,9 @@ const privateRoutes: RouteObject[] = [
         path: 'citas',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <PacienteMisCitas />
+            <Suspense fallback={<LoadingFallback />}>
+              <PacienteMisCitas />
+            </Suspense>
           </ProtectedRoute>
         )
       },
@@ -50,7 +81,9 @@ const privateRoutes: RouteObject[] = [
         path: 'agendar-cita',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <AgendarCita />
+            <Suspense fallback={<LoadingFallback />}>
+              <AgendarCita />
+            </Suspense>
           </ProtectedRoute>
         )
       },
@@ -58,17 +91,31 @@ const privateRoutes: RouteObject[] = [
         path: 'historial-clinico',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <HistorialClinico />
+            <Suspense fallback={<LoadingFallback />}>
+              <HistorialClinico />
+            </Suspense>
           </ProtectedRoute>
         )
       },
 
-      // Rutas de doctor
+      // ============= RUTAS DE DOCTOR =============
+      {
+        path: 'doctor',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <DoctorDashboard />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
       {
         path: 'doctor/perfil',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
-            <DoctorProfile />
+            <Suspense fallback={<LoadingFallback />}>
+              <DoctorProfile />
+            </Suspense>
           </ProtectedRoute>
         )
       },
@@ -76,7 +123,24 @@ const privateRoutes: RouteObject[] = [
         path: 'doctor/citas',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
-            <div>Gestión de Citas</div>
+            <Suspense fallback={<LoadingFallback />}>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold">Gestión de Citas</h1>
+                <p className="text-gray-600 mt-2">Próximamente...</p>
+              </div>
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+
+      // ============= RUTAS DE ADMIN =============
+      {
+        path: 'admin',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <AdminDashboard />
+            </Suspense>
           </ProtectedRoute>
         )
       },
@@ -84,7 +148,11 @@ const privateRoutes: RouteObject[] = [
       // Unauthorized
       {
         path: 'unauthorized',
-        element: <div>No autorizado</div>
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <Unauthorized />
+          </Suspense>
+        )
       }
     ]
   }
