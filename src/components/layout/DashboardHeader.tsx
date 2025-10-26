@@ -28,7 +28,7 @@ export const DashboardHeader = ({ onLogout }: DashboardHeaderProps) => {
     { label: 'Inicio', path: '/patient/dashboard', roles: ['patient'] },
     { label: 'Mis Citas', path: '/patient/mis-citas', roles: ['patient'] },
     { label: 'Médicos', path: '/patient/doctors', roles: ['patient'] },
-    
+
 
     // Doctor navegacion
     { label: 'Inicio', path: '/doctor/dashboard', roles: ['doctor'] },
@@ -43,12 +43,12 @@ export const DashboardHeader = ({ onLogout }: DashboardHeaderProps) => {
 
   useEffect(() => {
     if (keycloak.authenticated && keycloak.tokenParsed) {
-      console.log('Token completo:', keycloak.tokenParsed);
+      console.log(' Token completo:', keycloak.tokenParsed);
       setUserName(keycloak.tokenParsed.name || keycloak.tokenParsed.preferred_username || '');
 
       // Obtener el correo electrónico
       const email = (keycloak.tokenParsed.email || '').toLowerCase();
-      console.log('Correo electrónico del usuario:', email);
+      console.log(' [iNFO] Correo electrónico del usuario:', email);
 
       // Asignar rol basado en el correo electrónico
       let clientRoles: string[] = [];
