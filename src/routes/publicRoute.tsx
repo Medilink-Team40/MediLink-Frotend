@@ -1,43 +1,81 @@
-import React, { lazy } from 'react';
+// src/routes/publicRoute.tsx
+import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import PublicLayout from '@/components/layout/PublicLayout';
-import TestConection from '@/features/Test/TestContection';
 
-
-
+// Lazy load de componentes pesados
 const LandingPage = lazy(() => import('@/features/landing/page/LandingPage'));
-const AboutPage = lazy(() => import('@/features/landing/page/AboutPage'));
-const FeaturesPage = lazy(() => import('@/features/landing/page/FeaturesPage'));
-const TermsPage = lazy(() => import('@/features/landing/page/TermsPage'));
-const PrivacyPage = lazy(() => import('@/features/landing/page/PrivacyPage'));
-const CookiesPage = lazy(() => import('@/features/landing/page/CookiesPage'));
 const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPractitionerPage'));
+const DevLoginPage = lazy(() => import('@/features/auth/pages/DevLoginPage'));
+const TestConection = lazy(() => import('@/features/Test/TestContection'));
+const AdminLogin = lazy(() => import('@/features/Admin/Auth/AdminLogin'));
+const ConnectionTester = lazy(() => import('@/features/Test/ConnectionTester'));
 
+// Loading fallback
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p className="mt-4 text-gray-600">Cargando...</p>
+    </div>
+  </div>
+);
 
 const publicRoutes: RouteObject[] = [
   {
-
     path: '/',
     element: <PublicLayout />,
     children: [
-      { index: true, element: <LandingPage /> },
-      { path: "about", element: <AboutPage /> },
-      { path: "features", element: <FeaturesPage /> },
-      { path: "terminos", element: <TermsPage /> },
-      { path: "privacidad", element: <PrivacyPage /> },
-      { path: "cookies", element: <CookiesPage /> },
-      { path: "test", element:<TestConection/>},
-      
+      { 
+        index: true, 
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <LandingPage />
+          </Suspense>
+        )
+      },
+      { 
+        path: "login", 
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <DevLoginPage />
+          </Suspense>
+        )
+      },
+      { 
+        path: "test", 
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <TestConection />
+          </Suspense>
+        )
+      },
+      { 
+        path: "connection-test", 
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <ConnectionTester />
+          </Suspense>
+        )
+      },
       {
         path: "register",
-        element: <RegisterPage />
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <RegisterPage />
+          </Suspense>
+        )
       },
-     
-      
+      {
+        path: "login-admin",
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <AdminLogin />
+          </Suspense>
+        )
+      }
     ]
   }
 ];
-
-
 
 export default publicRoutes;
