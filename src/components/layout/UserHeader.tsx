@@ -21,8 +21,8 @@ export const UserHeader = () => {
             <div className="flex items-center space-x-2">
               <div className="relative">
                 <Avatar>
-                  {user?.pinture ? (
-                    <AvatarImage src={user.pinture} alt={user.name} />
+                  {user?.picture ? (
+                    <AvatarImage src={user.picture} alt={user.name} />
                   ) : (
                     <AvatarFallback>
                       {getUserInitials()}
@@ -44,7 +44,7 @@ export const UserHeader = () => {
                 </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={logout}
               className="text-sm text-gray-600 hover:text-gray-900"
             >

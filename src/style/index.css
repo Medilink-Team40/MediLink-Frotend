@@ -141,7 +141,7 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  
+
    :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -188,7 +188,7 @@ body {
   }
 
   .toggle-indicator {
-    @apply absolute left-1.5 top-1.5 h-[calc(100%-0.75rem)] rounded-full bg-white shadow-sm transition-all duration-300;
+    @apply absolute left-1.5 top-1.5 h-[calc(100%_-_0.75rem)] rounded-full bg-white shadow-sm transition-all duration-300;
     width: calc(50% - 0.75rem);
   }
 }

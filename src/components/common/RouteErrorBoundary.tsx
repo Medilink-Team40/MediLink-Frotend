@@ -1,13 +1,24 @@
-import { useRouteError, Link } from 'react-router-dom';
+// src/components/common/RouteErrorBoundary.tsx
+import { useRouteError, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Home, RefreshCw  } from 'lucide-react';
+import { AlertCircle, Home, RefreshCw } from 'lucide-react';
 
 export const RouteErrorBoundary = () => {
     const error: any = useRouteError();
-    console.error(error);
+    const navigate = useNavigate();
+
+   console.error('[ERROR] Route Error:', error);
+
+    const handleGoHome = () => {
+        navigate('/');
+    };
+
+    const handleReload = () => {
+        window.location.reload();
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
             <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                     <AlertCircle className="h-8 w-8 text-red-600" />
@@ -32,23 +43,21 @@ export const RouteErrorBoundary = () => {
                 )}
 
                 <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button >
-                        <Link to="/">
-                            <Home className="mr-2 h-4 w-4" />
-                            Volver al inicio
-                        </Link>
+                    <Button onClick={handleGoHome}>
+                        <Home className="mr-2 h-4 w-4" />
+                        Volver al inicio
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => window.location.reload()}
+                        onClick={handleReload}
                     >
-                        <RefreshCw   className="mr-2 h-4 w-4" />
+                        <RefreshCw className="mr-2 h-4 w-4" />
                         Recargar página
                     </Button>
                 </div>
             </div>
         </div>
     );
-}
+};
 
-export default RouteErrorBoundary
+export default RouteErrorBoundary;
