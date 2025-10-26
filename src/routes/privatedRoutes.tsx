@@ -5,6 +5,7 @@ import { ProtectedRoute } from './ProtectRoute';
 import AppLayout from '@/components/layout/AppLayout';
 import { ROLES } from './roles';
 import NotFound from '@/components/common/NotFound';
+import { ZoomApp } from '@/features/zoom/page/page';
 
 // Lazy load components
 const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
@@ -64,6 +65,16 @@ const privateRoutes: RouteObject[] = [
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
             <Suspense fallback={<LoadingFallback />}>
               <PacienteProfile />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path:'zoom',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
+            <Suspense fallback={<LoadingFallback/>}>
+            <ZoomApp/>
             </Suspense>
           </ProtectedRoute>
         )
