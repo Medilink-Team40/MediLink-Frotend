@@ -35,7 +35,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             const { error } = this.state;
 
             return (
-                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+                <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
                     <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
                         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                             <AlertCircle className="h-8 w-8 text-red-600" />
