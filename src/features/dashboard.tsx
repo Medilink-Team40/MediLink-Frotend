@@ -75,7 +75,7 @@ const DashboardPrueba = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 p-4">
       <DashboardHeader onLogout={handleLogout} />
 
       <main className="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-xl shadow-lg border border-blue-100">
