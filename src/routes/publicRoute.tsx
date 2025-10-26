@@ -11,6 +11,13 @@ const TestConection = lazy(() => import('@/features/Test/TestContection'));
 const AdminLogin = lazy(() => import('@/features/Admin/Auth/AdminLogin'));
 const ConnectionTester = lazy(() => import('@/features/Test/ConnectionTester'));
 
+const FeaturesPage = lazy(()=> import ('@/features/landing/page/FeaturesPage' ));
+const  AboutPage = lazy(()=> import ('@/features/landing/page/AboutPage') );
+const CookiesPage = lazy(() => import('@/features/landing/page/CookiesPage'));
+const PrivacyPage = lazy(() => import('@/features/landing/page/PrivacyPage'));
+const TermsPage = lazy(() => import('@/features/landing/page/TermsPage'));
+
+
 // Loading fallback
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -26,32 +33,81 @@ const publicRoutes: RouteObject[] = [
     path: '/',
     element: <PublicLayout />,
     children: [
-      { 
-        index: true, 
+      {
+        index: true,
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <LandingPage />
           </Suspense>
         )
       },
-      { 
-        path: "login", 
+      {
+        path: "login",
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <DevLoginPage />
           </Suspense>
         )
       },
-      { 
-        path: "test", 
+      {
+        path: "features",
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <FeaturesPage />
+          </Suspense>
+        )
+      },
+      {
+        path: "about",
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <AboutPage />
+          </Suspense>
+        )
+      },
+       {
+        path: "cookies",
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <CookiesPage/>
+          </Suspense>
+        )
+      },
+       {
+        path: "about",
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <AboutPage />
+          </Suspense>
+        )
+      },
+       {
+        path: "privacidad",
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <PrivacyPage />
+          </Suspense>
+        )
+      },
+       {
+        path: "terminos",
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <TermsPage />
+          </Suspense>
+        )
+      },
+
+      {
+        path: "test",
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <TestConection />
           </Suspense>
         )
       },
-      { 
-        path: "connection-test", 
+      {
+        path: "connection-test",
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <ConnectionTester />

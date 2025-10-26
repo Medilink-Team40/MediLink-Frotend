@@ -4,6 +4,7 @@ import { RouteObject } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectRoute';
 import AppLayout from '@/components/layout/AppLayout';
 import { ROLES } from './roles';
+import NotFound from '@/components/common/NotFound';
 
 // Lazy load components
 const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
@@ -150,7 +151,7 @@ const privateRoutes: RouteObject[] = [
         path: 'unauthorized',
         element: (
           <Suspense fallback={<LoadingFallback />}>
-            <Unauthorized />
+            <Unauthorized/>
           </Suspense>
         )
       }

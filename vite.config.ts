@@ -32,6 +32,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  css:{
+    postcss: './postcss.config.js',
+    },
   server: {
     port: 5173,
     proxy: {
@@ -45,7 +48,7 @@ export default defineConfig({
   build: {
     // Aumentar el límite de advertencia
     chunkSizeWarningLimit: 1000,
-    
+
     rollupOptions: {
       output: {
         // Separar chunks manualmente para mejor caching
@@ -64,7 +67,7 @@ export default defineConfig({
             // Otros vendors
             return 'vendor';
           }
-          
+
           // Feature chunks
           if (id.includes('/features/landing/')) {
             return 'feature-landing';
@@ -85,27 +88,27 @@ export default defineConfig({
             return 'feature-auth';
           }
         },
-        
+
         // Nombres de archivos más descriptivos
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
-    
+
     // Minificación con esbuild (más rápido que terser)
     minify: 'esbuild',
-    
+
     // Source maps solo en desarrollo
     sourcemap: false,
-    
+
     // Optimizar CSS
-    cssMinify: true,
-    
+    cssMinify: false,
+
     // Target más moderno para bundles más pequeños
     target: 'es2015',
   },
-  
+
   // Optimización de dependencias
   optimizeDeps: {
     include: [
