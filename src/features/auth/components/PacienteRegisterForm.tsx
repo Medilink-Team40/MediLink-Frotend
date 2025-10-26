@@ -21,6 +21,7 @@ export const PacienteRegisterForm = () => {
       phone: '',
       birthDate: '',
       gender: 'unknown',
+      dni: '',
       password: '',
       confirmPassword: '',
     },
@@ -128,6 +129,22 @@ export const PacienteRegisterForm = () => {
           {errors.gender && (
             <p className="text-sm text-red-500">
               {errors.gender.message}
+            </p>
+          )}
+        </div>
+
+        {/**DNI */}
+        <div className="space-y-2">
+          <Label htmlFor="dni">DNI</Label>
+          <Input
+            id="dni"
+            type="text"
+            {...register('dni')}
+            placeholder="12345678"
+          />
+          {errors.dni && (
+            <p className="text-sm text-red-500">
+              {errors.dni.message}
             </p>
           )}
         </div>
