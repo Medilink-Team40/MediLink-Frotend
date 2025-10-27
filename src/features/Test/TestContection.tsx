@@ -321,7 +321,7 @@ const APITester = () => {
                 <div className="text-xs text-gray-600">
                   {connectionStatus.lastChecked && (
                     <>
-                      Última verificación: {new Date(connectionStatus.lastChecked).toLocaleTimeString()}
+                      {/* Última verificación: {new Date(connectionStatus.lastChecked).toLocaleTimeString()} */}
                       {connectionStatus.responseTime && ` • ${connectionStatus.responseTime}ms`}
                     </>
                   )}
