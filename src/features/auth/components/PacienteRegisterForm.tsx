@@ -26,7 +26,7 @@ import {
   IdCard,
   Users
 } from 'lucide-react';
-import axios from '@/lib/api/axiosConfig';
+import axios from '@/utils/api';
 
 // Estados del formulario
 enum FormStatus {

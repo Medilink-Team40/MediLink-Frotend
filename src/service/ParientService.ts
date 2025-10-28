@@ -1,8 +1,8 @@
-import axios from '@/lib/api/axiosConfig';
+import axios from '@/utils/api';
 import { FHIRExternalGender } from '@/types/patient.types';
 
-
 interface PatientData {
+    id: string;
     name: string;
     email: string;
     password: string;
@@ -12,82 +12,138 @@ interface PatientData {
     dni: string;
 }
 
-
-export const registerPatient = {
-
-
+export const PatientService = {
     /**
      * Registro de un nuevo paciente
-     * @param PatientData 
-     * @returns 
      */
-    async register(PatientData: PatientData ): Promise<any>{
-        try{
-            const response = await axios.post('/api/patient/register', PatientData);
+    async register(PatientData: PatientData): Promise<any> {
+        try {
+            const response = await axios.post('/patient/register', PatientData);
             return {
                 data: response.data,
                 status: response.status,
                 message: response.statusText
-
-            } 
-        }catch(error:any){
-            return{
-                error:{
+            }
+        } catch (error: any) {
+            return {
+                error: {
                     message: error.message,
                     status: error.response?.status
                 },
                 status: error.response?.status || 500,
             }
-            throw error;
         }
     },
 
     /**
      * Actualizar el perfil del paciente
      */
-
-    async updateProfile(PatientData: PatientData): Promise<any>{
-        try{
-            const response = await axios.put('/api/patient/update', PatientData);
+    async updateProfile(PatientData: Partial<PatientData>): Promise<any> {
+        try {
+            const response = await axios.put('/patient/update', PatientData);
             return {
                 data: response.data,
                 status: response.status,
                 message: response.statusText
-
-            } 
-        }catch(error:any){
-            return{
-                error:{
+            }
+        } catch (error: any) {
+            return {
+                error: {
                     message: error.message,
                     status: error.response?.status
                 },
                 status: error.response?.status || 500,
             }
-            throw error;
         }
     },
 
     /**
      * Obtener los datos del perfil del paciente
      */
-
-    async getProfile(patientId: string): Promise<any>{
-        try{
-            const response = await axios.get(`/api/patient/${patientId}`);
+    async getProfile(patientId: string): Promise<any> {
+        try {
+            const response = await axios.get(`/patient/${patientId}`);
             return {
                 data: response.data,
                 status: response.status,
                 message: response.statusText
-            } 
-        }catch(error:any){
-            return{
-                error:{
+            }
+        } catch (error: any) {
+            return {
+                error: {
                     message: error.message,
                     status: error.response?.status
                 },
                 status: error.response?.status || 500,
             }
-            throw error;
+        }
+    },
+
+    /**
+     * Obtener citas del paciente
+     */
+    async getAppointments(patientId: string): Promise<any> {
+        try {
+            const response = await axios.get(`/patient/${patientId}/appointments`);
+            return {
+                data: response.data,
+                status: response.status,
+                message: response.statusText
+            }
+        } catch (error: any) {
+            return {
+                error: {
+                    message: error.message,
+                    status: error.response?.status
+                },
+                status: error.response?.status || 500,
+            }
+        }
+    },
+
+    /**
+     * Obtener historial médico
+     */
+    async getMedicalHistory(patientId: string): Promise<any> {
+        try {
+            const response = await axios.get(`/patient/${patientId}/medical-history`);
+            return {
+                data: response.data,
+                status: response.status,
+                message: response.statusText
+            }
+        } catch (error: any) {
+            return {
+                error: {
+                    message: error.message,
+                    status: error.response?.status
+                },
+                status: error.response?.status || 500,
+            }
+        }
+    },
+
+    /**
+     * Obtener recetas del paciente
+     */
+    async getPrescriptions(patientId: string): Promise<any> {
+        try {
+            const response = await axios.get(`/patient/${patientId}/prescriptions`);
+            return {
+                data: response.data,
+                status: response.status,
+                message: response.statusText
+            }
+        } catch (error: any) {
+            return {
+                error: {
+                    message: error.message,
+                    status: error.response?.status
+                },
+                status: error.response?.status || 500,
+            }
         }
     }
-}
+};
+
+export default PatientService;
