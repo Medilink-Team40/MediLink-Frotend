@@ -6,13 +6,15 @@ export enum FHIRExternalGender {
   OTHER = 'other',
   UNKNOWN = 'unknown'
 }
+
 interface PatientData {
+  
  name: string,
  email: string,
  password: string,
  repeatpassword: string,
  birthDate: string,
- gender: string | FHIRExternalGender,   
+ gender: string | FHIRExternalGender,
 }
 
 export default PatientData;
