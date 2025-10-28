@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
 
 // Importar los dashboards específicos
-import PacienteDashboard from '@/features/Parients/components/PacienteDashboard';
+import PacienteDashboard from '@/features/patients/components/PacienteDashboard';
 import DoctorDashboard from '@/features/Doctor/components/DoctorDashboard';
 import AdminDashboard from '@/features/Admin/components/AdminDashboard';
 
