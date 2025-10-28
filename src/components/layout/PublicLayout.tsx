@@ -18,6 +18,7 @@ const PublicLayout = () => {
         <Outlet />
       </main>
       <ChatAssistant
+        n8nWebhookUrl={import.meta.env.VITE_N8N_WEBHOOK_URL}
         position="bottom-right"
         primaryColor='#3B82F6'
       />
