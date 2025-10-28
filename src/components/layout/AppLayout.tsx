@@ -17,7 +17,7 @@ const AppLayout = ({ showSidebar = true, children }: AppLayoutProps) => {
             {/* Sidebar */}
             {showSidebar && (
                 <div className={cn(
-                    "flex-shrink-0 transition-all duration-300 ease-in-out",
+                    "shrink-0 transition-all duration-300 ease-in-out",
                     isCollapsed ? "w-16" : "w-64"
                 )}>
                     <SidebarApp />
