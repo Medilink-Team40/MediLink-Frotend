@@ -80,7 +80,7 @@ class N8NWebhookService {
         this.config.timeout
       );
 
-      console.log('📤 Enviando a N8N:', { message, sessionId });
+      console.log('Enviando a N8N:', { message, sessionId });
 
       const response = await fetch(this.config.webhookUrl, {
         method: 'POST',
@@ -105,20 +105,28 @@ class N8NWebhookService {
 
       // Obtener respuesta como JSON
       const responseText = await response.text();
-      console.log('📨 Respuesta cruda:', responseText.substring(0, 300));
+      if (!responseText) {
+        throw new Error('Respuesta vacia del servidor N8N');
+      }
+
+      /**
+       * La linea 115 fue comentada porque causaba errores de build al ejecutar
+       * pnpm build 
+       */
+    //  console.debug('Respuesta cruda:', responseText.substring(0, Math.min(300, responseText.length)));
 
       // Parsear JSON
       let data;
       try {
         data = JSON.parse(responseText);
       } catch (e) {
-        console.warn('⚠️ No es JSON válido, retornando como texto');
+        console.warn('No es JSON valido, retornando como texto');
         return responseText;
       }
 
       // Si es array, tomar el primer elemento
       if (Array.isArray(data)) {
-        console.log('📦 Array detectado, tomando primer elemento');
+        console.log('Array detectado, tomando primer elemento');
         if (data.length > 0) {
           data = data[0];
         } else {
@@ -126,24 +134,24 @@ class N8NWebhookService {
         }
       }
 
-      console.log('📋 Datos parseados:', data);
+      console.log('Datos parseados:', data);
 
       // Extraer el mensaje
       const messageText = this.extractMessageFromObject(data);
 
       if (!messageText) {
-        console.error('❌ No se encontró mensaje en la respuesta:', data);
+        console.error('No se encontró mensaje en la respuesta:', data);
         throw new Error('No se encontró campo de mensaje válido en la respuesta');
       }
 
-      console.log('✅ Mensaje extraído:', messageText);
+      console.log('Mensaje extraído:', messageText);
       return messageText;
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           throw new Error('La solicitud tardó demasiado. Intenta nuevamente.');
         }
-        console.error('❌ Error:', error.message);
+        console.error('Error:', error.message);
         throw error;
       }
       throw new Error('Error desconocido al conectar con N8N');
@@ -185,7 +193,7 @@ export default N8NWebhookService;
 /**
  * Convierte una respuesta streaming de N8N en un solo string
  */
-// utils/n8nHelpers.ts
+
 export function extractMessageFromN8NEvents(n8nResponse: any): string {
   try {
     // Si viene como string JSON, parsearlo
