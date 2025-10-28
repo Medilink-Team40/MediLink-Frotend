@@ -8,16 +8,17 @@ import NotFound from '@/components/common/NotFound';
 import { ZoomApp } from '@/features/zoom/page/page';
 import ProtectedRoute from './ProtectedRoute';
 import UnderConstruction from '@/components/common/UnderContruction';
+import DashboardPrueba from '@/features/dashboard';
 
 // Lazy load components
 const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
 
 //============= PACIENTE COMPONENTS =============
-const PacienteDashboard = lazy(() => import('@/features/Parients/components/PacienteDashboard'));
-const PacienteProfile = lazy(() => import('@/features/Parients/components/PacientesProfile'));
-const PacienteMisCitas = lazy(() => import('@/features/Parients/components/PacienteMisCitas'));
-const AgendarCita = lazy(() => import('@/features/Parients/components/AgendarCita'));
-const HistorialClinico = lazy(() => import('@/features/Parients/components/HistorialClinico'));
+const PacienteDashboard = lazy(() => import('@/features/patients/components/PacienteDashboard'));
+const PacienteProfile = lazy(() => import('@/features/patients/components/PacientesProfile'));
+const PacienteMisCitas = lazy(() => import('@/features/patients/components/PacienteMisCitas'));
+const AgendarCita = lazy(() => import('@/features/patients/components/AgendarCita'));
+const HistorialClinico = lazy(() => import('@/features/patients/components/HistorialClinico'));
 //============= DOCTOR COMPONENTS =============
 const DoctorDashboard = lazy(() => import('@/features/Doctor/components/DoctorDashboard'));
 const DoctorProfile = lazy(() => import('@/features/Doctor/components/DoctorProfile'));
@@ -48,10 +49,18 @@ const privateRoutes: RouteObject[] = [
     children: [
       // Dashboard - Accesible para todos los usuarios autenticados
       {
-        path: 'dashboard',
+        path: 'patient/dashboard',
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <Dashboard />
+          </Suspense>
+        )
+      },
+      {
+        path: 'dashboard',
+        element:(
+          <Suspense fallback={<LoadingFallback />}>
+            <DashboardPrueba />
           </Suspense>
         )
       },
@@ -79,20 +88,20 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'Chat',
-        element:(
+        element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <Suspense fallback={<LoadingFallback/>}>
-              <UnderConstruction/>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
             </Suspense>
           </ProtectedRoute>
         )
       },
       {
-        path:'zoom',
+        path: 'zoom',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <Suspense fallback={<LoadingFallback/>}>
-            <ZoomApp/>
+            <Suspense fallback={<LoadingFallback />}>
+              <ZoomApp />
             </Suspense>
           </ProtectedRoute>
         )
@@ -130,7 +139,7 @@ const privateRoutes: RouteObject[] = [
 
       // ============= RUTAS DE DOCTOR =============
       {
-        path: 'doctor',
+        path: 'doctor/dashboard',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
             <Suspense fallback={<LoadingFallback />}>
@@ -144,17 +153,68 @@ const privateRoutes: RouteObject[] = [
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
             <Suspense fallback={<LoadingFallback />}>
-              <DoctorProfile />
+              <UnderConstruction />
             </Suspense>
           </ProtectedRoute>
         )
       },
+
       {
         path: 'doctor/citas',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
             <Suspense fallback={<LoadingFallback />}>
-             <DoctorAgenda />
+              <DoctorAgenda />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/paciente',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/paciente/:id',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/teleconsultas',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/mensaje',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/teleconsultas',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
             </Suspense>
           </ProtectedRoute>
         )
@@ -162,7 +222,7 @@ const privateRoutes: RouteObject[] = [
 
       // ============= RUTAS DE ADMIN =============
       {
-        path: 'admin',
+        path: 'admin/dashboard',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Suspense fallback={<LoadingFallback />}>
@@ -173,7 +233,7 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'admin/doctor-register',
-        element:(
+        element: (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Suspense fallback={<LoadingFallback />}>
               <DoctorRegister />
@@ -183,7 +243,7 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'admin/manage-doctors',
-        element:(
+        element: (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Suspense fallback={<LoadingFallback />}>
               <UnderConstruction />
@@ -193,7 +253,7 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'admin/manage-patients',
-        element:(
+        element: (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Suspense fallback={<LoadingFallback />}>
               <UnderConstruction />
@@ -203,7 +263,28 @@ const privateRoutes: RouteObject[] = [
       },
       {
         path: 'admin/manage-patients',
-        element:(
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+
+      {
+        path: 'admin/roles',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'admin/permisos',
+        element: (
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <Suspense fallback={<LoadingFallback />}>
               <UnderConstruction />
@@ -217,7 +298,7 @@ const privateRoutes: RouteObject[] = [
         path: 'unauthorized',
         element: (
           <Suspense fallback={<LoadingFallback />}>
-            <Unauthorized/>
+            <Unauthorized />
           </Suspense>
         )
       }
