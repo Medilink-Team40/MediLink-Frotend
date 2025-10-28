@@ -24,9 +24,13 @@ import {
   Shield,
   UserPlus,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Stethoscope
 } from 'lucide-react';
-import axios from '@/lib/api/axiosConfig';
+import axios from '@/utils/api';
+import { practitionerService } from '@/service/practitionerService';
+import { toast } from 'sonner';
+
 
 // Tipo de datos para el registro de doctor
 type PractitionerRegisterData = z.infer<typeof practitionerRegisterSchema>;
@@ -95,6 +99,10 @@ export const DoctorRegister = () => {
       password: '',
       repeatpassword: '',
       birthDate: '',
+      specialization: '',
+      licenseNumber: '',
+      professionalId: '',
+      workplace: '',
     },
   });
 
@@ -146,56 +154,90 @@ export const DoctorRegister = () => {
   // Verificar si las contraseñas coinciden
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
-  const onSubmit: SubmitHandler<PractitionerRegisterFormData> = async (data) => {
-    try {
-      setFormStatus(FormStatus.SUBMITTING);
-      clearErrors();
+ const onSubmit: SubmitHandler<PractitionerRegisterFormData> = async (data) => {
+  try {
+    setFormStatus(FormStatus.SUBMITTING);
+    clearErrors();
 
-      const payload: PractitionerRegisterData = {
-        email: data.email,
-        password: data.password,
-        repeatpassword: data.repeatpassword,
-        birthDate: data.birthDate,
-        gender: data.gender,
-        name: data.name.map((n) => ({
-          use: n.use ?? 'official',
-          family: n.family,
-          given: n.given,
-          prefix: n.prefix ?? [],
-          suffix: n.suffix ?? [],
-          text: n.text || `${n.given.join(' ')} ${n.family}`.trim()
-        })),
-        telecom: data.telecom.map((t) => ({
-          system: t.system ?? 'phone',
-          value: t.value,
-          use: t.use ?? 'work',
-          rank: t.rank ?? 1,
-        })),
-      };
+    // Tipos válidos según FHIR
+    type ValidNameUse = "official" | "usual" | "temp" | "nickname" | "anonymous" | "old" | "maiden";
 
-      const { data: response } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/practitioners/register`,
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+    // Función helper para validar y retornar use válido
+    const getValidNameUse = (use: string | undefined): ValidNameUse => {
+      const validUses: ValidNameUse[] = ["official", "usual", "temp", "nickname", "anonymous", "old", "maiden"];
 
-      setFormStatus(FormStatus.SUCCESS);
-      setSubmitMessage('¡Doctor registrado exitosamente!');
-      reset(); // Limpiar formulario
-      console.log("Registro exitoso:", response);
+      if (use && validUses.includes(use as ValidNameUse)) {
+        return use as ValidNameUse;
+      }
+      return "official"; // Valor por defecto
+    };
 
-    } catch (error: any) {
-      setFormStatus(FormStatus.ERROR);
-      const errorMessage = error.response?.data?.message || "Ocurrió un error inesperado.";
-      setSubmitMessage(errorMessage);
-      setError("root", {
-        type: "manual",
-        message: errorMessage,
-      });
+    // Construir el payload según el formato FHIR
+    const payload: PractitionerRegisterData = {
+      email: data.email,
+      password: data.password,
+      repeatpassword: data.repeatpassword,
+      birthDate: data.birthDate,
+      gender: data.gender,
+      specialization: data.specialization,
+      licenseNumber: data.licenseNumber,
+      professionalId: data.professionalId,
+      workplace: data.workplace,
+      name: data.name.map(n => ({
+        ...n,
+        use: n.use ? (n.use as 'official' | 'usual' | 'temp' | 'nickname' | 'anonymous' | 'old' | 'maiden') : 'official',
+        given: n.given.filter(name => name.trim() !== ''),
+        prefix: n.prefix?.filter(p => p.trim() !== '') ?? [],
+        suffix: n.suffix?.filter(s => s.trim() !== '') ?? [],
+        text: n.text || `${(n.prefix?.filter(p => p.trim() !== '') || []).join(' ')} ${n.given.filter(name => name.trim() !== '').join(' ')} ${n.family}`.trim()
+      })),
+      telecom: data.telecom.map((t, index) => ({
+        system: t.system ?? 'phone',
+        value: t.value,
+        use: t.use ?? 'work',
+        rank: t.rank ?? index + 1,
+      })).filter(t => t.value.trim() !== '')
+    };
+
+    console.log('Enviando payload:', payload);
+
+    // Usar el practitionerService
+    const result = await practitionerService.register(payload);
+
+    if (result.error) {
+      throw new Error(result.error.message || 'Error al registrar');
     }
-  };
+
+    setFormStatus(FormStatus.SUCCESS);
+    setSubmitMessage('¡Doctor registrado exitosamente!');
+
+    toast.success('¡Doctor registrado exitosamente!', {
+      description: 'El doctor ha sido registrado en el sistema correctamente.'
+    });
+
+    setTimeout(() => {
+      reset();
+    }, 2000);
+
+    console.log("Registro exitoso:", result.data);
+
+  } catch (error: any) {
+    console.error('Error en registro:', error);
+
+    setFormStatus(FormStatus.ERROR);
+    const errorMessage = error.message || error.response?.data?.message || "Ocurrió un error inesperado.";
+    setSubmitMessage(errorMessage);
+
+    toast.error('Error al registrar doctor', {
+      description: errorMessage
+    });
+
+    setError("root", {
+      type: "manual",
+      message: errorMessage,
+    });
+  }
+};
 
   // Limpiar mensaje después de 5 segundos
   useEffect(() => {
@@ -240,11 +282,10 @@ export const DoctorRegister = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                 >
-                  <Alert className={`${
-                    formStatus === FormStatus.SUCCESS
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-red-500 bg-red-50'
-                  }`}>
+                  <Alert className={`${formStatus === FormStatus.SUCCESS
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-red-500 bg-red-50'
+                    }`}>
                     {formStatus === FormStatus.SUCCESS ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
                     ) : (
@@ -278,13 +319,12 @@ export const DoctorRegister = () => {
                     type="text"
                     {...register('name.0.given.0')}
                     placeholder="Juan Carlos"
-                    className={`transition-all ${
-                      errors.name?.[0]?.given?.[0]
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.name?.[0]?.given?.[0]
+                    className={`transition-all ${errors.name?.[0]?.given?.[0]
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.name?.[0]?.given?.[0]
                         ? 'border-green-500 focus:border-green-500'
                         : ''
-                    }`}
+                      }`}
                   />
                   {errors.name?.[0]?.given?.[0] && (
                     <motion.p
@@ -308,13 +348,12 @@ export const DoctorRegister = () => {
                     type="text"
                     {...register('name.0.family')}
                     placeholder="Pérez González"
-                    className={`transition-all ${
-                      errors.name?.[0]?.family
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.name?.[0]?.family
+                    className={`transition-all ${errors.name?.[0]?.family
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.name?.[0]?.family
                         ? 'border-green-500 focus:border-green-500'
                         : ''
-                    }`}
+                      }`}
                   />
                   {errors.name?.[0]?.family && (
                     <motion.p
@@ -374,13 +413,12 @@ export const DoctorRegister = () => {
                     type="email"
                     {...register('email')}
                     placeholder="doctor@hospital.com"
-                    className={`transition-all ${
-                      errors.email
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.email
+                    className={`transition-all ${errors.email
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.email
                         ? 'border-green-500 focus:border-green-500'
                         : ''
-                    }`}
+                      }`}
                   />
                   {errors.email && (
                     <motion.p
@@ -405,13 +443,12 @@ export const DoctorRegister = () => {
                     type="tel"
                     {...register('telecom.0.value')}
                     placeholder="+01234567890"
-                    className={`transition-all ${
-                      errors.telecom?.[0]?.value
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.telecom?.[0]?.value
+                    className={`transition-all ${errors.telecom?.[0]?.value
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.telecom?.[0]?.value
                         ? 'border-green-500 focus:border-green-500'
                         : ''
-                    }`}
+                      }`}
                   />
                   {errors.telecom?.[0]?.value && (
                     <motion.p
@@ -444,13 +481,12 @@ export const DoctorRegister = () => {
                     id="birthDate"
                     type="date"
                     {...register('birthDate')}
-                    className={`transition-all ${
-                      errors.birthDate
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.birthDate
+                    className={`transition-all ${errors.birthDate
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.birthDate
                         ? 'border-green-500 focus:border-green-500'
                         : ''
-                    }`}
+                      }`}
                   />
                   {errors.birthDate && (
                     <motion.p
@@ -472,11 +508,10 @@ export const DoctorRegister = () => {
                     control={control}
                     render={({ field }) => (
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className={` bg-white transition-all ${
-                          errors.gender
-                            ? 'border-red-500 focus:border-red-500'
-                            : ''
-                        }`}>
+                        <SelectTrigger className={` bg-white transition-all ${errors.gender
+                          ? 'border-red-500 focus:border-red-500'
+                          : ''
+                          }`}>
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -502,6 +537,131 @@ export const DoctorRegister = () => {
               </div>
             </motion.div>
 
+
+{/* Información Profesional */}
+<motion.div variants={itemVariants} className="space-y-6">
+  <div className="flex items-center gap-2 mb-4">
+    <Stethoscope className="h-5 w-5 text-blue-500" />
+    <h3 className="text-xl font-semibold text-gray-900">Información Profesional</h3>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {/* Especialización */}
+    <div className="space-y-2">
+      <Label htmlFor="specialization" className="text-sm font-medium">
+        Especialización *
+      </Label>
+      <Controller
+        name="specialization"
+        control={control}
+        rules={{ required: "La especialización es requerida" }}
+        render={({ field }) => (
+          <Select onValueChange={field.onChange} value={field.value}>
+            <SelectTrigger className={`bg-white transition-all ${errors.specialization
+              ? 'border-red-500 focus:border-red-500'
+              : ''
+              }`}>
+              <SelectValue placeholder="Seleccionar especialización" />
+            </SelectTrigger>
+            <SelectContent className="bg-white max-h-60 overflow-y-auto">
+              <SelectItem value="cardiologia">Cardiología</SelectItem>
+              <SelectItem value="dermatologia">Dermatología</SelectItem>
+              <SelectItem value="endocrinologia">Endocrinología</SelectItem>
+              <SelectItem value="gastroenterologia">Gastroenterología</SelectItem>
+              <SelectItem value="ginecologia">Ginecología</SelectItem>
+              <SelectItem value="neurologia">Neurología</SelectItem>
+              <SelectItem value="oftalmologia">Oftalmología</SelectItem>
+              <SelectItem value="ortopedia">Ortopedia</SelectItem>
+              <SelectItem value="otorrinolaringologia">Otorrinolaringología</SelectItem>
+              <SelectItem value="pediatria">Pediatría</SelectItem>
+              <SelectItem value="psiquiatria">Psiquiatría</SelectItem>
+              <SelectItem value="urologia">Urología</SelectItem>
+              <SelectItem value="medicina-general">Medicina General</SelectItem>
+              <SelectItem value="medicina-interna">Medicina Interna</SelectItem>
+              <SelectItem value="cirugia-general">Cirugía General</SelectItem>
+              <SelectItem value="anestesiologia">Anestesiología</SelectItem>
+              <SelectItem value="radiologia">Radiología</SelectItem>
+              <SelectItem value="patologia">Patología</SelectItem>
+              <SelectItem value="medicina-familiar">Medicina Familiar</SelectItem>
+              <SelectItem value="geriatria">Geriatría</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      />
+      {errors.specialization && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-sm text-red-500 flex items-center gap-1"
+        >
+          <XCircle className="h-3 w-3" />
+          {errors.specialization.message?.toString()}
+        </motion.p>
+      )}
+    </div>
+
+    {/* Número de Licencia */}
+    <div className="space-y-2">
+      <Label htmlFor="licenseNumber" className="text-sm font-medium">
+        Número de Licencia Médica *
+      </Label>
+      <Input
+        id="licenseNumber"
+        type="text"
+        {...register('licenseNumber', {
+          required: "El número de licencia es requerido",
+          minLength: { value: 6, message: "Mínimo 6 caracteres" }
+        })}
+        placeholder="Ej: LIC123456"
+        className={`transition-all ${errors.licenseNumber
+          ? 'border-red-500 focus:border-red-500'
+          : touchedFields.licenseNumber
+            ? 'border-green-500 focus:border-green-500'
+            : ''
+          }`}
+      />
+      {errors.licenseNumber && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-sm text-red-500 flex items-center gap-1"
+        >
+          <XCircle className="h-3 w-3" />
+          {errors.licenseNumber.message?.toString()}
+        </motion.p>
+      )}
+    </div>
+
+    {/* Cédula Profesional (opcional) */}
+    <div className="space-y-2">
+      <Label htmlFor="professionalId" className="text-sm font-medium">
+        Cédula Profesional
+      </Label>
+      <Input
+        id="professionalId"
+        type="text"
+        {...register('professionalId')}
+        placeholder="Ej: 12345678"
+        className="transition-all"
+      />
+    </div>
+
+    {/* Hospital/Clínica */}
+    <div className="space-y-2">
+      <Label htmlFor="workplace" className="text-sm font-medium">
+        Hospital/Clínica
+      </Label>
+      <Input
+        id="workplace"
+        type="text"
+        {...register('workplace')}
+        placeholder="Ej: Hospital General"
+        className="transition-all"
+      />
+    </div>
+  </div>
+</motion.div>
+
             {/* Seguridad */}
             <motion.div variants={itemVariants} className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
@@ -521,13 +681,12 @@ export const DoctorRegister = () => {
                       type={showPassword ? "text" : "password"}
                       {...register('password')}
                       placeholder="••••••••"
-                      className={`pr-10 transition-all ${
-                        errors.password
-                          ? 'border-red-500 focus:border-red-500'
-                          : password && passwordStrength.strength >= 4
+                      className={`pr-10 transition-all ${errors.password
+                        ? 'border-red-500 focus:border-red-500'
+                        : password && passwordStrength.strength >= 4
                           ? 'border-blue-500 focus:border-blue-500'
                           : ''
-                      }`}
+                        }`}
                     />
                     <button
                       type="button"
@@ -603,13 +762,12 @@ export const DoctorRegister = () => {
                       type={showConfirmPassword ? "text" : "password"}
                       {...register('repeatpassword')}
                       placeholder="••••••••"
-                      className={`pr-10 transition-all ${
-                        errors.repeatpassword
-                          ? 'border-red-500 focus:border-red-500'
-                          : passwordsMatch
+                      className={`pr-10 transition-all ${errors.repeatpassword
+                        ? 'border-red-500 focus:border-red-500'
+                        : passwordsMatch
                           ? 'border-green-500 focus:border-green-500'
                           : ''
-                      }`}
+                        }`}
                     />
                     <button
                       type="button"
@@ -625,9 +783,8 @@ export const DoctorRegister = () => {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className={`text-sm flex items-center gap-1 ${
-                        passwordsMatch ? 'text-green-600' : 'text-red-500'
-                      }`}
+                      className={`text-sm flex items-center gap-1 ${passwordsMatch ? 'text-green-600' : 'text-red-500'
+                        }`}
                     >
                       {passwordsMatch ? (
                         <>
