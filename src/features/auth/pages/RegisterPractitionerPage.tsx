@@ -1,7 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PacienteRegisterForm } from "../components/PacienteRegisterForm";
 
-export const RegisterPractitionerPage = () => {
+ const RegisterPractitionerPage = () => {
+  const isDevelopment = import.meta.env.DEV;
+
+  const handleLoginRedirect = () => {
+   if (isDevelopment) {
+    const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL;
+    const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'medilink';
+    const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend';
+    const redirectUri = encodeURIComponent(window.location.origin + '/dev-login');
+
+    window.location.href = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
+  } else {
+    window.location.href = '/login';
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-2xl">
@@ -17,9 +31,23 @@ export const RegisterPractitionerPage = () => {
         <CardContent>
           <PacienteRegisterForm />
         </CardContent>
+        <CardHeader className="space-y-1">
+        <CardTitle className="text-lg font-bold text-center">
+          Ya tiene una cuenta? Inicie sesión{''}
+          <button
+            onClick={handleLoginRedirect}
+            className="underline  text-blue-600 hover:text-blue-800"
+          >aquí
+          </button>.
+        </CardTitle>
+      </CardHeader>
       </Card>
+
+
+
     </div>
   );
 };
+}
 
 export default RegisterPractitionerPage;

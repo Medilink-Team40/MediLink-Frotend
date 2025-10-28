@@ -3,6 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const HeroSection = () => {
+  const isDevelopment = import.meta.env.DEV;
+  const handleLoginRedirect = () => {
+    if (isDevelopment) {
+    const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL;
+    const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'medilink';
+    const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend';
+    const redirectUri = encodeURIComponent(window.location.origin + '/dev-login');
+
+    window.location.href = `${keycloakUrl}realms/${realm}/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
+  }
+  }
+
   return (
     <section className="relative bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -19,8 +31,8 @@ const HeroSection = () => {
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
                   <Link to="/register">
-                    <Button 
-                      size="lg" 
+                    <Button
+                      size="lg"
                       className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
                     >
                       Solicitud de Alta
@@ -28,15 +40,16 @@ const HeroSection = () => {
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
-                  <Link to="/login">
-                    <Button 
-                      variant="outline" 
+
+                    <Button
+                    onClick={handleLoginRedirect}
+                      variant="outline"
                       size="lg"
                       className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
                     >
                       Iniciar Sesión
                     </Button>
-                  </Link>
+
                 </div>
               </div>
             </div>
