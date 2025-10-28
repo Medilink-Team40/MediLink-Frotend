@@ -146,13 +146,13 @@ const AdminDashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // const formatTime = (date: Date) => {
-  //   return date.toLocaleTimeString('es-ES', {
-  //     hour: '2-digit',
-  //     minute: '2-digit',
-  //     second: '2-digit'
-  //   });
-  // };
+   const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+};
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('es-ES', {
@@ -222,7 +222,7 @@ const AdminDashboard = () => {
             {/* Quick Actions */}
             <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
               <Button
-              onClick={()=> window.location.href='/doctor/register'}
+              onClick={()=> window.location.href='/admin/doctor-register'}
               className="bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
                 <Plus className="h-4 w-4 mr-2" />
                 Registrar Doctor
