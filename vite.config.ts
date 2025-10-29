@@ -49,19 +49,20 @@ export default defineConfig({
     commonjsOptions: {
       ignoreDynamicRequires: true,
       include: [/node_modules/],
-      exclude: ['@zoom/meetingsdk'],
-
+      // Incluimos @zoom/meetingsdk para desarrollo
+      // exclude: ['@zoom/meetingsdk'],
     },
 
     // Aumentar el límite de advertencia
     chunkSizeWarningLimit: 1000,
 
     rollupOptions: {
-      external: ['@zoom/meetingsdk'],
+      // Removemos @zoom/meetingsdk de external para desarrollo
+      // external: ['@zoom/meetingsdk'],
       output: {
-        globals: {
-          '@zoom/meetingsdk': 'ZoomMtgEmbedded'
-        },
+        // globals: {
+        //   '@zoom/meetingsdk': 'ZoomMtgEmbedded'
+        // },
         // Separar chunks manualmente para mejor caching
         manualChunks: (id) => {
           // Vendor chunks
@@ -127,8 +128,10 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
       'lucide-react',
-      'lodash', 'react', 'redux', 'redux-thunk'
+      'lodash', 'react', 'redux', 'redux-thunk',
+      '@zoom/meetingsdk'
     ],
-    exclude: ['@zoom/meetingsdk'],
+    // Incluimos @zoom/meetingsdk para desarrollo
+    // exclude: ['@zoom/meetingsdk'],
   },
 });
