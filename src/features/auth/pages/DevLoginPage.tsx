@@ -28,21 +28,22 @@ const DevLoginPage = () => {
       const userRole = user.role || (user.roles && user.roles[0]);
 
       const timer = setTimeout(() => {
-        switch (userRole) {
-          case 'paciente':
-          case 'patient':
-            navigate('/patient/dashboard');
-            break;
-          case 'doctor':
-            navigate('/doctor/dashboard');
-            break;
-          case 'admin':
-            navigate('/admin/dashboard');
-            break;
-          default:
-            navigate('/admin/dashboard');
-        }
-      }, 1000);
+  switch (userRole) {
+    case 'practitioner':
+    case 'doctor':
+      navigate('/doctor/dashboard');
+      break;
+    case 'patient':
+    case 'paciente':
+      navigate('/patient/dashboard');
+      break;
+    case 'admin':
+      navigate('/admin/dashboard');
+      break;
+    default:
+      navigate('/dashboard'); 
+  }
+}, 1000);
 
       return () => clearTimeout(timer);
     }
