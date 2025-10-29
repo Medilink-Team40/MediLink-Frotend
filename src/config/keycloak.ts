@@ -27,7 +27,7 @@ export const getDashboardPathByRole = (roles: string[]): string => {
     if (roles.includes('admin')) {
         return '/admin/dashboard';
     }
-    if (roles.includes('practitoner')) {
+    if (roles.includes('practitioner')) {
         return '/doctor/dashboard';
     }
     if (roles.includes('patient')) {
