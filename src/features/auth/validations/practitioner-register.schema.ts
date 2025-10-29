@@ -39,10 +39,7 @@ export const practitionerRegisterSchema = z.object({
       rank: z.number().optional(),
     })
   ),
- specialization: z.string().min(1, 'La especialización es requerida'),
-  licenseNumber: z.string().min(6, 'Número de licencia debe tener al menos 6 caracteres'),
-  professionalId: z.string().optional(),
-  workplace: z.string().optional(),
+ 
 }).refine((data) => data.password === data.repeatpassword, {
   message: "Las contraseñas no coinciden",
   path: ["repeatpassword"],
