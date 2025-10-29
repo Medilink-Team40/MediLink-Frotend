@@ -3,11 +3,11 @@ import axios from 'axios';
 import { getAccessToken, updateToken, logout } from '@/config/keycloak';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://medilink-backend-production-3d65.up.railway.app',
   headers: {
     'content-type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 30000,
 });
 
 // 🚀 PASO CRÍTICO: Interceptor para adjuntar el Access Token y manejar el refresh
