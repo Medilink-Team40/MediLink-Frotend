@@ -27,7 +27,7 @@ import {
   AlertCircle,
   Stethoscope
 } from 'lucide-react';
-import axios from '@/utils/api';
+
 import { practitionerService } from '@/service/practitionerService';
 import { toast } from 'sonner';
 
@@ -99,10 +99,7 @@ export const DoctorRegister = () => {
       password: '',
       repeatpassword: '',
       birthDate: '',
-      specialization: '',
-      licenseNumber: '',
-      professionalId: '',
-      workplace: '',
+
     },
   });
 
@@ -173,31 +170,30 @@ export const DoctorRegister = () => {
     };
 
     // Construir el payload según el formato FHIR
-    const payload: PractitionerRegisterData = {
+     const payload = {
       email: data.email,
       password: data.password,
       repeatpassword: data.repeatpassword,
       birthDate: data.birthDate,
       gender: data.gender,
-      specialization: data.specialization,
-      licenseNumber: data.licenseNumber,
-      professionalId: data.professionalId,
-      workplace: data.workplace,
       name: data.name.map(n => ({
-        ...n,
-        use: n.use ? (n.use as 'official' | 'usual' | 'temp' | 'nickname' | 'anonymous' | 'old' | 'maiden') : 'official',
-        given: n.given.filter(name => name.trim() !== ''),
-        prefix: n.prefix?.filter(p => p.trim() !== '') ?? [],
-        suffix: n.suffix?.filter(s => s.trim() !== '') ?? [],
-        text: n.text || `${(n.prefix?.filter(p => p.trim() !== '') || []).join(' ')} ${n.given.filter(name => name.trim() !== '').join(' ')} ${n.family}`.trim()
+        use: n.use || 'official',
+        text: n.text || `${n.given.filter(name => name?.trim()).join(' ')} ${n.family}`.trim(),
+        family: n.family,
+        given: n.given.filter(name => name?.trim()),
+        ...(n.prefix?.filter(p => p?.trim()).length && { prefix: n.prefix.filter(p => p?.trim()) }),
+        ...(n.suffix?.filter(s => s?.trim()).length && { suffix: n.suffix.filter(s => s?.trim()) })
       })),
-      telecom: data.telecom.map((t, index) => ({
-        system: t.system ?? 'phone',
-        value: t.value,
-        use: t.use ?? 'work',
-        rank: t.rank ?? index + 1,
-      })).filter(t => t.value.trim() !== '')
+      telecom: data.telecom
+        .filter(t => t.value?.trim())
+        .map((t, index) => ({
+          system: t.system || 'phone',
+          value: t.value,
+          use: t.use || 'work',
+          rank: t.rank || index + 1,
+        }))
     };
+
 
     console.log('Enviando payload:', payload);
 
@@ -208,6 +204,7 @@ export const DoctorRegister = () => {
       throw new Error(result.error.message || 'Error al registrar');
     }
 
+   
     setFormStatus(FormStatus.SUCCESS);
     setSubmitMessage('¡Doctor registrado exitosamente!');
 
@@ -538,129 +535,8 @@ export const DoctorRegister = () => {
             </motion.div>
 
 
-{/* Información Profesional */}
-<motion.div variants={itemVariants} className="space-y-6">
-  <div className="flex items-center gap-2 mb-4">
-    <Stethoscope className="h-5 w-5 text-blue-500" />
-    <h3 className="text-xl font-semibold text-gray-900">Información Profesional</h3>
-  </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {/* Especialización */}
-    <div className="space-y-2">
-      <Label htmlFor="specialization" className="text-sm font-medium">
-        Especialización *
-      </Label>
-      <Controller
-        name="specialization"
-        control={control}
-        rules={{ required: "La especialización es requerida" }}
-        render={({ field }) => (
-          <Select onValueChange={field.onChange} value={field.value}>
-            <SelectTrigger className={`bg-white transition-all ${errors.specialization
-              ? 'border-red-500 focus:border-red-500'
-              : ''
-              }`}>
-              <SelectValue placeholder="Seleccionar especialización" />
-            </SelectTrigger>
-            <SelectContent className="bg-white max-h-60 overflow-y-auto">
-              <SelectItem value="cardiologia">Cardiología</SelectItem>
-              <SelectItem value="dermatologia">Dermatología</SelectItem>
-              <SelectItem value="endocrinologia">Endocrinología</SelectItem>
-              <SelectItem value="gastroenterologia">Gastroenterología</SelectItem>
-              <SelectItem value="ginecologia">Ginecología</SelectItem>
-              <SelectItem value="neurologia">Neurología</SelectItem>
-              <SelectItem value="oftalmologia">Oftalmología</SelectItem>
-              <SelectItem value="ortopedia">Ortopedia</SelectItem>
-              <SelectItem value="otorrinolaringologia">Otorrinolaringología</SelectItem>
-              <SelectItem value="pediatria">Pediatría</SelectItem>
-              <SelectItem value="psiquiatria">Psiquiatría</SelectItem>
-              <SelectItem value="urologia">Urología</SelectItem>
-              <SelectItem value="medicina-general">Medicina General</SelectItem>
-              <SelectItem value="medicina-interna">Medicina Interna</SelectItem>
-              <SelectItem value="cirugia-general">Cirugía General</SelectItem>
-              <SelectItem value="anestesiologia">Anestesiología</SelectItem>
-              <SelectItem value="radiologia">Radiología</SelectItem>
-              <SelectItem value="patologia">Patología</SelectItem>
-              <SelectItem value="medicina-familiar">Medicina Familiar</SelectItem>
-              <SelectItem value="geriatria">Geriatría</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
-      />
-      {errors.specialization && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm text-red-500 flex items-center gap-1"
-        >
-          <XCircle className="h-3 w-3" />
-          {errors.specialization.message?.toString()}
-        </motion.p>
-      )}
-    </div>
 
-    {/* Número de Licencia */}
-    <div className="space-y-2">
-      <Label htmlFor="licenseNumber" className="text-sm font-medium">
-        Número de Licencia Médica *
-      </Label>
-      <Input
-        id="licenseNumber"
-        type="text"
-        {...register('licenseNumber', {
-          required: "El número de licencia es requerido",
-          minLength: { value: 6, message: "Mínimo 6 caracteres" }
-        })}
-        placeholder="Ej: LIC123456"
-        className={`transition-all ${errors.licenseNumber
-          ? 'border-red-500 focus:border-red-500'
-          : touchedFields.licenseNumber
-            ? 'border-green-500 focus:border-green-500'
-            : ''
-          }`}
-      />
-      {errors.licenseNumber && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm text-red-500 flex items-center gap-1"
-        >
-          <XCircle className="h-3 w-3" />
-          {errors.licenseNumber.message?.toString()}
-        </motion.p>
-      )}
-    </div>
-
-    {/* Cédula Profesional (opcional) */}
-    <div className="space-y-2">
-      <Label htmlFor="professionalId" className="text-sm font-medium">
-        Cédula Profesional
-      </Label>
-      <Input
-        id="professionalId"
-        type="text"
-        {...register('professionalId')}
-        placeholder="Ej: 12345678"
-        className="transition-all"
-      />
-    </div>
-
-    {/* Hospital/Clínica */}
-    <div className="space-y-2">
-      <Label htmlFor="workplace" className="text-sm font-medium">
-        Hospital/Clínica
-      </Label>
-      <Input
-        id="workplace"
-        type="text"
-        {...register('workplace')}
-        placeholder="Ej: Hospital General"
-        className="transition-all"
-      />
-    </div>
-  </div>
-</motion.div>
 
             {/* Seguridad */}
             <motion.div variants={itemVariants} className="space-y-6">
