@@ -4,8 +4,8 @@ import { RouteObject } from 'react-router-dom';
 
 import AppLayout from '@/components/layout/AppLayout';
 import { ROLES } from './roles';
-import NotFound from '@/components/common/NotFound';
-import { ZoomApp } from '@/features/zoom/page/page';
+
+//import { ZoomApp } from '@/features/zoom/page/page';
 import ProtectedRoute from './ProtectedRoute';
 import UnderConstruction from '@/components/common/UnderContruction';
 import DashboardPrueba from '@/features/dashboard';
@@ -96,16 +96,16 @@ const privateRoutes: RouteObject[] = [
           </ProtectedRoute>
         )
       },
-      {
-        path: 'zoom',
-        element: (
-          <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
-            <Suspense fallback={<LoadingFallback />}>
-              <ZoomApp />
-            </Suspense>
-          </ProtectedRoute>
-        )
-      },
+      // {
+      //   path: 'zoom',
+      //   element: (
+      //     <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
+      //       <Suspense fallback={<LoadingFallback />}>
+      //         <ZoomApp />
+      //       </Suspense>
+      //     </ProtectedRoute>
+      //   )
+      // },
       {
         path: 'citas',
         element: (
