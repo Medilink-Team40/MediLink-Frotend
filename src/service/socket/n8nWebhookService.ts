@@ -108,7 +108,6 @@ class N8NWebhookService {
       if (!responseText) {
         throw new Error('Respuesta vacia del servidor N8N');
       }
-
       /**
        * La linea 115 fue comentada porque causaba errores de build al ejecutar
        * pnpm build 
