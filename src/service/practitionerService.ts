@@ -1,5 +1,5 @@
 import axios from '@/utils/api';
-import { PractitionerRegisterData, Practitioner } from '@/types/practitioner.types';
+import { PractitionerRegisterData } from '@/types/practitioner.types';
 
 export const practitionerService = {
     /**
@@ -7,7 +7,15 @@ export const practitionerService = {
      */
     async register(practitionerData: PractitionerRegisterData): Promise<any> {
         try {
+            console.log('Enviando a backend:', practitionerData)
             const response = await axios.post('/practitioner/register-practitioner', practitionerData);
+            console.log(' Respuesta completa:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      data: response.data
+    });
+
             return {
                 data: response.data,
                 status: response.status,
