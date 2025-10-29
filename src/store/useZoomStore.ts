@@ -85,13 +85,13 @@ export const useZoomStore = create<ZoomState>((set, get) => ({
             set({ isJoined: true });
             console.log("✅ Joined Zoom meeting");
           },
-          error: (err) => {
+          error: (err: unknown) => {
             console.error("Join error", err);
             set({ error: JSON.stringify(err) });
           },
         });
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error("Init error", err);
         set({ error: JSON.stringify(err) });
       },
