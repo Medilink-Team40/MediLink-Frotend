@@ -6,14 +6,16 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6 md:pt-16 md:pb-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <footer className="bg-gray-900 text-white pt-8 pb-4 sm:pt-12 sm:pb-6 lg:pt-16 lg:pb-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8 md:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8 lg:mb-12">
           {/* Company Info */}
-          <div className="text-center sm:text-left">
-            <h3 className="text-xl font-bold mb-3 md:mb-4">MediLink</h3>
-            <p className="text-gray-400 text-sm md:text-base leading-relaxed">
+          <div className="text-center sm:text-left lg:col-span-1">
+            <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 lg:mb-4 text-blue-400">
+              MediLink
+            </h3>
+            <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-xs mx-auto sm:mx-0">
               Conectando pacientes con los mejores profesionales de la salud.
             </p>
           </div>
@@ -98,8 +100,8 @@ const Footer = () => {
         </div>
         
         {/* Bottom Bar */}
-        <div className="pt-6 md:pt-8 border-t border-gray-800 text-center">
-          <p className="text-gray-400 text-sm md:text-base">
+        <div className="pt-4 sm:pt-6 lg:pt-8 border-t border-gray-800 text-center">
+          <p className="text-gray-400 text-xs sm:text-sm lg:text-base">
             &copy; {currentYear} MediLink. Todos los derechos reservados.
           </p>
         </div>
