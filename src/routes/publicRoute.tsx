@@ -5,12 +5,8 @@ import PublicLayout from '@/components/layout/PublicLayout';
 
 // Lazy load de componentes pesados
 const LandingPage = lazy(() => import('@/features/landing/page/LandingPage'));
-const RegisterPractitionerPage = lazy(() =>
-  import('@/features/auth/pages/RegisterPractitionerPage').then((module) => ({
-    // prefer default export, fall back to a named export if present
-    default: (module as any).default ?? (module as any).RegisterPractitionerPage
-  }))
-);
+const RegisterPage = lazy(() => import('@/features/auth/pages/RegisterPage'));
+
 const DevLoginPage = lazy(() => import('@/features/auth/pages/DevLoginPage'));
 const TestConection = lazy(() => import('@/features/Test/TestContection'));
 const AdminLogin = lazy(() => import('@/features/Admin/Auth/AdminLogin'));
@@ -116,7 +112,7 @@ const publicRoutes: RouteObject[] = [
         path: "register",
         element: (
           <Suspense fallback={<LoadingFallback />}>
-            <RegisterPractitionerPage />
+            <RegisterPage />
           </Suspense>
         )
       },
