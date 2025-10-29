@@ -59,7 +59,7 @@ const DoctorDashboard = () => {
 
   // Mostrar indicador de carga mientras se cargan los datos
   if (cargando) {
-    return <div className="flex justify-center p-8">Cargando datos del doctor...</div>;
+    return  <div className="flex justify-center p-8">Cargando datos del doctor...</div>;
   }
 
   return (
