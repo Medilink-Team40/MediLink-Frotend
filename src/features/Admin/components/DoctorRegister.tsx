@@ -10,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { FHIRExternalGender } from '@/types/practitioner.types';
 import { practitionerRegisterSchema, PractitionerRegisterFormData } from '@/features/auth/validations/practitioner-register.schema';
 import {
   Eye,
@@ -71,15 +70,18 @@ export const DoctorRegister = () => {
     register,
     handleSubmit,
     control,
+    setValue,
     watch,
     formState: { errors, isSubmitting, touchedFields },
+    reset,
     setError,
-    clearErrors,
-    reset
+    clearErrors
   } = useForm<PractitionerRegisterFormData>({
     resolver: zodResolver(practitionerRegisterSchema),
-    mode: 'onChange', // Validación en tiempo real
     defaultValues: {
+      email: '',
+      password: '',
+      repeatpassword: '',
       name: [{
         use: 'official',
         family: '',
@@ -94,10 +96,7 @@ export const DoctorRegister = () => {
         use: 'work',
         rank: 1
       }],
-      gender: FHIRExternalGender.UNKNOWN,
-      email: '',
-      password: '',
-      repeatpassword: '',
+      gender: 'unknown', // Cambiar a string
       birthDate: '',
 
     },
@@ -151,109 +150,109 @@ export const DoctorRegister = () => {
   // Verificar si las contraseñas coinciden
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
 
- const onSubmit: SubmitHandler<PractitionerRegisterFormData> = async (data) => {
-  try {
-    setFormStatus(FormStatus.SUBMITTING);
-    clearErrors();
+  const onSubmit: SubmitHandler<PractitionerRegisterFormData> = async (data) => {
+    try {
+      setFormStatus(FormStatus.SUBMITTING);
+      clearErrors();
 
-    // Tipos válidos según FHIR
-    type ValidNameUse = "official" | "usual" | "temp" | "nickname" | "anonymous" | "old" | "maiden";
+      // Tipos válidos según FHIR
+      type ValidNameUse = "official" | "usual" | "temp" | "nickname" | "anonymous" | "old" | "maiden";
 
-    // Función helper para validar y retornar use válido
-    const getValidNameUse = (use: string | undefined): ValidNameUse => {
-      const validUses: ValidNameUse[] = ["official", "usual", "temp", "nickname", "anonymous", "old", "maiden"];
+      // Función helper para validar y retornar use válido
+      const getValidNameUse = (use: string | undefined): ValidNameUse => {
+        const validUses: ValidNameUse[] = ["official", "usual", "temp", "nickname", "anonymous", "old", "maiden"];
 
-      if (use && validUses.includes(use as ValidNameUse)) {
-        return use as ValidNameUse;
+        if (use && validUses.includes(use as ValidNameUse)) {
+          return use as ValidNameUse;
+        }
+        return "official"; // Valor por defecto
+      };
+
+      // Construir el payload según el formato FHIR
+      const payload = {
+        email: data.email,
+        password: data.password,
+        repeatpassword: data.repeatpassword,
+        birthDate: data.birthDate,
+        gender: data.gender,
+        name: data.name.map(n => ({
+          use: n.use || 'official',
+          text: n.text || `${n.given.filter(name => name?.trim()).join(' ')} ${n.family}`.trim(),
+          family: n.family,
+          given: n.given.filter(name => name?.trim()),
+          ...(n.prefix?.filter(p => p?.trim()).length && { prefix: n.prefix.filter(p => p?.trim()) }),
+          ...(n.suffix?.filter(s => s?.trim()).length && { suffix: n.suffix.filter(s => s?.trim()) })
+        })),
+        telecom: data.telecom
+          .filter(t => t.value?.trim())
+          .map((t, index) => ({
+            system: t.system || 'phone',
+            value: t.value,
+            use: t.use || 'work',
+            rank: t.rank || index + 1,
+          }))
+      };
+
+
+      console.log('Enviando payload:', payload);
+
+      // Usar el practitionerService
+      const result = await practitionerService.register(payload);
+
+      if (result.error) {
+        throw new Error(result.error.message || 'Error al registrar');
       }
-      return "official"; // Valor por defecto
-    };
-
-    // Construir el payload según el formato FHIR
-     const payload = {
-      email: data.email,
-      password: data.password,
-      repeatpassword: data.repeatpassword,
-      birthDate: data.birthDate,
-      gender: data.gender,
-      name: data.name.map(n => ({
-        use: n.use || 'official',
-        text: n.text || `${n.given.filter(name => name?.trim()).join(' ')} ${n.family}`.trim(),
-        family: n.family,
-        given: n.given.filter(name => name?.trim()),
-        ...(n.prefix?.filter(p => p?.trim()).length && { prefix: n.prefix.filter(p => p?.trim()) }),
-        ...(n.suffix?.filter(s => s?.trim()).length && { suffix: n.suffix.filter(s => s?.trim()) })
-      })),
-      telecom: data.telecom
-        .filter(t => t.value?.trim())
-        .map((t, index) => ({
-          system: t.system || 'phone',
-          value: t.value,
-          use: t.use || 'work',
-          rank: t.rank || index + 1,
-        }))
-    };
 
 
-    console.log('Enviando payload:', payload);
+      setFormStatus(FormStatus.SUCCESS);
+      setSubmitMessage('¡Doctor registrado exitosamente!');
 
-    // Usar el practitionerService
-    const result = await practitionerService.register(payload);
+      toast.success('¡Doctor registrado exitosamente!', {
+        description: 'El doctor ha sido registrado en el sistema correctamente.'
+      });
 
-    if (result.error) {
-      throw new Error(result.error.message || 'Error al registrar');
+      setTimeout(() => {
+        reset();
+      }, 2000);
+
+      console.log("Registro exitoso:", result.data);
+
+    } catch (error: any) {
+      console.error('Error en registro:', error);
+
+      setFormStatus(FormStatus.ERROR);
+
+      // Mejorar el mensaje segun el codigo de estado
+      let errorMessage = "Ocurrio un error inesperado.";
+
+      if (error.response?.status === 409) {
+        errorMessage = "Este correo electronico ya esta registrado. Por favor, usa otro email.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setSubmitMessage(errorMessage);
+
+      toast.error('Error al registrar doctor', {
+        description: errorMessage
+      });
+
+      // Opcional: Marcar el campo de email como error
+      if (error.response?.status === 409) {
+        setError("email", {
+          type: "manual",
+          message: "Este email ya esta registrado",
+        });
+      }
+
+      setError("root", {
+        type: "manual",
+        message: errorMessage,
+      });
     }
-
-
-    setFormStatus(FormStatus.SUCCESS);
-    setSubmitMessage('¡Doctor registrado exitosamente!');
-
-    toast.success('¡Doctor registrado exitosamente!', {
-      description: 'El doctor ha sido registrado en el sistema correctamente.'
-    });
-
-    setTimeout(() => {
-      reset();
-    }, 2000);
-
-    console.log("Registro exitoso:", result.data);
-
-  } catch (error: any) {
-  console.error('Error en registro:', error);
-
-  setFormStatus(FormStatus.ERROR);
-
-  // Mejorar el mensaje segun el codigo de estado
-  let errorMessage = "Ocurrio un error inesperado.";
-
-  if (error.response?.status === 409) {
-    errorMessage = "Este correo electronico ya esta registrado. Por favor, usa otro email.";
-  } else if (error.response?.data?.message) {
-    errorMessage = error.response.data.message;
-  } else if (error.message) {
-    errorMessage = error.message;
-  }
-
-  setSubmitMessage(errorMessage);
-
-  toast.error('Error al registrar doctor', {
-    description: errorMessage
-  });
-
-  // Opcional: Marcar el campo de email como error
-  if (error.response?.status === 409) {
-    setError("email", {
-      type: "manual",
-      message: "Este email ya esta registrado",
-    });
-  }
-
-  setError("root", {
-    type: "manual",
-    message: errorMessage,
-  });
-}
-};
+  };
 
   // Limpiar mensaje después de 5 segundos
   useEffect(() => {
@@ -518,36 +517,28 @@ export const DoctorRegister = () => {
 
                 {/* Género */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Género *</Label>
+                  <Label className="text-sm font-medium">
+                    Género *
+                  </Label>
                   <Controller
                     name="gender"
                     control={control}
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger className={` bg-white transition-all ${errors.gender
-                          ? 'border-red-500 focus:border-red-500'
-                          : ''
-                          }`}>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
-                          <SelectItem value={FHIRExternalGender.MALE}>Masculino</SelectItem>
-                          <SelectItem value={FHIRExternalGender.FEMALE}>Femenino</SelectItem>
-                          <SelectItem value={FHIRExternalGender.OTHER}>Otro</SelectItem>
-                          <SelectItem value={FHIRExternalGender.UNKNOWN}>Prefiero no decirlo</SelectItem>
+                          <SelectItem value="male">Masculino</SelectItem>
+                          <SelectItem value="female">Femenino</SelectItem>
+                          <SelectItem value="other">Otro</SelectItem>
+                          <SelectItem value="unknown">Prefiero no decirlo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
                   />
                   {errors.gender && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-sm text-red-500 flex items-center gap-1"
-                    >
-                      <XCircle className="h-3 w-3" />
-                      {errors.gender.message?.toString()}
-                    </motion.p>
+                    <p className="text-sm text-red-500">{errors.gender.message}</p>
                   )}
                 </div>
               </div>

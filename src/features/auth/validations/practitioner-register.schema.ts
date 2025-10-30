@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { FHIRExternalGender } from '@/types/practitioner.types';
 
 export const practitionerRegisterSchema = z.object({
   email: z
@@ -16,9 +15,7 @@ export const practitionerRegisterSchema = z.object({
   birthDate: z
     .string({ message: "La fecha de nacimiento es requerida" }),
 
-  gender: z.string().min(1, "Selecciona un género válido").refine((value) => Object.values(FHIRExternalGender).includes(value as any), {
-    message: "Selecciona un género válido"
-  }),
+  gender: z.string().min(1, "El género es requerido"), // Cambiar a string simple
 
   name: z.array(
     z.object({
