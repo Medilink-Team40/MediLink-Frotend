@@ -1,92 +1,37 @@
 // src/pages/AuthCallback.tsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/config/AuthProvider';
+import { getDashboardPathByRole } from '@/config/keycloak';
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleKeycloakCallback = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-
-      if (!code) {
-        setError('No se recibió el código de autenticación.');
-        setLoading(false);
-        return;
-      }
-
+    const handleCallback = async () => {
       try {
-        const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL!;
-        const realm = import.meta.env.VITE_KEYCLOAK_REALM!;
-        const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID!;
-        const redirectUri = `${window.location.origin}/auth/callback`;
+        // Esperar un momento para que el AuthProvider procese la autenticación
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const formData = new URLSearchParams();
-        formData.append('grant_type', 'authorization_code');
-        formData.append('client_id', clientId);
-        formData.append('code', code);
-        formData.append('redirect_uri', redirectUri);
-
-        const response = await fetch(`${keycloakUrl}/realms/${realm}/protocol/openid-connect/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: formData.toString(),
-        });
-
-        if (!response.ok) throw new Error('Error al intercambiar código.');
-
-        const data = await response.json();
-        const payload = JSON.parse(atob(data.id_token.split('.')[1]));
-
-        const user = {
-          id: payload.sub,
-          name: payload.name,
-          email: payload.email,
-          role: payload.realm_access?.roles?.[0] || 'user',
-        };
-
-        login();
-
-        // Redirigir según rol
-        const role = payload.realm_access?.roles?.[0] || 'user';
-        switch (role) {
-          case 'doctor':
-          case 'practitioner':
-            navigate('/doctor/dashboard');
-            break;
-          case 'paciente':
-          case 'patient':
-            navigate('/patient/dashboard');
-            break;
-          case 'admin':
-            navigate('/admin/dashboard');
-            break;
-          default:
-            navigate('/dashboard');
+        if (isAuthenticated && user?.roles) {
+          const dashboardPath = getDashboardPathByRole(user.roles);
+          console.log('🚀 Callback: Redirigiendo a', dashboardPath);
+          navigate(dashboardPath, { replace: true });
+        } else {
+          console.log('❌ Callback: No autenticado, redirigiendo a landing');
+          navigate('/', { replace: true });
         }
-      } catch (err: any) {
-        console.error('Error en autenticación:', err);
-        setError(err.message || 'Error desconocido en la autenticación');
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error('Error en callback:', err);
+        setError('Error en la autenticación');
+        setTimeout(() => navigate('/'), 3000);
       }
     };
 
-    handleKeycloakCallback();
-  }, [navigate, login]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div>Procesando autenticación...</div>
-      </div>
-    );
-  }
+    handleCallback();
+  }, [navigate, isAuthenticated, user]);
 
   if (error) {
     return (
@@ -96,7 +41,14 @@ const AuthCallback: React.FC = () => {
     );
   }
 
-  return null;
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p>Procesando autenticación...</p>
+      </div>
+    </div>
+  );
 };
 
 export default AuthCallback;
