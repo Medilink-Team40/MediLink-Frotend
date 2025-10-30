@@ -29,7 +29,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // Si no está autenticado, redirigir al login
   if (!isAuthenticated) {
     const isDevelopment = import.meta.env.DEV;
-    const redirectTo = isDevelopment ? '/dev-login' : '/login';
+    const redirectTo = isDevelopment ? '/dev-login' : '/dev-login';
 
     return (
       <Navigate
