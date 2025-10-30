@@ -37,6 +37,7 @@ export interface PractitionerRegisterData {
 
 export interface Practitioner{
   id: string;
+  keycloakId: string;
   email: string;
   birthDate: string;
   gender: FHIRExternalGender;

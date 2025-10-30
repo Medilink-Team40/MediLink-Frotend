@@ -1,5 +1,5 @@
 import axios from 'axios';
-// ⚠️ Importamos las funciones necesarias desde su archivo keycloak.ts
+
 import { getAccessToken, updateToken, logout } from '@/config/keycloak';
 
 const api = axios.create({
