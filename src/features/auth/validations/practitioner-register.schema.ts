@@ -16,7 +16,7 @@ export const practitionerRegisterSchema = z.object({
   birthDate: z
     .string({ message: "La fecha de nacimiento es requerida" }),
 
-  gender: z.nativeEnum(FHIRExternalGender, {
+  gender: z.string().min(1, "Selecciona un género válido").refine((value) => Object.values(FHIRExternalGender).includes(value as any), {
     message: "Selecciona un género válido"
   }),
 
@@ -39,7 +39,7 @@ export const practitionerRegisterSchema = z.object({
       rank: z.number().optional(),
     })
   ),
- 
+
 }).refine((data) => data.password === data.repeatpassword, {
   message: "Las contraseñas no coinciden",
   path: ["repeatpassword"],
