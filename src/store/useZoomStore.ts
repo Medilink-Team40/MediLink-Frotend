@@ -83,7 +83,7 @@ export const useZoomStore = create<ZoomState>((set, get) => ({
           zak: zakToken,
           success: () => {
             set({ isJoined: true });
-            console.log("✅ Joined Zoom meeting");
+            console.log("  Joined Zoom meeting");
           },
           error: (err: unknown) => {
             console.error("Join error", err);
