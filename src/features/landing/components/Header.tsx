@@ -8,12 +8,12 @@ import UserMenu from '@/components/ui/UserMenu';
 import { useMobileMenu } from '@/hooks/useMobileMenu';
 
 const Header = () => {
-  const { isAuthenticated, login, logout } = useAuth(); // ✅ Obtener login y logout del hook
+  const { isAuthenticated, login, logout } = useAuth();
   const { isOpen, toggleMenu, closeMenu } = useMobileMenu();
 
   const handleLoginRedirect = async () => {
     try {
-      await login(); // ✅ Usar login directamente del hook
+      await login();
     } catch (error) {
       console.error("Error during login:", error);
     }
@@ -21,7 +21,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(); // ✅ Usar logout del hook
+      await logout();
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -34,9 +34,18 @@ const Header = () => {
           <div className="flex items-center justify-between">
             <Link
               to='/'
-              className="text-xl sm:text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
             >
-              MediLink
+              {/* Logo desde assets */}
+              <img
+                src="/src/assets/medilink-logo.svg"
+                alt="MediLink Logo"
+                className="w-8 h-8"
+              />
+
+              <span className="text-xl sm:text-2xl font-bold">
+                MediLink
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -92,8 +101,8 @@ const Header = () => {
         isOpen={isOpen}
         onClose={closeMenu}
         isAuthenticated={isAuthenticated}
-        onLogin={handleLoginRedirect} // ✅ Función corregida
-        onLogout={handleLogout} // ✅ Función logout funcional
+        onLogin={handleLoginRedirect}
+        onLogout={handleLogout}
       />
     </>
   );
