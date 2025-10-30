@@ -154,7 +154,15 @@ export const PacienteRegisterForm = () => {
         birthDate: data.birthDate,
         gender: data.gender,
         phone: data.phone,
-        dni: data.dni
+        dni: data.dni,
+        name: [
+          {
+            use: 'official',
+            text: `${data.firstName} ${data.lastName}`,
+            family: data.lastName,
+            given: [data.firstName]
+          }
+        ]
       };
 
       console.log(' Datos del formulario:', patientFormData);
@@ -193,7 +201,7 @@ export const PacienteRegisterForm = () => {
       animate="visible"
       className="max-w-4xl mx-auto p-6"
     >
-      <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+      <Card className="shadow-xl border-0 bg-linear-to-br from-white to-gray-50">
         <CardHeader className="text-center pb-8">
           <motion.div variants={itemVariants} className="flex items-center justify-center mb-4">
             <div className="p-3 bg-green-500 rounded-full">
@@ -596,7 +604,7 @@ export const PacienteRegisterForm = () => {
             <motion.div variants={itemVariants} className="pt-6">
               <Button
                 type="submit"
-                className="w-full h-12 text-lg font-medium bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-[1.02]"
+                className="w-full h-12 text-lg font-medium bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-[1.02]"
                 disabled={loading || isSubmitting || formStatus === FormStatus.SUBMITTING}
               >
                 {loading || isSubmitting || formStatus === FormStatus.SUBMITTING ? (
