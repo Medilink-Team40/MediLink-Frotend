@@ -42,7 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const location = useLocation();
   const navigate = useNavigate();
   const devAuthData = useDevAuth();
-  const isDevelopment = import.meta.env.DEV; // forzar entorno de desarrollo con false
+  const isDevelopment = false;
+  //import.meta.env.DEV; // forzar entorno de desarrollo con false
 
   const [state, setState] = useState<{
     isAuthenticated: boolean;

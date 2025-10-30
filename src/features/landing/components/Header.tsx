@@ -11,14 +11,21 @@ const Header = () => {
   const { isAuthenticated, login, logout } = useAuth();
   const { isOpen, toggleMenu, closeMenu } = useMobileMenu();
 
+  const handleLoginRedirect = async () => {
+    try {
+      await login();
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
 
   return (
     <>
       <header className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-100">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link 
-              to='/' 
+            <Link
+              to='/'
               className="text-xl sm:text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
             >
               MediLink
@@ -26,14 +33,14 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-              <Link 
-                to='/features' 
+              <Link
+                to='/features'
                 className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm lg:text-base font-medium"
               >
                 Características
               </Link>
-              <Link 
-                to='/about' 
+              <Link
+                to='/about'
                 className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm lg:text-base font-medium"
               >
                 Sobre Nosotros
@@ -46,8 +53,10 @@ const Header = () => {
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 lg:space-x-3">
-                  <Button variant="outline" asChild size="sm" className="text-sm">
-                    <Link to="/dev-login">Iniciar Sesión</Link>
+                  <Button variant="outline" size="sm" className="text-sm"
+                  onClick={handleLoginRedirect}
+                  >
+                   Iniciar Sesión
                   </Button>
                   <Button asChild size="sm" className="text-sm">
                     <Link to="/register">Registrarse</Link>

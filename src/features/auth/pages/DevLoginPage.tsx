@@ -35,7 +35,7 @@ const DevLoginPage = () => {
           const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app/';
           const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink';
           const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend';
-          const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback'); // evitar loop
+          const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
 
           window.location.href = `${keycloakUrl}/realms/${realm}/protocol/openid-connect/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=openid`;
         }, 1000);
