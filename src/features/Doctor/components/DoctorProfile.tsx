@@ -23,12 +23,12 @@ import { practitionerService } from '@/service/practitionerService';
 import axios from '@/utils/api';
 import {
   Practitioner,
-  FHIRExternalGender,
   PractitionerName,
   Telecom,
   getPractitionerDisplayName,
   getPractitionerWorkPhone,
-  getPractitionerWorkEmail
+  getPractitionerWorkEmail,
+  PractitionerQualification
 } from '@/types/practitioner.types';
 
 interface DoctorProfileData {
@@ -37,10 +37,11 @@ interface DoctorProfileData {
   email: string;
   phone: string;
   birthDate: string;
-  gender: FHIRExternalGender;
+  gender: string;
   specialization: string;
   licenseNumber: string;
   workplace: string;
+  qualifications?: PractitionerQualification[];
 }
 
 const DoctorProfile = () => {
@@ -54,10 +55,11 @@ const DoctorProfile = () => {
     email: '',
     phone: '',
     birthDate: '',
-    gender: FHIRExternalGender.UNKNOWN,
+    gender: '',
     specialization: '',
     licenseNumber: '',
     workplace: ''
+
   });
 
   useEffect(() => {
@@ -107,7 +109,7 @@ const DoctorProfile = () => {
                 email: user?.email || '',
                 phone: '',
                 birthDate: '',
-                gender: FHIRExternalGender.UNKNOWN,
+                gender: '',
                 specialization: '',
                 licenseNumber: '',
                 workplace: ''
@@ -180,8 +182,8 @@ const DoctorProfile = () => {
           email: practitioner.email || '',
           phone: getPractitionerWorkPhone(telecoms),
           birthDate: practitioner.birthDate || '',
-          gender: practitioner.gender || FHIRExternalGender.UNKNOWN,
-          specialization: firstQualification || '',
+          gender: (practitioner.gender as string) || '',
+          specialization: typeof firstQualification === 'string' ? firstQualification : (typeof firstQualification?.code === 'string' ? firstQualification.code : (firstQualification?.code as any)?.text || ''),
           licenseNumber: getLicenseNumber(practitioner.identifier?.[0]),
           workplace: ''
         };
@@ -439,25 +441,22 @@ const DoctorProfile = () => {
             <div className="space-y-2">
               <Label>Genero</Label>
               {isEditing ? (
-                <Select
-                  value={profileData.gender}
-                  onValueChange={(value) => handleInputChange('gender', value)}
-                >
+                <Select onValueChange={(value) => handleInputChange('gender', value)} value={profileData.gender}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar genero" />
+                    <SelectValue placeholder="Seleccionar género" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={FHIRExternalGender.MALE}>Masculino</SelectItem>
-                    <SelectItem value={FHIRExternalGender.FEMALE}>Femenino</SelectItem>
-                    <SelectItem value={FHIRExternalGender.OTHER}>Otro</SelectItem>
-                    <SelectItem value={FHIRExternalGender.UNKNOWN}>Prefiero no decirlo</SelectItem>
+                    <SelectItem value="male">Masculino</SelectItem>
+                    <SelectItem value="female">Femenino</SelectItem>
+                    <SelectItem value="other">Otro</SelectItem>
+                    <SelectItem value="unknown">Prefiero no decirlo</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
                 <p className="text-gray-700">
-                  {profileData.gender === FHIRExternalGender.MALE ? 'Masculino' :
-                    profileData.gender === FHIRExternalGender.FEMALE ? 'Femenino' :
-                      profileData.gender === FHIRExternalGender.OTHER ? 'Otro' : 'No especificado'}
+                  {profileData.gender === 'male' ? 'Masculino' :
+                    profileData.gender === 'female' ? 'Femenino' :
+                      profileData.gender === 'other' ? 'Otro' : 'No especificado'}
                 </p>
               )}
             </div>

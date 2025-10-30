@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { FHIRExternalGender } from '@/types/practitioner.types';
 
 export const practitionerRegisterSchema = z.object({
   email: z
@@ -16,9 +15,7 @@ export const practitionerRegisterSchema = z.object({
   birthDate: z
     .string({ message: "La fecha de nacimiento es requerida" }),
 
-  gender: z.nativeEnum(FHIRExternalGender, {
-    message: "Selecciona un género válido"
-  }),
+  gender: z.string().min(1, "El género es requerido"), // Cambiar a string simple
 
   name: z.array(
     z.object({
@@ -39,7 +36,7 @@ export const practitionerRegisterSchema = z.object({
       rank: z.number().optional(),
     })
   ),
- 
+
 }).refine((data) => data.password === data.repeatpassword, {
   message: "Las contraseñas no coinciden",
   path: ["repeatpassword"],

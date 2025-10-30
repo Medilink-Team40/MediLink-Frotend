@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PatientRegisterFormData, patientRegisterSchema } from '@/features/auth/validations/patient-register.schema';
-import { PatientFormData, FHIR_EXTERNAL_GENDER, } from '@/types/patient.types'; // Importar FHIRExternalGender
+import { PatientFormData, } from '@/types/patient.types'; // Importar FHIRExternalGender
 import { usePatientRegistration } from '@/hooks/usePatienteRegistraction';
 import {
   Eye,
@@ -78,7 +78,7 @@ export const PacienteRegisterForm = () => {
       email: '',
       phone: '',
       birthDate: '',
-      gender: FHIR_EXTERNAL_GENDER[3], // Usar el enum en lugar de string (unknown)
+      gender: '',
       dni: '',
       password: '',
       confirmPassword: '',
@@ -220,8 +220,8 @@ export const PacienteRegisterForm = () => {
                   exit={{ opacity: 0, y: -10 }}
                 >
                   <Alert className={`${success
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-red-500 bg-red-50'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-red-500 bg-red-50'
                     }`}>
                     {success ? (
                       <CheckCircle className="h-4 w-4 text-green-600" />
@@ -260,10 +260,10 @@ export const PacienteRegisterForm = () => {
                     {...register('firstName')}
                     placeholder="Juan Carlos"
                     className={`transition-all ${errors.firstName
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.firstName
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.firstName
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.firstName && (
@@ -289,10 +289,10 @@ export const PacienteRegisterForm = () => {
                     {...register('lastName')}
                     placeholder="Pérez González"
                     className={`transition-all ${errors.lastName
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.lastName
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.lastName
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.lastName && (
@@ -319,10 +319,10 @@ export const PacienteRegisterForm = () => {
                     {...register('email')}
                     placeholder="john.doe@ejemplo.com"
                     className={`transition-all ${errors.email
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.email
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.email
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.email && (
@@ -349,10 +349,10 @@ export const PacienteRegisterForm = () => {
                     {...register('phone')}
                     placeholder="+1234567890"
                     className={`transition-all ${errors.phone
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.phone
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.phone
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.phone && (
@@ -379,10 +379,10 @@ export const PacienteRegisterForm = () => {
                     {...register('birthDate')}
                     max={new Date().toISOString().split('T')[0]}
                     className={`transition-all ${errors.birthDate
-                        ? 'border-red-500 focus:border-red-500'
-                        : touchedFields.birthDate
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : touchedFields.birthDate
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.birthDate && (
@@ -409,10 +409,10 @@ export const PacienteRegisterForm = () => {
                     {...register('dni')}
                     placeholder="12345678"
                     className={`transition-all ${errors.dni
-                        ? 'border-red-500 focus:border-red-500'
-                        : isDniValid
-                          ? 'border-green-500 focus:border-green-500'
-                          : ''
+                      ? 'border-red-500 focus:border-red-500'
+                      : isDniValid
+                        ? 'border-green-500 focus:border-green-500'
+                        : ''
                       }`}
                   />
                   {errors.dni && (
@@ -438,19 +438,21 @@ export const PacienteRegisterForm = () => {
                         onValueChange={(value) => field.onChange(value)}
                         value={field.value}
                       >
-                        <SelectTrigger className={`bg-white transition-all ${errors.gender
-                            ? 'border-red-500 focus:border-red-500'
-                            : touchedFields.gender
-                              ? 'border-green-500 focus:border-green-500'
-                              : ''
-                          }`}>
+                        <SelectTrigger
+                          className={`bg-white transition-all ${errors.gender
+                              ? "border-red-500 focus:border-red-500"
+                              : touchedFields.gender
+                                ? "border-green-500 focus:border-green-500"
+                                : ""
+                            }`}
+                        >
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
-                        <SelectContent className='bg-white'>
-                          <SelectItem value={FHIR_EXTERNAL_GENDER[0]}>Masculino</SelectItem>
-                          <SelectItem value={FHIR_EXTERNAL_GENDER[1]}>Femenino</SelectItem>
-                          <SelectItem value={FHIR_EXTERNAL_GENDER[2]}>Otro</SelectItem>
-                          <SelectItem value={FHIR_EXTERNAL_GENDER[3]}>Prefiero no decirlo</SelectItem>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="male">Masculino</SelectItem>
+                          <SelectItem value="female">Femenino</SelectItem>
+                          <SelectItem value="other">Otro</SelectItem>
+                          <SelectItem value="unknown">Prefiero no decirlo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
@@ -489,10 +491,10 @@ export const PacienteRegisterForm = () => {
                       {...register('password')}
                       placeholder="••••••••"
                       className={`pr-10 transition-all ${errors.password
-                          ? 'border-red-500 focus:border-red-500'
-                          : passwordStrength.strength >= 3
-                            ? 'border-green-500 focus:border-green-500'
-                            : ''
+                        ? 'border-red-500 focus:border-red-500'
+                        : passwordStrength.strength >= 3
+                          ? 'border-green-500 focus:border-green-500'
+                          : ''
                         }`}
                     />
                     <button
@@ -547,10 +549,10 @@ export const PacienteRegisterForm = () => {
                       {...register('confirmPassword')}
                       placeholder="••••••••"
                       className={`pr-10 transition-all ${errors.confirmPassword
-                          ? 'border-red-500 focus:border-red-500'
-                          : passwordsMatch
-                            ? 'border-green-500 focus:border-green-500'
-                            : ''
+                        ? 'border-red-500 focus:border-red-500'
+                        : passwordsMatch
+                          ? 'border-green-500 focus:border-green-500'
+                          : ''
                         }`}
                     />
                     <button

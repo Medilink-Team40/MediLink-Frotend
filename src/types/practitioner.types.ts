@@ -20,19 +20,8 @@ export interface Telecom {
   value: string;
   use: 'home' | 'work' | 'mobile' | 'temp' | 'old' | 'maiden';
   rank?: number;
-}[];
-
-export interface PractitionerRegisterData {
-  email: string;
-  password: string;
-  repeatpassword: string;
-  birthDate: string;
-  gender: FHIRExternalGender;
-  name: PractitionerName[];
-  telecom: Telecom[];
-  specialization?: string;
-  licenseNumber?: string;
 }
+
 export interface PractitionerIdentifier {
   use?: 'usual' | 'official' | 'temp' | 'secondary';
   type?: {
@@ -60,24 +49,34 @@ export interface PractitionerQualification {
   issuer?: string;
 }
 
+export interface PractitionerRegisterData {
+  email: string;
+  password: string;
+  repeatpassword: string;
+  birthDate: string;
+  gender: string; // Cambiar a string
+  name: PractitionerName[];
+  telecom: Telecom[];
+  specialization?: string;
+  licenseNumber?: string;
+}
 
-export interface Practitioner{
+export interface Practitioner {
   id: string;
   keycloakId?: string;
   email: string;
   birthDate: string;
-  gender: FHIRExternalGender;
+  gender: string; // Cambiar a string
   name: PractitionerName[];
   telecom: Telecom[];
-  identifier?: string[];
-  qualification?: string[];
+  identifier?: PractitionerIdentifier[];
+  qualification?: PractitionerQualification[];
   specialization?: string;
   licenseNumber?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
-
 
 export const getPractitionerDisplayName = (names: PractitionerName[]): string => {
   const officialName = names.find(name => name.use === 'official') || names[0];
