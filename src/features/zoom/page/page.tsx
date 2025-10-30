@@ -28,7 +28,7 @@
 //         <h1>Zoom Meeting SDK React + Zustand</h1>
 
 //         {loading && <p>🔄 Conectando...</p>}
-//         {error && <p style={{ color: "red" }}>❌ {error}</p>}
+//         {error && <p style={{ color: "red" }}>  {error}</p>}
 //         {!isJoined && !loading && <button onClick={getSignature}>Join Meeting</button>}
 //         {isJoined && <p>🎉 Estás en la reunión</p>}
 
