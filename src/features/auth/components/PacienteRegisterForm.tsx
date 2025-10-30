@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PatientRegisterFormData, patientRegisterSchema } from '@/features/auth/validations/patient-register.schema';
-import { PatientFormData, FHIRExternalGender } from '@/types/patient.types'; // Importar FHIRExternalGender
+import { PatientFormData, FHIR_EXTERNAL_GENDER, } from '@/types/patient.types'; // Importar FHIRExternalGender
 import { usePatientRegistration } from '@/hooks/usePatienteRegistraction';
 import {
   Eye,
@@ -78,7 +78,7 @@ export const PacienteRegisterForm = () => {
       email: '',
       phone: '',
       birthDate: '',
-      gender: FHIRExternalGender.UNKNOWN, // Usar el enum en lugar de string
+      gender: FHIR_EXTERNAL_GENDER[3], // Usar el enum en lugar de string (unknown)
       dni: '',
       password: '',
       confirmPassword: '',
@@ -435,7 +435,7 @@ export const PacienteRegisterForm = () => {
                     control={control}
                     render={({ field }) => (
                       <Select
-                        onValueChange={(value) => field.onChange(value as FHIRExternalGender)}
+                        onValueChange={(value) => field.onChange(value)}
                         value={field.value}
                       >
                         <SelectTrigger className={`bg-white transition-all ${errors.gender
@@ -447,10 +447,10 @@ export const PacienteRegisterForm = () => {
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
                         <SelectContent className='bg-white'>
-                          <SelectItem value={FHIRExternalGender.MALE}>Masculino</SelectItem>
-                          <SelectItem value={FHIRExternalGender.FEMALE}>Femenino</SelectItem>
-                          <SelectItem value={FHIRExternalGender.OTHER}>Otro</SelectItem>
-                          <SelectItem value={FHIRExternalGender.UNKNOWN}>Prefiero no decirlo</SelectItem>
+                          <SelectItem value={FHIR_EXTERNAL_GENDER[0]}>Masculino</SelectItem>
+                          <SelectItem value={FHIR_EXTERNAL_GENDER[1]}>Femenino</SelectItem>
+                          <SelectItem value={FHIR_EXTERNAL_GENDER[2]}>Otro</SelectItem>
+                          <SelectItem value={FHIR_EXTERNAL_GENDER[3]}>Prefiero no decirlo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}

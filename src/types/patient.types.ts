@@ -1,11 +1,12 @@
 
-
-export enum FHIRExternalGender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
-  UNKNOWN = 'unknown'
-}
+export const FHIR_EXTERNAL_GENDER = ['male', 'female', 'other', 'unknown'] as const;
+export type FHIRExternalGender = typeof FHIR_EXTERNAL_GENDER[number];
+// export enum FHIRExternalGender {
+//   MALE = 'male',
+//   FEMALE = 'female',
+//   OTHER = 'other',
+//   UNKNOWN = 'unknown'
+// }
 
 interface HumanName {
   use: 'official' | 'nickname' | 'anonymous' | 'old' | 'maiden';
@@ -40,7 +41,7 @@ export interface PatientRegisterData {
 }
 
 interface PatientFormData {
-  firstName: string;       
+  firstName: string;
   lastName: string;
   email: string;
   password?: string;
