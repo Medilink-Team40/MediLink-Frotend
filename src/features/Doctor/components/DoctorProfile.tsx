@@ -47,7 +47,7 @@ const DoctorProfile = () => {
   const { user, loading: authLoading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [practitionerId, setPractitionerId] = useState<string | null>(null);
+  const [practitionerId, setPractitionerId] = useState<string | null | undefined>(null);
   const [profileData, setProfileData] = useState<DoctorProfileData>({
     firstName: '',
     lastName: '',
@@ -64,7 +64,7 @@ const DoctorProfile = () => {
 
 
     if (!authLoading && user && user.id) {
-        loadProfileData();
+      loadProfileData();
     } else {
       console.warn('No se pudo cargar el perfil: usuario no autenticado o ID no disponible');
     }
@@ -113,7 +113,8 @@ const DoctorProfile = () => {
                 workplace: ''
               });
 
-              setPractitionerId(userId);
+              // Convertir undefined a null
+              setPractitionerId(userId ?? null);
 
               toast.info('Perfil no encontrado', {
                 description: 'Completa tu informacion profesional para crear tu perfil.',
@@ -149,11 +150,29 @@ const DoctorProfile = () => {
 
         const finalPractitionerId = practitioner.keycloakId || user?.id;
         console.log('Guardando practitionerId:', finalPractitionerId);
-        setPractitionerId(finalPractitionerId);
+
+        // Convertir undefined a null
+        setPractitionerId(finalPractitionerId ?? null);
 
         const names = practitioner.name || [];
         const telecoms = practitioner.telecom || [];
         const firstQualification = practitioner.qualification?.[0];
+
+        const getLicenseNumber = (identifier: any): string => {
+          if (!identifier) return '';
+
+          // If it's a string directly
+          if (typeof identifier === 'string') {
+            return identifier;
+          }
+
+          //agregamos un  If vara verificar si es el objeto con la propiedad value
+          if (typeof identifier === 'object' && 'value' in identifier) {
+            return identifier.value || '';
+          }
+
+          return '';
+        };
 
         const newProfileData = {
           firstName: names[0]?.given?.[0] || '',
@@ -162,8 +181,8 @@ const DoctorProfile = () => {
           phone: getPractitionerWorkPhone(telecoms),
           birthDate: practitioner.birthDate || '',
           gender: practitioner.gender || FHIRExternalGender.UNKNOWN,
-          specialization: firstQualification?.code || '',
-          licenseNumber: practitioner.identifier?.[0]?.value || '',
+          specialization: firstQualification || '',
+          licenseNumber: getLicenseNumber(practitioner.identifier?.[0]),
           workplace: ''
         };
 
@@ -437,8 +456,8 @@ const DoctorProfile = () => {
               ) : (
                 <p className="text-gray-700">
                   {profileData.gender === FHIRExternalGender.MALE ? 'Masculino' :
-                   profileData.gender === FHIRExternalGender.FEMALE ? 'Femenino' :
-                   profileData.gender === FHIRExternalGender.OTHER ? 'Otro' : 'No especificado'}
+                    profileData.gender === FHIRExternalGender.FEMALE ? 'Femenino' :
+                      profileData.gender === FHIRExternalGender.OTHER ? 'Otro' : 'No especificado'}
                 </p>
               )}
             </div>
