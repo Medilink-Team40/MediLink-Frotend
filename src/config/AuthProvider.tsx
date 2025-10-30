@@ -26,7 +26,7 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const PUBLIC_ROUTES = ['/', '/login', '/register', '/test', '/connection-test', '/dev-login'];
+const PUBLIC_ROUTES = ['/', '/register', '/test', '/connection-test', '/dev-login', '/auth/callback'];
 
 const isPublicRoute = (pathname: string): boolean => {
   return PUBLIC_ROUTES.some(route => {
@@ -42,8 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const location = useLocation();
   const navigate = useNavigate();
   const devAuthData = useDevAuth();
+  /**
+   * Utiliza false en desarrollo si quiere
+   * utilizar el flujo de keycloak
+   * Utiliza true en desarrollo si quiere
+   *  utilizar el flujo de DevLoginPage
+   * enn producción siempre debe ir
+   * import.meta.env.DEV
+   */
   const isDevelopment = import.meta.env.DEV;
-  //import.meta.env.DEV; // forzar entorno de desarrollo con false
 
   const [state, setState] = useState<{
     isAuthenticated: boolean;
@@ -55,27 +62,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading: true,
   });
 
+  // ✅ Función para redirigir según rol después del login
+  const redirectToDashboard = useCallback((userRoles: string[]) => {
+    const dashboardPath = getDashboardPathByRole(userRoles);
+    console.log('🚀 Redirigiendo a dashboard:', dashboardPath);
+    navigate(dashboardPath, { replace: true });
+  }, [navigate]);
+
   const login = useCallback(async () => {
     if (isDevelopment) {
-      const auth = devAuthData();
-      console.log(' Estado de Autenticación:', auth);
-      setState({
-        isAuthenticated: auth.isAuthenticated,
-        user: auth.user,
-        loading: false,
-      });
+      // En desarrollo, redirigir a DevLoginPage
+      navigate('/dev-login');
       return;
     }
 
     try {
+      console.log('🔐 Iniciando login con Keycloak...');
       const keycloak = getKeycloakInstance();
       await keycloak.login({
-        redirectUri: `${window.location.origin}${window.location.pathname}`,
+        redirectUri: `${window.location.origin}/auth/callback`, // ✅ Usar callback correcto
       });
     } catch (error) {
+      console.error('Error al iniciar login:', error);
       setState(prev => ({ ...prev, loading: false }));
     }
-  }, [isDevelopment, devAuthData]);
+  }, [isDevelopment, navigate]);
 
   const logout = useCallback(async () => {
     if (isDevelopment) {
@@ -87,6 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user: null,
         loading: false,
       });
+      navigate('/'); // Redirigir a landing
       return;
     }
 
@@ -103,9 +115,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
-  }, [isDevelopment]);
+  }, [isDevelopment, navigate]);
 
   const setDevUser = useCallback(async (devUser: User): Promise<void> => {
+    console.log('👤 Configurando usuario dev:', devUser);
     setState({
       isAuthenticated: true,
       user: devUser,
@@ -114,7 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('dev_user', JSON.stringify(devUser));
     localStorage.setItem('dev_token', `dev-token-${devUser.role}-${Date.now()}`);
     localStorage.setItem('dev_user_type', devUser.role || '');
-  }, []);
+
+    // ✅ Redirigir automáticamente al dashboard en desarrollo
+    if (devUser.roles && devUser.roles.length > 0) {
+      redirectToDashboard(devUser.roles);
+    }
+  }, [redirectToDashboard]);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -129,6 +147,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
             const user = JSON.parse(savedUser);
             setState({ isAuthenticated: true, user, loading: false });
+
+            // ✅ Si estás en landing y tienes usuario, redirigir a dashboard
+            if (currentPath === '/' && user.roles) {
+              redirectToDashboard(user.roles);
+            }
             return;
           } catch (error) {
             localStorage.removeItem('dev_user');
@@ -153,40 +176,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (authenticated) {
           const keycloak = getKeycloakInstance();
-
           const roles = getUserRoles();
-          const userDashboardPath = getDashboardPathByRole(roles);
+
+          const user = {
+            name: keycloak.tokenParsed?.name || '',
+            email: keycloak.tokenParsed?.email || '',
+            roles,
+            role: roles.length > 0 ? roles[0] : undefined,
+            picture: keycloak.tokenParsed?.picture,
+            id: keycloak.tokenParsed?.sub,
+          };
 
           setState({
             isAuthenticated: true,
-            user: {
-              name: keycloak.tokenParsed?.name || '',
-              email: keycloak.tokenParsed?.email || '',
-              roles,
-              role: roles.length > 0 ? roles[0] : undefined,
-              picture: keycloak.tokenParsed?.picture,
-            },
+            user,
             loading: false,
           });
 
-          // Lógica de Redirección Condicional
-          if (currentPath.includes('/dev-login') && userDashboardPath) {
-             navigate(userDashboardPath, { replace: true });
+          // ✅ Redirigir a dashboard si estás autenticado y en landing o callback
+          if ((currentPath === '/' || currentPath.includes('/auth/callback')) && roles.length > 0) {
+            redirectToDashboard(roles);
           }
 
         } else {
           setState({ isAuthenticated: false, user: null, loading: false });
         }
       } catch (error) {
+        console.error('Error de autenticación:', error);
         setState({ isAuthenticated: false, user: null, loading: false });
         if (!isPublic) {
-            navigate('/login');
+          navigate('/');
         }
       }
     };
 
     initAuth();
-  }, [location.pathname, isDevelopment, devAuthData, navigate]);
+  }, [location.pathname, isDevelopment, devAuthData, navigate, redirectToDashboard]);
 
   const value: AuthContextType = {
     isAuthenticated: state.isAuthenticated,
