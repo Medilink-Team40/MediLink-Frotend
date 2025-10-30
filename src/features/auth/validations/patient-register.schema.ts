@@ -1,8 +1,8 @@
 // src/features/auth/validations/patient-register.schema.ts
 import { z } from 'zod';
+import { FHIRExternalGender } from '@/types/patient.types';
 
-// Definir valores directamente para evitar problemas de importación
-const GENDER_VALUES = ['male', 'female', 'other', 'unknown'] as const;
+
 
 export const patientRegisterSchema = z.object({
   firstName: z.string().min(2, "El nombre es requerido"),
@@ -10,7 +10,7 @@ export const patientRegisterSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   phone: z.string().min(8, "Número de teléfono inválido"),
   birthDate: z.string().min(1, "La fecha de nacimiento es requerida"),
-  gender: z.enum(GENDER_VALUES),
+  gender: z.enum(FHIRExternalGender),
   dni: z.string().optional(),
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
   confirmPassword: z.string()
@@ -24,7 +24,7 @@ export const patientFhirRegisterSchema = z.object({
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
   repeatpassword: z.string(),
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (YYYY-MM-DD)"),
-  gender: z.enum(GENDER_VALUES),
+  gender: z.enum(FHIRExternalGender),
   name: z.array(z.object({
     use: z.enum(['official', 'usual', 'nickname', 'anonymous', 'old', 'maiden']),
     text: z.string().min(1, "El nombre completo es requerido"),
