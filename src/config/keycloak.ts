@@ -3,7 +3,7 @@ import Keycloak, { KeycloakInstance } from 'keycloak-js';
 // Configuración centralizada
 const keycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app',
-  realm:  import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink',
+  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink',
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend',
 };
 
@@ -13,7 +13,7 @@ let initializationPromise: Promise<boolean> | null = null;
 let tokenRefreshInterval: number | null = null;
 
 export const getUserRoles = (): string[] => {
- const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? [];
+  const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? [];
 
   // 2. Obtener Roles de Cliente (específicos de 'medilink-frontend')
   // Usamos keycloakConfig.clientId para acceder a la clave correcta en resource_access.
@@ -24,22 +24,22 @@ export const getUserRoles = (): string[] => {
 };
 
 export const getDashboardPathByRole = (roles: string[]): string => {
-    if (roles.includes('admin')) {
-        return '/admin/dashboard';
-    }
-    if (roles.includes('practitioner')) {
-        return '/doctor/dashboard';
-    }
-    if (roles.includes('patient')) {
-        return '/patient/dashboard';
-    }
-    return '/dashboard';
+  if (roles.includes('admin')) {
+    return '/admin/dashboard'; 
+  }
+  if (roles.includes('practitioner')) {
+    return '/doctor/dashboard';
+  }
+  if (roles.includes('patient')) {
+    return '/patient/dashboard';
+  }
+  return '/dashboard';
 };
 
 export const initKeycloak = (): Promise<boolean> => {
   if (!initializationPromise) {
     if (tokenRefreshInterval !== null) {
-        clearInterval(tokenRefreshInterval);
+      clearInterval(tokenRefreshInterval);
     }
 
     initializationPromise = keycloak
@@ -72,7 +72,7 @@ export const getKeycloakInstance = (): Keycloak => keycloak;
 export const login = async (): Promise<void> => {
   try {
     await keycloak.login({
-      redirectUri: window.location.origin + '/dev-login',
+      redirectUri: window.location.origin + '/auth/callback',
     });
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
