@@ -14,7 +14,8 @@ import {
     BellIcon,
     HelpCircleIcon,
     ShieldCheckIcon,
-    Stethoscope
+    Stethoscope,
+    Clock
 } from "lucide-react";
 import { useAuth } from "@/config/AuthProvider";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -122,6 +123,12 @@ const SidebarApp = () => {
             label: 'Pacientes',
             icon: <UserIcon size={20} />,
             category: 'consultas'
+        },
+        {
+           path: '/doctor/administrar-horarios',
+           label: 'Administrar Horarios',
+           icon: <Clock size={20} />,
+           category: 'consultas'
         },
         {
             path: '/doctor/teleconsultas',
