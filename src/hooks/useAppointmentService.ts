@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 // Tipos del appointment service
 interface CreateAppointmentRequest {
   patientId: string;
-  doctorId: string;
+  doctorId?: string | undefined;
   date: string;
   time: string;
   reason: string;
@@ -27,7 +27,7 @@ interface Patient {
 interface Appointment {
   id: string;
   patientId: string;
-  doctorId: string;
+  doctorId?: string | undefined;
   date: string;
   time: string;
   reason: string;
@@ -45,7 +45,7 @@ interface AvailabilitySlot {
   appointmentId?: string;
 }
 
-export const useAppointmentService = (doctorId?: string) => {
+export const useAppointmentService = (doctorKeycloakId: string) => {
   // Estados del servicio
   const [loading, setLoading] = useState(false);
   const [searchingPatients, setSearchingPatients] = useState(false);
@@ -103,7 +103,7 @@ export const useAppointmentService = (doctorId?: string) => {
 
   // Inicializar calendario del doctor
   const initializeCalendar = useCallback(async (doctorIdParam?: string) => {
-    const targetDoctorId = doctorIdParam || doctorId;
+    const targetDoctorId = doctorIdParam || doctorKeycloakId;
 
     if (!targetDoctorId) {
       console.error('No se proporciono doctorId');
@@ -142,22 +142,17 @@ export const useAppointmentService = (doctorId?: string) => {
     } finally {
       setLoading(false);
     }
-  }, [doctorId]);
+  }, [doctorKeycloakId]);
 
   // Obtener citas por doctor
-  const fetchAppointmentsByDoctor = useCallback(async (doctorIdParam?: string) => {
-    const targetDoctorId = doctorIdParam || doctorId;
-
-    if (!targetDoctorId) {
-      console.error('No se proporciono doctorId para obtener citas');
-      return;
-    }
+  const fetchAppointmentsByDoctor = useCallback(async () => {
+    if (!doctorKeycloakId) return;
 
     try {
       setLoading(true);
-      console.log('Obteniendo citas del doctor:', targetDoctorId);
+      console.log('Obteniendo citas del doctor:', doctorKeycloakId);
 
-      const response = await appointmentService.getByDoctor(targetDoctorId);
+      const response = await appointmentService.getByDoctor(doctorKeycloakId);
 
       if (response.error) {
         console.error('Error al obtener citas del doctor:', response.error);
@@ -173,14 +168,11 @@ export const useAppointmentService = (doctorId?: string) => {
     } finally {
       setLoading(false);
     }
-  }, [doctorId]);
+  }, [doctorKeycloakId]);
 
   // Obtener slots disponibles
   const fetchAvailableSlots = useCallback(async (date: string) => {
-    if (!calendarId) {
-      console.error('No hay calendarId disponible para obtener slots');
-      return;
-    }
+    if (!doctorKeycloakId || !calendarId) return;
 
     try {
       setLoadingSlots(true);
@@ -225,7 +217,7 @@ export const useAppointmentService = (doctorId?: string) => {
     } finally {
       setLoadingSlots(false);
     }
-  }, [calendarId]);
+  }, [calendarId, doctorKeycloakId]);
 
   // Generar slots por defecto (horario de oficina estandar)
   const generateDefaultSlots = useCallback((): AvailabilitySlot[] => {
@@ -302,8 +294,8 @@ export const useAppointmentService = (doctorId?: string) => {
       toast.success('Cita creada exitosamente');
 
       // Actualizar la lista de citas si tenemos doctorId
-      if (doctorId) {
-        await fetchAppointmentsByDoctor(doctorId);
+      if (doctorKeycloakId) {
+        await fetchAppointmentsByDoctor();
       }
 
       // Actualizar slots disponibles para la fecha
@@ -317,19 +309,19 @@ export const useAppointmentService = (doctorId?: string) => {
     } finally {
       setCreatingAppointment(false);
     }
-  }, [doctorId, fetchAppointmentsByDoctor, fetchAvailableSlots]);
+  }, [doctorKeycloakId, fetchAppointmentsByDoctor, fetchAvailableSlots]);
 
   // Inicializar calendario automaticamente cuando cambie el doctorId
   // Solo se ejecuta UNA VEZ cuando el componente monta y hay doctorId
   useEffect(() => {
     let mounted = true;
 
-    if (doctorId && !calendarReady && !loading) {
-      console.log('Iniciando inicializacion de calendario para:', doctorId);
+    if (doctorKeycloakId && !calendarReady && !loading) {
+      console.log('Iniciando inicializacion de calendario para:', doctorKeycloakId);
 
       const init = async () => {
         if (mounted) {
-          await initializeCalendar(doctorId);
+          await initializeCalendar(doctorKeycloakId);
         }
       };
 
@@ -339,7 +331,7 @@ export const useAppointmentService = (doctorId?: string) => {
     return () => {
       mounted = false;
     };
-  }, [doctorId]); // Solo depende de doctorId
+  }, [doctorKeycloakId]); // Solo depende de doctorId
 
   return {
     // Estados

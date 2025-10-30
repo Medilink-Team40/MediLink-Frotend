@@ -1,7 +1,7 @@
 export interface Appointment {
   id: string;
   patientId: string;
-  doctorId: string;
+  doctorId?: string | undefined;
   date: string;
   time: string;
   reason: string;
@@ -25,7 +25,7 @@ export interface Appointment {
 
 export interface CreateAppointmentRequest {
   patientId: string;
-  doctorId: string;
+  doctorId?: string | undefined;
   date: string;
   time: string;
   reason: string;

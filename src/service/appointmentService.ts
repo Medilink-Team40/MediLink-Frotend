@@ -2,7 +2,7 @@ import axios from '@/utils/api';
 
 interface CreateAppointmentRequest {
     patientId: string;
-    doctorId: string;
+    doctorId?: string | undefined;
     date: string;
     time: string;
     reason: string;
@@ -23,7 +23,7 @@ interface CreateAppointmentBackendRequest {
 
 interface UpdateAppointmentRequest {
     patientId?: string;
-    doctorId?: string;
+    doctorId?: string | undefined;
     date?: string;
     time?: string;
     reason?: string;
