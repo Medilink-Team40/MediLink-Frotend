@@ -204,7 +204,7 @@ export const DoctorRegister = () => {
       throw new Error(result.error.message || 'Error al registrar');
     }
 
-   
+
     setFormStatus(FormStatus.SUCCESS);
     setSubmitMessage('¡Doctor registrado exitosamente!');
 
@@ -219,21 +219,40 @@ export const DoctorRegister = () => {
     console.log("Registro exitoso:", result.data);
 
   } catch (error: any) {
-    console.error('Error en registro:', error);
+  console.error('Error en registro:', error);
 
-    setFormStatus(FormStatus.ERROR);
-    const errorMessage = error.message || error.response?.data?.message || "Ocurrió un error inesperado.";
-    setSubmitMessage(errorMessage);
+  setFormStatus(FormStatus.ERROR);
 
-    toast.error('Error al registrar doctor', {
-      description: errorMessage
-    });
+  // Mejorar el mensaje segun el codigo de estado
+  let errorMessage = "Ocurrio un error inesperado.";
 
-    setError("root", {
+  if (error.response?.status === 409) {
+    errorMessage = "Este correo electronico ya esta registrado. Por favor, usa otro email.";
+  } else if (error.response?.data?.message) {
+    errorMessage = error.response.data.message;
+  } else if (error.message) {
+    errorMessage = error.message;
+  }
+
+  setSubmitMessage(errorMessage);
+
+  toast.error('Error al registrar doctor', {
+    description: errorMessage
+  });
+
+  // Opcional: Marcar el campo de email como error
+  if (error.response?.status === 409) {
+    setError("email", {
       type: "manual",
-      message: errorMessage,
+      message: "Este email ya esta registrado",
     });
   }
+
+  setError("root", {
+    type: "manual",
+    message: errorMessage,
+  });
+}
 };
 
   // Limpiar mensaje después de 5 segundos
