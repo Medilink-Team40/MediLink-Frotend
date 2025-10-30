@@ -33,16 +33,44 @@ export interface PractitionerRegisterData {
   specialization?: string;
   licenseNumber?: string;
 }
+export interface PractitionerIdentifier {
+  use?: 'usual' | 'official' | 'temp' | 'secondary';
+  type?: {
+    coding: Array<{
+      system: string;
+      code: string;
+      display: string;
+    }>;
+  };
+  system?: string;
+  value: string;
+  period?: {
+    start?: string;
+    end?: string;
+  };
+}
+
+export interface PractitionerQualification {
+  identifier?: PractitionerIdentifier[];
+  code: string;
+  period?: {
+    start?: string;
+    end?: string;
+  };
+  issuer?: string;
+}
 
 
 export interface Practitioner{
   id: string;
-  keycloakId: string;
+  keycloakId?: string;
   email: string;
   birthDate: string;
   gender: FHIRExternalGender;
   name: PractitionerName[];
   telecom: Telecom[];
+  identifier?: string[];
+  qualification?: string[];
   specialization?: string;
   licenseNumber?: string;
   isActive: boolean;
