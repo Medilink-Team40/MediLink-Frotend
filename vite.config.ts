@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 // Plugin para eliminar console.log en producción
 const removeConsolePlugin = () => {
@@ -25,6 +26,7 @@ const removeConsolePlugin = () => {
 export default defineConfig({
   plugins: [
     react(),
+    tsconfigPaths(),
     removeConsolePlugin()
   ],
   resolve: {
@@ -32,25 +34,35 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  css:{
+  css: {
     postcss: './postcss.config.js',
-    },
+  },
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://medilink-backend-bivg.onrender.com',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
+    open: true,
+  },
+  define: {
+    __DEV__: process.env.NODE_ENV === "development",
   },
   build: {
+
+    commonjsOptions: {
+      ignoreDynamicRequires: true,
+      include: [/node_modules/],
+      // Incluimos @zoom/meetingsdk para desarrollo
+      // exclude: ['@zoom/meetingsdk'],
+    },
+
     // Aumentar el límite de advertencia
     chunkSizeWarningLimit: 1000,
 
     rollupOptions: {
+      // Removemos @zoom/meetingsdk de external para desarrollo
+      // external: ['@zoom/meetingsdk'],
       output: {
+        // globals: {
+        //   '@zoom/meetingsdk': 'ZoomMtgEmbedded'
+        // },
         // Separar chunks manualmente para mejor caching
         manualChunks: (id) => {
           // Vendor chunks
@@ -116,6 +128,10 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
       'lucide-react',
+      'lodash', 'react', 'redux', 'redux-thunk',
+      '@zoom/meetingsdk'
     ],
+    // Incluimos @zoom/meetingsdk para desarrollo
+    // exclude: ['@zoom/meetingsdk'],
   },
 });

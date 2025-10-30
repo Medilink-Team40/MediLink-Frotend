@@ -107,7 +107,7 @@ const PacientesProfile = () => {
   };
 
   const setAsPrimary = (id: string) => {
-    setContacts(prev => 
+    setContacts(prev =>
       prev.map(contact => ({
         ...contact,
         isPrimary: contact.id === id
@@ -131,8 +131,8 @@ const PacientesProfile = () => {
             </Button>
           </div>
         ) : (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="border-blue-500 text-blue-600 hover:bg-blue-50"
             onClick={() => setIsEditing(true)}
           >
@@ -418,8 +418,8 @@ const PacientesProfile = () => {
                   <p className="text-sm text-gray-500">Recibir recordatorios y actualizaciones</p>
                 </div>
               </div>
-              <Switch 
-                checked={notifications} 
+              <Switch
+                checked={notifications}
                 onCheckedChange={toggleNotifications}
               />
             </div>
@@ -431,8 +431,8 @@ const PacientesProfile = () => {
                   <p className="text-sm text-gray-500">Recibir notificaciones en el dispositivo</p>
                 </div>
               </div>
-              <Switch 
-                checked={notifications} 
+              <Switch
+                checked={notifications}
                 onCheckedChange={toggleNotifications}
               />
             </div>
@@ -440,7 +440,7 @@ const PacientesProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Zona de Peligro */}
+      {/* Zona de Peligro
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-600">
@@ -481,7 +481,7 @@ const PacientesProfile = () => {
           </div>
         </CardContent>
       </Card>
-
+*/}
       {/* Mensaje de seguridad */}
       <div className="flex items-center justify-center text-sm text-gray-500 mt-8">
         <LockIcon className="h-4 w-4 mr-2" />

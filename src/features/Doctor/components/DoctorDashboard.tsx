@@ -1,105 +1,143 @@
-// Importación de componentes necesarios
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card.tsx";
-import { useAuth } from "@/config/AuthProvider";
 import { useEffect, useState } from "react";
-import { Calendar1Icon } from "lucide-react";
+import { VideoIcon } from "lucide-react";
 
-// Interfaz para el tipo de cita
+// Interfaces
 interface Cita {
-  id: number;
-  paciente: string;
-  fecha: string;
   hora: string;
+  paciente: string;
   tipo: string;
+  estado: 'Confirmada' | 'Pendiente';
+}
+
+interface Paciente {
+  nombre: string;
+  edad: number;
+  ultimaVisita: string;
+  diagnostico: string;
 }
 
 const DoctorDashboard = () => {
-  // Obtener información del usuario autenticado
-  const { user } = useAuth();
-
-  // Estado para almacenar las citas del día
+  // Estados
   const [citasHoy, setCitasHoy] = useState<Cita[]>([]);
+  const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [cargando, setCargando] = useState(true);
 
-  // Efecto para cargar las citas del día al montar el componente
+  // Efecto para cargar los datos al montar el componente
   useEffect(() => {
-    const cargarCitasDelDia = async () => {
+    const cargarDatos = async () => {
       try {
         // Simulación de carga de datos
-        // En una aplicación real, aquí iría una llamada a la API
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Datos de ejemplo
+        // Datos de citas de hoy
         const citasEjemplo: Cita[] = [
-          { id: 1, paciente: "María González", fecha: "2023-10-21", hora: "09:00", tipo: "Consulta" },
-          { id: 2, paciente: "Carlos López", fecha: "2023-10-21", hora: "10:30", tipo: "Control" }
+          { hora: "09:00", paciente: "Liam Harper", tipo: "Chequeo", estado: "Confirmada" },
+          { hora: "10:30", paciente: "Olivia Bennett", tipo: "Consulta", estado: "Confirmada" },
+          { hora: "11:45", paciente: "Noah Thompson", tipo: "Seguimiento", estado: "Confirmada" },
+          { hora: "13:30", paciente: "Ava Mitchell", tipo: "Emergencia", estado: "Pendiente" },
+          { hora: "15:00", paciente: "Ethan Clark", tipo: "Rutina", estado: "Confirmada" }
+        ];
+
+        // Datos de pacientes
+        const pacientesEjemplo: Paciente[] = [
+          { nombre: "Liam Harper", edad: 35, ultimaVisita: "Hace 2 meses", diagnostico: "Hipertensión" },
+          { nombre: "Olivia Bennett", edad: 42, ultimaVisita: "Hace 1 mes", diagnostico: "Arritmia" },
+          { nombre: "Noah Thompson", edad: 60, ultimaVisita: "Hace 3 meses", diagnostico: "Insuficiencia cardíaca" }
         ];
 
         setCitasHoy(citasEjemplo);
+        setPacientes(pacientesEjemplo);
       } catch (error) {
-        console.error("Error al cargar las citas:", error);
+        console.error("Error al cargar los datos:", error);
       } finally {
         setCargando(false);
       }
     };
 
-    cargarCitasDelDia();
+    cargarDatos();
   }, []);
 
   // Mostrar indicador de carga mientras se cargan los datos
   if (cargando) {
-    return <div className="flex justify-center p-8">Cargando datos del doctor...</div>;
+    return  <div className="flex justify-center p-8">Cargando datos del doctor...</div>;
   }
 
   return (
-    <div className="p-6">
-      {/* Título del dashboard */}
-      <h1 className="text-2xl font-bold mb-6">Panel del Doctor</h1>
-
-      {/* Sección de resumen */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Tarjeta de citas del día */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Citas Hoy</CardTitle>
-            <Calendar1Icon className="h-4 w-4 text-gray-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{citasHoy.length}</div>
-            <p className="text-xs text-gray-500">Citas programadas para hoy</p>
-          </CardContent>
-        </Card>
-
-        {/* Otras tarjetas de resumen pueden ir aquí */}
+    <div className="w-full p-6 space-y-6">
+      {/* Citas de hoy */}
+      <div className="bg-white rounded-xl shadow-sm">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">Citas de hoy</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th className="px-6 py-3">Hora</th>
+                <th className="px-6 py-3">Paciente</th>
+                <th className="px-6 py-3">Tipo</th>
+                <th className="px-6 py-3">Estado</th>
+                <th className="px-6 py-3">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {citasHoy.map((cita, idx) => (
+                <tr key={idx} className="bg-white border-b">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{cita.hora}</td>
+                  <td className="px-6 py-4">{cita.paciente}</td>
+                  <td className="px-6 py-4">{cita.tipo}</td>
+                  <td className="px-6 py-4">
+                    {cita.estado === 'Confirmada' ? (
+                      <span className="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Confirmada</span>
+                    ) : (
+                      <span className="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">Pendiente</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-[#1193d4] rounded-lg hover:bg-[#0f82c1] transition-colors">
+                      <VideoIcon className="w-4 h-4" />
+                      <span>Iniciar llamada</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Lista de próximas citas */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Próximas Citas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {citasHoy.length > 0 ? (
-            <div className="space-y-4">
-              {citasHoy.map((cita) => (
-                <div key={cita.id} className="border-b pb-2 last:border-b-0">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{cita.paciente}</p>
-                      <p className="text-sm text-gray-500">{cita.tipo}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">{cita.hora}</p>
-                    </div>
-                  </div>
-                </div>
+      {/* Registros de pacientes */}
+      <div className="bg-white rounded-xl shadow-sm">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">Registros de pacientes</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th className="px-6 py-3">Paciente</th>
+                <th className="px-6 py-3">Edad</th>
+                <th className="px-6 py-3">Última visita</th>
+                <th className="px-6 py-3">Diagnóstico</th>
+                <th className="px-6 py-3">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pacientes.map((p, idx) => (
+                <tr key={idx} className="bg-white border-b">
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{p.nombre}</td>
+                  <td className="px-6 py-4">{p.edad}</td>
+                  <td className="px-6 py-4">{p.ultimaVisita}</td>
+                  <td className="px-6 py-4">{p.diagnostico}</td>
+                  <td className="px-6 py-4">
+                    <a className="font-medium text-white bg-[#1193d4] px-3 py-1.5 rounded-lg hover:bg-[#0f82c1] transition-colors" href="#">Ver ficha</a>
+                  </td>
+                </tr>
               ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No hay citas programadas para hoy</p>
-          )}
-        </CardContent>
-      </Card>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

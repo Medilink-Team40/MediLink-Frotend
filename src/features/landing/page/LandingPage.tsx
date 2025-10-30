@@ -8,28 +8,27 @@ import Testimonials from '@/features/landing/components/Testimonials';
 import CtaSection from '@/features/landing/components/CtaSection';
 import Footer from '@/features/landing/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+
 
 const LandingPage = () => {
 
-const { isAuthenticated, loading } = useAuth();
+const {  loading } = useAuth();
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
- // Eliminamos la redirección automática al dashboard para que la landing sea
- // la página por defecto incluso cuando el usuario esté autenticado.
- // Mostrar solo el estado de carga mientras se inicializa la autenticación.
   if (loading) {
-    return <div>Cargando...</div>;
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600'>
+          <span className='sr-only'>Cargando...</span>
+        </div>
+      </div>
+    )
   }
- 
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <Header/>
-      
-      <main className="flex-1">
+
+      <main className="flex-1 w-full overflow-hidden">
         <HeroSection />
         <FeaturesSection />
         <HowItWorks />

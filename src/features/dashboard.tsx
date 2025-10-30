@@ -16,10 +16,10 @@ const DashboardPrueba = () => {
 
   useEffect(() => {
     if (keycloak.tokenParsed) {
-      // ✅ Obtener roles del realm
+      //   Obtener roles del realm
       const realmRoles = keycloak.tokenParsed.realm_access?.roles || [];
 
-      // ✅ Obtener roles del cliente
+      //   Obtener roles del cliente
       const clientRoles: string[] = [];
       const resourceAccess = keycloak.tokenParsed.resource_access;
 
@@ -31,10 +31,10 @@ const DashboardPrueba = () => {
         });
       }
 
-      // ✅ Combinar todos los roles (realm + cliente)
+      //   Combinar todos los roles (realm + cliente)
       const allRoles = [...realmRoles, ...clientRoles];
 
-      // ✅ Filtrar roles del sistema (opcional)
+      //   Filtrar roles del sistema (opcional)
       const filteredRoles = allRoles.filter(role =>
         !role.startsWith('default-') &&
         !role.startsWith('uma_') &&
@@ -50,7 +50,7 @@ const DashboardPrueba = () => {
         clientRoles: clientRoles
       });
 
-      // ✅ Para debugging - ver qué roles tienes
+      //   Para debugging - ver qué roles tienes
       console.log('Realm Roles:', realmRoles);
       console.log('Client Roles:', clientRoles);
       console.log('Token completo:', keycloak.tokenParsed);
@@ -99,7 +99,7 @@ const DashboardPrueba = () => {
             </div>
           </div>
 
-          {/* ✅ Mostrar roles del Realm */}
+          {/*   Mostrar roles del Realm */}
           {userInfo.realmRoles.length > 0 && (
             <div className="p-5 bg-green-50 border border-green-100 rounded-lg">
               <h2 className="font-semibold text-green-700 mb-3">Roles del Realm</h2>
@@ -116,7 +116,7 @@ const DashboardPrueba = () => {
             </div>
           )}
 
-          {/* ✅ Mostrar roles del Cliente */}
+          {/*   Mostrar roles del Cliente */}
           {userInfo.clientRoles.length > 0 && (
             <div className="p-5 bg-purple-50 border border-purple-100 rounded-lg">
               <h2 className="font-semibold text-purple-700 mb-3">Roles del Cliente</h2>
@@ -133,7 +133,7 @@ const DashboardPrueba = () => {
             </div>
           )}
 
-          {/* ✅ Todos los roles combinados */}
+          {/*   Todos los roles combinados */}
           {userInfo.roles.length > 0 && (
             <div className="p-5 bg-blue-50 border border-blue-100 rounded-lg">
               <h2 className="font-semibold text-blue-700 mb-3">Todos los Roles</h2>

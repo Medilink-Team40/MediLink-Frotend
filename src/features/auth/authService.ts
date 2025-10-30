@@ -1,8 +1,8 @@
 // src/features/auth/authService.ts
-import { 
-  getKeycloakInstance, 
-  initKeycloak, 
-  login as keycloakLogin, 
+import {
+  getKeycloakInstance,
+  initKeycloak,
+  login as keycloakLogin,
   logout as keycloakLogout,
   isAuthenticated as keycloakIsAuthenticated,
   getAccessToken as keycloakGetAccessToken,
@@ -103,7 +103,7 @@ export const updateToken = async (minValidity: number = 70): Promise<boolean> =>
 export const getUserProfile = async () => {
   try {
     const keycloak = getKeycloakInstance();
-    
+
     if (!keycloak.authenticated) {
       return null;
     }
@@ -128,7 +128,7 @@ export const getUserProfile = async () => {
 export const getUserInfo = () => {
   try {
     const keycloak = getKeycloakInstance();
-    
+
     if (!keycloak.tokenParsed) {
       return null;
     }
@@ -141,7 +141,9 @@ export const getUserInfo = () => {
       firstName: keycloak.tokenParsed.given_name,
       lastName: keycloak.tokenParsed.family_name,
       roles: keycloak.tokenParsed.realm_access?.roles || [],
+      
     };
+
   } catch {
     return null;
   }

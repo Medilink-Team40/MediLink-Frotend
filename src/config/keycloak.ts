@@ -1,24 +1,47 @@
-// src/config/keycloak.ts
-import Keycloak from 'keycloak-js';
+import Keycloak, { KeycloakInstance } from 'keycloak-js';
 
 // Configuración centralizada
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'medilink',
+  url: import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app',
+  realm:  import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink',
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend',
 };
 
-// Instancia de Keycloak para toda la app
-export const keycloak = new Keycloak(keycloakConfig);
+export const keycloak: KeycloakInstance = new Keycloak(keycloakConfig);
 
-// Promise para evitar múltiples inicializaciones
 let initializationPromise: Promise<boolean> | null = null;
+let tokenRefreshInterval: number | null = null;
 
-/**
- * Inicializar Keycloak
- */
+export const getUserRoles = (): string[] => {
+ const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? [];
+
+  // 2. Obtener Roles de Cliente (específicos de 'medilink-frontend')
+  // Usamos keycloakConfig.clientId para acceder a la clave correcta en resource_access.
+  const clientRoles = keycloak.tokenParsed?.resource_access?.[keycloakConfig.clientId]?.roles ?? [];
+
+  // 3. Combinar ambos arrays y usar 'Set' para asegurar que no haya duplicados.
+  return [...new Set([...realmRoles, ...clientRoles])];
+};
+
+export const getDashboardPathByRole = (roles: string[]): string => {
+    if (roles.includes('admin')) {
+        return '/admin/dashboard';
+    }
+    if (roles.includes('practitioner')) {
+        return '/doctor/dashboard';
+    }
+    if (roles.includes('patient')) {
+        return '/patient/dashboard';
+    }
+    return '/dashboard';
+};
+
 export const initKeycloak = (): Promise<boolean> => {
   if (!initializationPromise) {
+    if (tokenRefreshInterval !== null) {
+        clearInterval(tokenRefreshInterval);
+    }
+
     initializationPromise = keycloak
       .init({
         onLoad: 'check-sso',
@@ -27,106 +50,70 @@ export const initKeycloak = (): Promise<boolean> => {
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
       })
       .then((authenticated) => {
-        console.log(authenticated ? 'Usuario autenticado' : ' Usuario no autenticado');
-
-        // Configurar refresh automático del token
         if (authenticated) {
-          setInterval(() => {
+          tokenRefreshInterval = window.setInterval(() => {
             keycloak.updateToken(70).catch(() => {
-              console.error(' Error al refrescar el token');
+              console.error('Error al refrescar el token');
             });
-          }, 60000); // Cada 60 segundos
+          }, 60000) as unknown as number;
         }
-
         return authenticated;
       })
       .catch((error) => {
-        console.error(' [ERROR] Fallo al inicializar Keycloak', error);
+        console.error('Fallo al inicializar Keycloak', error);
         throw error;
       });
   }
-
   return initializationPromise;
 };
 
-/**
- * Obtener la instancia de Keycloak
- */
 export const getKeycloakInstance = (): Keycloak => keycloak;
 
-/**
- * Iniciar sesión
- */
 export const login = async (): Promise<void> => {
   try {
     await keycloak.login({
-      redirectUri: window.location.origin + '/dashboard',
+      redirectUri: window.location.origin + '/dev-login',
     });
   } catch (error) {
-    console.error(' [ERROR] Error al iniciar sesión:', error);
+    console.error('Error al iniciar sesión:', error);
     throw error;
   }
 };
 
-/**
- * Cerrar sesión
- */
 export const logout = async (): Promise<void> => {
   try {
     await keycloak.logout({
       redirectUri: window.location.origin,
     });
   } catch (error) {
-    console.error(' [ERROR] Error al cerrar sesión:', error);
+    console.error('Error al cerrar sesión:', error);
     throw error;
   }
 };
 
-/**
- * Verificar si está autenticado
- */
 export const isAuthenticated = (): boolean => {
   return !!keycloak.authenticated;
 };
 
-/**
- * Obtener el token de acceso
- */
 export const getAccessToken = (): string | undefined => {
   return keycloak.token;
 };
 
-/**
- * Obtener el refresh token
- */
 export const getRefreshToken = (): string | undefined => {
   return keycloak.refreshToken;
 };
 
-/**
- * Actualizar el token
- */
 export const updateToken = async (minValidity: number = 70): Promise<boolean> => {
   try {
     return await keycloak.updateToken(minValidity);
   } catch (error) {
-    console.error(' Error al actualizar token:', error);
+    console.error('Error al actualizar token:', error);
     return false;
   }
 };
 
-/**
- * Verificar si el usuario tiene un rol
- */
 export const hasRole = (role: string): boolean => {
   return keycloak.hasRealmRole(role);
-};
-
-/**
- * Obtener roles del usuario
- */
-export const getUserRoles = (): string[] => {
-  return keycloak.tokenParsed?.realm_access?.roles || [];
 };
 
 export default {
@@ -141,4 +128,5 @@ export default {
   updateToken,
   hasRole,
   getUserRoles,
+  getDashboardPathByRole,
 };

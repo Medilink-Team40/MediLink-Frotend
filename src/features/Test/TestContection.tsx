@@ -34,7 +34,7 @@ const APITester = () => {
   const [result, setResult] = useState<TestResult | null>(null);
   const [token, setToken] = useState('');
   const [copied, setCopied] = useState(false);
-  const [baseUrl, setBaseUrl] = useState('https://medilink.hilosdekari.store');
+  const [baseUrl, setBaseUrl] = useState('https://medilink-backend-production-3d65.up.railway.app');
   const [savedRequests, setSavedRequests] = useState<SavedRequest[]>([]);
   const [showSaved, setShowSaved] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
@@ -61,7 +61,7 @@ const APITester = () => {
       });
 
       const duration = Date.now() - startTime;
-      
+
       if (response.ok) {
         setConnectionStatus({
           isConnected: true,
@@ -299,8 +299,8 @@ const APITester = () => {
 
         {/* Connection Status Banner */}
         <div className={`mb-6 p-4 rounded-xl border-2 transition-all ${
-          connectionStatus.isConnected 
-            ? 'bg-green-50 border-green-200' 
+          connectionStatus.isConnected
+            ? 'bg-green-50 border-green-200'
             : 'bg-red-50 border-red-200'
         }`}>
           <div className="flex items-center justify-between">
@@ -321,7 +321,7 @@ const APITester = () => {
                 <div className="text-xs text-gray-600">
                   {connectionStatus.lastChecked && (
                     <>
-                      Última verificación: {new Date(connectionStatus.lastChecked).toLocaleTimeString()}
+                      {/* Última verificación: {new Date(connectionStatus.lastChecked).toLocaleTimeString()} */}
                       {connectionStatus.responseTime && ` • ${connectionStatus.responseTime}ms`}
                     </>
                   )}
