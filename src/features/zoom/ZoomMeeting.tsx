@@ -45,7 +45,7 @@ const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                 debug: true,
             })
             .then(() => {
-                console.log("✅ Zoom SDK initialized");
+                console.log("  Zoom SDK initialized");
 
                 return zmClient.join({
                     sdkKey: import.meta.env.VITE_ZOOM_SDK_KEY,
@@ -57,10 +57,10 @@ const ZoomMeeting: React.FC<ZoomMeetingProps> = ({
                 });
             })
             .then(() => {
-                console.log("🎉 Joined Zoom meeting successfully!");
+                console.log(" Joined Zoom meeting successfully!");
             })
             .catch((err) => {
-                console.error("❌ Zoom SDK error:", err);
+                console.error("  Zoom SDK error:", err);
             });
 
         // Cleanup
