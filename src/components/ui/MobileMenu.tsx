@@ -48,16 +48,6 @@ const menuItems: MenuItem[] = [
     )
   },
   {
-    label: 'Iniciar Sesión',
-    href: '/login',
-    showWhenNotAuthenticated: true,
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-      </svg>
-    )
-  },
-  {
     label: 'Registrarse',
     href: '/register',
     showWhenNotAuthenticated: true,
@@ -182,6 +172,25 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           </ul>
 
           {/* Auth Actions */}
+          {/* ✅ NUEVO: Botón de Iniciar Sesión para no autenticados */}
+          {!isAuthenticated && onLogin && (
+            <div className="mt-6 px-4">
+              <Button
+                onClick={() => {
+                  onLogin(); // ✅ Esto ejecutará la lógica de Keycloak
+                  onClose();
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Iniciar Sesión
+              </Button>
+            </div>
+          )}
+
+          {/* ✅ Botón de Cerrar Sesión para usuarios autenticados */}
           {isAuthenticated && onLogout && (
             <div className="mt-6 px-4">
               <Button
@@ -201,7 +210,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           )}
         </nav>
 
-       
+
       </div>
     </>
   );
