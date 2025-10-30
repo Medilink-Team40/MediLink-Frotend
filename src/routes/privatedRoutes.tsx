@@ -8,7 +8,6 @@ import { ROLES } from './roles';
 //import { ZoomApp } from '@/features/zoom/page/page';
 import ProtectedRoute from './ProtectedRoute';
 import UnderConstruction from '@/components/common/UnderContruction';
-import DashboardPrueba from '@/features/dashboard';
 
 // Lazy load components
 const Dashboard = lazy(() => import('@/features/Dashboard/page/Dashboard'));
@@ -48,23 +47,7 @@ const privateRoutes: RouteObject[] = [
       </ProtectedRoute>
     ),
     children: [
-      // Dashboard - Accesible para todos los usuarios autenticados
-      {
-        path: 'patient/dashboard',
-        element: (
-          <Suspense fallback={<LoadingFallback />}>
-            <Dashboard />
-          </Suspense>
-        )
-      },
-      {
-        path: 'dashboard',
-        element:(
-          <Suspense fallback={<LoadingFallback />}>
-            <DashboardPrueba />
-          </Suspense>
-        )
-      },
+
 
       // ============= RUTAS DE PACIENTE =============
       {
@@ -220,16 +203,7 @@ const privateRoutes: RouteObject[] = [
           </ProtectedRoute>
         )
       },
-      {
-        path: 'doctor/teleconsultas',
-        element: (
-          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
-            <Suspense fallback={<LoadingFallback />}>
-              <UnderConstruction />
-            </Suspense>
-          </ProtectedRoute>
-        )
-      },
+      
 
       // ============= RUTAS DE ADMIN =============
       {
