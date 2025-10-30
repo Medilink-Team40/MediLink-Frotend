@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/config/AuthProvider';
 import { User, Stethoscope, Shield, Check, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { logout as keycloakLogout } from '@/config/keycloak';
+import { logout as keycloakLogout, getDashboardPathByRole } from '@/config/keycloak'; // ✅ Importar getDashboardPathByRole
 
 const DevLoginPage = () => {
   const navigate = useNavigate();
@@ -12,7 +12,8 @@ const DevLoginPage = () => {
   const [keycloakState, setKeycloakState] = useState<'idle' | 'loading' | 'success' | 'redirecting'>('idle');
   const [messageIndex, setMessageIndex] = useState(0);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const hasStartedKeycloak = useRef(false); // Evita loop infinito
+  const hasStartedKeycloak = useRef(false);
+  const hasRedirected = useRef(false); // ✅ Evitar múltiples redirecciones
 
   const loadingMessages = [
     "Estableciendo conexion segura...",
@@ -20,6 +21,22 @@ const DevLoginPage = () => {
     "Conectando con servidor de autenticacion...",
     "Preparando redireccion segura..."
   ];
+
+  // ✅ NUEVO: Redirección automática cuando el usuario está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user && user.roles && !hasRedirected.current) {
+      console.log('🚀 DevLoginPage: Usuario autenticado detectado, redirigiendo...', user);
+      hasRedirected.current = true;
+
+      const dashboardPath = getDashboardPathByRole(user.roles);
+      console.log('📍 Redirigiendo a:', dashboardPath);
+
+      // Pequeño delay para mostrar el mensaje de redirección
+      setTimeout(() => {
+        navigate(dashboardPath, { replace: true });
+      }, 1500);
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // --- Keycloak login seguro ---
   const handleKeycloakLogin = () => {
@@ -32,7 +49,7 @@ const DevLoginPage = () => {
         setKeycloakState('redirecting');
 
         setTimeout(() => {
-          const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app/';
+          const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app';
           const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink';
           const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend';
           const redirectUri = encodeURIComponent(window.location.origin + '/auth/callback');
@@ -74,14 +91,14 @@ const DevLoginPage = () => {
       const devUser = {
         id: `dev-${userType}-001`,
         name: userType === 'paciente' ? 'Juan Pérez' :
-              userType === 'doctor' ? 'Dra. María García' : 'Admin Sistema',
+          userType === 'doctor' ? 'Dra. María García' : 'Admin Sistema',
         email: `${userType}@dev.com`,
         role: userType,
         roles: [userType],
         firstName: userType === 'paciente' ? 'Juan' :
-                   userType === 'doctor' ? 'María' : 'Admin',
+          userType === 'doctor' ? 'María' : 'Admin',
         lastName: userType === 'paciente' ? 'Pérez' :
-                  userType === 'doctor' ? 'García' : 'Sistema'
+          userType === 'doctor' ? 'García' : 'Sistema'
       };
 
       await setDevUser(devUser);
@@ -149,6 +166,19 @@ const DevLoginPage = () => {
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
             <p className="text-gray-600">Redirigiendo al dashboard...</p>
           </div>
+
+          {/* ✅ NUEVO: Botón manual por si la redirección automática falla */}
+          <button
+            onClick={() => {
+              if (user?.roles) {
+                const dashboardPath = getDashboardPathByRole(user.roles);
+                navigate(dashboardPath, { replace: true });
+              }
+            }}
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Ir al Dashboard Manualmente
+          </button>
         </div>
       </div>
     );
