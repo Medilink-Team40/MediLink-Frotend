@@ -8,7 +8,7 @@ import ChatAssistant from '../components/chat/ChatAssistant';
 
 interface ChatProviderProps {
   children: React.ReactNode;
-  socketUrl?: string;
+  //socketUrl?: string;
   n8nWebhookUrl?: string;
   useSocket?: boolean;
   position?: 'bottom-right' | 'bottom-left';
@@ -18,7 +18,7 @@ interface ChatProviderProps {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({
   children,
-  socketUrl,
+  //socketUrl,
   n8nWebhookUrl,
   useSocket = true,
   position = 'bottom-right',
@@ -30,9 +30,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({
       {children}
       {enabled && (
         <ChatAssistant
-          socketUrl={socketUrl}
+          //socketUrl={socketUrl}
           n8nWebhookUrl={n8nWebhookUrl}
-          useSocket={useSocket}
+          //useSocket={useSocket}
           position={position}
           primaryColor={primaryColor}
         />
