@@ -68,7 +68,7 @@ const privateRoutes: RouteObject[] = [
 
       // ============= RUTAS DE PACIENTE =============
       {
-        path: 'paciente',
+        path: 'patient/dashboard',
         element: (
           <ProtectedRoute allowedRoles={[ROLES.PACIENTE]}>
             <Suspense fallback={<LoadingFallback />}>

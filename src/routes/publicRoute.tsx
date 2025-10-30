@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import PublicLayout from '@/components/layout/PublicLayout';
+import AuthCallback from '@/features/auth/pages/AuthCallback';
 
 // Lazy load de componentes pesados
 const LandingPage = lazy(() => import('@/features/landing/page/LandingPage'));
@@ -47,6 +48,14 @@ const publicRoutes: RouteObject[] = [
         element: (
           <Suspense fallback={<LoadingFallback />}>
             <DevLoginPage />
+          </Suspense>
+        )
+      },
+      {
+        path: "auth/callback",
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <AuthCallback />
           </Suspense>
         )
       },
