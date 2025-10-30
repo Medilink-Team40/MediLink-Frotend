@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PatientRegisterFormData, patientRegisterSchema } from '@/features/auth/validations/patient-register.schema';
-import { PatientFormData } from '@/types/patient.types';
+import { PatientFormData, FHIRExternalGender } from '@/types/patient.types'; // Importar FHIRExternalGender
 import { usePatientRegistration } from '@/hooks/usePatienteRegistraction';
 import {
   Eye,
@@ -78,7 +78,7 @@ export const PacienteRegisterForm = () => {
       email: '',
       phone: '',
       birthDate: '',
-      gender: 'unknown',
+      gender: FHIRExternalGender.UNKNOWN, // Usar el enum en lugar de string
       dni: '',
       password: '',
       confirmPassword: '',
@@ -155,17 +155,10 @@ export const PacienteRegisterForm = () => {
         gender: data.gender,
         phone: data.phone,
         dni: data.dni,
-        name: [
-          {
-            use: 'official',
-            text: `${data.firstName} ${data.lastName}`,
-            family: data.lastName,
-            given: [data.firstName]
-          }
-        ]
+        name: [] // El hook creará la estructura FHIR internamente
       };
 
-      console.log(' Datos del formulario:', patientFormData);
+      console.log('Datos del formulario:', patientFormData);
 
       // Registrar paciente usando el hook
       const registrationSuccess = await registerPatient(patientFormData);
@@ -178,7 +171,7 @@ export const PacienteRegisterForm = () => {
       }
 
     } catch (error: any) {
-      console.error('  Error en el envío del formulario:', error);
+      console.error('Error en el envío del formulario:', error);
       setFormStatus(FormStatus.ERROR);
     }
   };
@@ -442,7 +435,7 @@ export const PacienteRegisterForm = () => {
                     control={control}
                     render={({ field }) => (
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value) => field.onChange(value as FHIRExternalGender)}
                         value={field.value}
                       >
                         <SelectTrigger className={`bg-white transition-all ${errors.gender
@@ -454,10 +447,10 @@ export const PacienteRegisterForm = () => {
                           <SelectValue placeholder="Seleccionar género" />
                         </SelectTrigger>
                         <SelectContent className='bg-white'>
-                          <SelectItem value="male">Masculino</SelectItem>
-                          <SelectItem value="female">Femenino</SelectItem>
-                          <SelectItem value="other">Otro</SelectItem>
-                          <SelectItem value="unknown">Prefiero no decirlo</SelectItem>
+                          <SelectItem value={FHIRExternalGender.MALE}>Masculino</SelectItem>
+                          <SelectItem value={FHIRExternalGender.FEMALE}>Femenino</SelectItem>
+                          <SelectItem value={FHIRExternalGender.OTHER}>Otro</SelectItem>
+                          <SelectItem value={FHIRExternalGender.UNKNOWN}>Prefiero no decirlo</SelectItem>
                         </SelectContent>
                       </Select>
                     )}

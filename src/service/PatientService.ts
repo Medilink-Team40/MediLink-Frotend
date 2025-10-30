@@ -1,45 +1,54 @@
-import axios from '@/utils/api';
+// src/services/PatientService.ts
 
-interface HumanName {
-  use: 'official' | 'usual' | 'nickname' | 'anonymous' | 'old' | 'maiden';
-  text: string;
-  family: string;
-  given: string[];
-  prefix?: string[];
-  suffix?: string[];
+import axios from '@/utils/api'; // Asumo que esta es la instancia de Axios configurada
+import { PatientRegisterData, ContactPoint } from '@/types/patient.types';
+import { FHIRExternalGender } from '@/types/practitioner.types'; // Reutilizamos el enum FHIR centralizado
+
+// 1. **ELIMINACIÓN DE TIPOS DUPLICADOS/INCORRECTOS**
+// Se eliminan HumanName y ContactPoint definidos aquí y se importan.
+
+// 2. **DEFINICIÓN CORRECTA DEL PAYLOAD**
+// La interfaz PatientRegisterPayload se ALINEA con la PatientRegisterData
+// de nuestro archivo de tipos, pero la definimos si el backend requiere una forma estricta.
+// En este caso, usaremos PatientRegisterData (importada) ya que es la forma FHIR.
+
+// INTERFAZ DE RESPUESTA ESTANDARIZADA
+// Definimos una interfaz clara para el retorno de todas las promesas del servicio,
+// lo cual mejora la predictibilidad del código que consume este servicio.
+interface ServiceResponse<T> {
+  data?: T;
+  error?: {
+    message: string;
+    status: number;
+    details?: any;
+  };
+  status: number;
+  message?: string;
 }
 
-interface ContactPoint {
-  system: 'phone' | 'fax' | 'email' | 'pager' | 'url' | 'sms' | 'other';
-  value: string;
-  use: 'home' | 'work' | 'temp' | 'old' | 'mobile';
-  rank: number;
-}
-
-interface PatientRegisterPayload {
-  email: string;
-  password: string;
-  birthDate: string;
-  gender: string;
-  name: HumanName[];
-  telecom: ContactPoint[];
-}
-
-interface PatientData {
+// Interfaz para los datos del paciente recibidos del backend
+// Se usa solo para los métodos GET/PUT
+interface PatientDataFromAPI {
   id: string;
-  name: string;
   email: string;
   birthDate: string;
-  gender: string;
-  dni?: string;
+  gender: FHIRExternalGender;
+  name: { text: string }[]; // Simplificado
+  // Agregar aquí todos los campos que devuelve el servidor
 }
+
 
 export const PatientService = {
-  async register(patientData: PatientRegisterPayload): Promise<any> {
+  // 1. REGISTRO (POST /patient)
+  // Usamos PatientRegisterData para el tipado, asumiendo que el hook ya lo prepara.
+  async register(patientData: PatientRegisterData): Promise<ServiceResponse<PatientDataFromAPI>> {
     try {
       console.log('Enviando datos al backend:', patientData);
 
-      const response = await axios.post('/patient', patientData);
+      // Eliminamos el campo 'repeatpassword' si no es requerido por el backend real,
+      // o lo dejamos si es una peculiaridad temporal. Lo dejaremos si está en PatientRegisterData.
+
+      const response = await axios.post<PatientDataFromAPI>('/patient', patientData);
 
       console.log('Respuesta del backend:', response.data);
 
@@ -47,115 +56,22 @@ export const PatientService = {
         data: response.data,
         status: response.status,
         message: response.statusText
-      }
-    } catch (error: any) {
-      console.error('Error en PatientService.register:', error.response?.data || error.message);
-
+      };
+    } catch (error: unknown) { // Usamos 'unknown' para tipado seguro
+      console.error('Error en PatientService.register:', error);
       return {
         error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status,
-          details: error.response?.data
+          message: 'Error al registrar paciente',
+          status: 500,
+          details: error
         },
-        status: error.response?.status || 500,
-      }
+        status: 500
+      };
     }
   },
 
-  async updateProfile(patientData: Partial<PatientData>): Promise<any> {
-    try {
-      const response = await axios.put('/patient/update', patientData);
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      }
-    } catch (error: any) {
-      return {
-        error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status
-        },
-        status: error.response?.status || 500,
-      }
-    }
-  },
-
-  async getProfile(patientId: string): Promise<any> {
-    try {
-      const response = await axios.get(`/patient/${patientId}`);
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      }
-    } catch (error: any) {
-      return {
-        error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status
-        },
-        status: error.response?.status || 500,
-      }
-    }
-  },
-
-  async getAppointments(patientId: string): Promise<any> {
-    try {
-      const response = await axios.get(`/patient/${patientId}/appointments`);
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      }
-    } catch (error: any) {
-      return {
-        error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status
-        },
-        status: error.response?.status || 500,
-      }
-    }
-  },
-
-  async getMedicalHistory(patientId: string): Promise<any> {
-    try {
-      const response = await axios.get(`/patient/${patientId}/medical-history`);
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      }
-    } catch (error: any) {
-      return {
-        error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status
-        },
-        status: error.response?.status || 500,
-      }
-    }
-  },
-
-  async getPrescriptions(patientId: string): Promise<any> {
-    try {
-      const response = await axios.get(`/patient/${patientId}/prescriptions`);
-      return {
-        data: response.data,
-        status: response.status,
-        message: response.statusText
-      }
-    } catch (error: any) {
-      return {
-        error: {
-          message: error.response?.data?.message || error.message,
-          status: error.response?.status
-        },
-        status: error.response?.status || 500,
-      }
-    }
-  }
 };
+
+
 
 export default PatientService;
