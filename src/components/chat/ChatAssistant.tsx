@@ -170,7 +170,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({
                               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                             </div>
                           ) : (
-                            <p className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
+                            <p className="text-sm whitespace-pre-wrap wrap-break-word">{message.text}</p>
                           )}
                         </div>
                       </div>
