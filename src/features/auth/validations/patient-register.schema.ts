@@ -10,7 +10,7 @@ export const patientRegisterSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   phone: z.string().min(8, "Número de teléfono inválido"),
   birthDate: z.string().min(1, "La fecha de nacimiento es requerida"),
-  gender: z.enum(FHIR_EXTERNAL_GENDER, {
+  gender: z.string().min(1, "Selecciona un género válido").refine((value) => FHIR_EXTERNAL_GENDER.includes(value as any), {
   message: 'Selecciona un género válido'
 }),
   dni: z.string().optional(),
