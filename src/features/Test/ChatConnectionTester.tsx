@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useChatStore } from '../store/useChatStore';
-import ChatSocketService, { getChatService } from '../service/socket/chatSocketService';
+import { useChatStore } from '@/store/useChatStore';
+import ChatSocketService, { getChatService } from '@/service/socket/chatSocketService';
 import { Wifi, WifiOff, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 
 interface ChatConnectionTesterProps {
