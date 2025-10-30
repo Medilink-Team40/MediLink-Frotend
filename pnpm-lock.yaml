@@ -151,7 +151,7 @@ importers:
         specifier: ^7.0.15
         version: 7.0.15
       '@types/node':
-        specifier: ^24.6.2
+        specifier: ^24.9.2
         version: 24.9.2
       '@types/prop-types':
         specifier: ^15.7.15
