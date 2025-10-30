@@ -1,8 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PacienteRegisterForm } from "../components/PacienteRegisterForm";
+import { useAuth } from "@/config/AuthProvider";
+import { useNavigate } from "react-router-dom";
+
 
  const RegisterPage = () => {
-  const isDevelopment = import.meta.env.DEV;
+ const {login} = useAuth();
+ const navigate = useNavigate();
+ const isDevelopment = import.meta.env.DEV;
+ const handleLoginRedirect = async ()=>{
+  try {
+    if (isDevelopment) {
+      navigate('/dev-login');
+    }else{
+      await login();
+    }
+  } catch (error) {
+    console.error("Error al redirigir al login:", error);
+  }
+ }
+
 
 
   return (
@@ -24,7 +41,7 @@ import { PacienteRegisterForm } from "../components/PacienteRegisterForm";
         <CardTitle className="text-lg font-bold text-center">
           Ya tiene una cuenta? Inicie sesión{''}
           <button
-
+            onClick={handleLoginRedirect}
             className="underline  text-blue-600 hover:text-blue-800"
           >aquí
           </button>.
