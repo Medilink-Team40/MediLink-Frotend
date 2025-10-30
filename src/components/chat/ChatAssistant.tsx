@@ -83,7 +83,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({
 
       if (!isOpen) setUnreadMessages(true);
     } catch (error) {
-      console.error('❌ Error:', error);
+      console.error('  Error:', error);
       removeMessage('typing');
 
       addMessage({
