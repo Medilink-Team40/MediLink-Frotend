@@ -46,7 +46,7 @@ export const usePatientRegistration = (): UsePatientRegistrationReturn => {
       value: formData.phone,
       use: 'work',
       // 'rank' es opcional en patient.types.ts, pero lo mantengo si el backend lo requiere.
-      // rank: 1,
+      rank: 1,
     };
 
     // 4. Construir el payload final
