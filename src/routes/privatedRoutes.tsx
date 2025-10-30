@@ -23,6 +23,7 @@ const HistorialClinico = lazy(() => import('@/features/patients/components/Histo
 const DoctorDashboard = lazy(() => import('@/features/Doctor/components/DoctorDashboard'));
 const DoctorProfile = lazy(() => import('@/features/Doctor/components/DoctorProfile'));
 const DoctorAgenda = lazy(() => import('@/features/Doctor/components/DoctorAgenda'));
+const DoctorHorarios = lazy(() => import('@/features/Doctor/components/DoctorHorarios'));
 //=============ADMIN COMPONENTS =============
 const AdminDashboard = lazy(() => import('@/features/Admin/components/AdminDashboard'));
 const DoctorRegister = lazy(() => import('@/features/Admin/components/DoctorRegister'))
@@ -153,7 +154,7 @@ const privateRoutes: RouteObject[] = [
         element: (
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
             <Suspense fallback={<LoadingFallback />}>
-              <UnderConstruction />
+              <DoctorProfile />
             </Suspense>
           </ProtectedRoute>
         )
@@ -175,6 +176,16 @@ const privateRoutes: RouteObject[] = [
           <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
             <Suspense fallback={<LoadingFallback />}>
               <UnderConstruction />
+            </Suspense>
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'doctor/administrar-horarios',
+        element: (
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <Suspense fallback={<LoadingFallback />}>
+              <DoctorHorarios />
             </Suspense>
           </ProtectedRoute>
         )
