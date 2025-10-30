@@ -2,7 +2,7 @@
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import PublicLayout from '@/components/layout/PublicLayout';
-import AuthCallback from '@/features/auth/pages/AuthCallback';
+
 
 // Lazy load de componentes pesados
 const LandingPage = lazy(() => import('@/features/landing/page/LandingPage'));
@@ -18,6 +18,8 @@ const  AboutPage = lazy(()=> import ('@/features/landing/page/AboutPage') );
 const CookiesPage = lazy(() => import('@/features/landing/page/CookiesPage'));
 const PrivacyPage = lazy(() => import('@/features/landing/page/PrivacyPage'));
 const TermsPage = lazy(() => import('@/features/landing/page/TermsPage'));
+
+const AuthCallback = lazy(() => import('@/features/auth/pages/AuthCallback'));
 
 
 // Loading fallback
