@@ -4,18 +4,26 @@ import { useAuth } from "@/config/AuthProvider";
 import { Link } from "react-router-dom";
 import MobileMenu from '@/components/ui/MobileMenu';
 import HamburgerButton from '@/components/ui/HamburgerButton';
+import UserMenu from '@/components/ui/UserMenu';
 import { useMobileMenu } from '@/hooks/useMobileMenu';
 
-
 const Header = () => {
-  const { isAuthenticated, login, logout } = useAuth();
+  const { isAuthenticated, login, logout } = useAuth(); // ✅ Obtener login y logout del hook
   const { isOpen, toggleMenu, closeMenu } = useMobileMenu();
 
   const handleLoginRedirect = async () => {
     try {
-      await login();
+      await login(); // ✅ Usar login directamente del hook
     } catch (error) {
       console.error("Error during login:", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // ✅ Usar logout del hook
+    } catch (error) {
+      console.error("Error during logout:", error);
     }
   };
 
@@ -45,18 +53,21 @@ const Header = () => {
               >
                 Sobre Nosotros
               </Link>
+
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
-                  <Button variant="outline" onClick={logout} size="sm" className="text-sm">
-                    Cerrar Sesión
-                  </Button>
+                  {/* ✅ Componente UserMenu en lugar de botón simple */}
+                  <UserMenu />
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 lg:space-x-3">
-                  <Button variant="outline" size="sm" className="text-sm"
-                  onClick={handleLoginRedirect}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-sm"
+                    onClick={handleLoginRedirect}
                   >
-                   Iniciar Sesión
+                    Iniciar Sesión
                   </Button>
                   <Button asChild size="sm" className="text-sm">
                     <Link to="/register">Registrarse</Link>
@@ -81,8 +92,8 @@ const Header = () => {
         isOpen={isOpen}
         onClose={closeMenu}
         isAuthenticated={isAuthenticated}
-        onLogin={login}
-        onLogout={logout}
+        onLogin={handleLoginRedirect} // ✅ Función corregida
+        onLogout={handleLogout} // ✅ Función logout funcional
       />
     </>
   );
