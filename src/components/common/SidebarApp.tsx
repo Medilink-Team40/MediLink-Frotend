@@ -283,7 +283,7 @@ const SidebarApp = () => {
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                            <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                                 <span className="text-white font-bold text-lg">M</span>
                             </div>
                             <div>
