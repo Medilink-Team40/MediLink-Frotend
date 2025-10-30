@@ -4,6 +4,7 @@ import privateRoute from "@/routes/privatedRoutes";
 import RouteErrorBoundary from "@/components/common/RouteErrorBoundary";
 import { AuthProvider } from "@/config/AuthProvider";
 import NotFound from "@/components/common/NotFound";
+import AuthCallback from "@/features/auth/pages/AuthCallback";
 
 /**
  * Función recursiva para añadir un ErrorBoundary a cada una de las rutas.
@@ -13,7 +14,7 @@ import NotFound from "@/components/common/NotFound";
  * @returns Un nuevo array de `RouteObject` con el `errorElement` configurado.
  */
 const addErrorBoundary = (routes: RouteObject[]): RouteObject[] => {
-    return routes.map(route => {
+    return routes.map((route) => {
         // Creamos un nuevo objeto de ruta para no mutar el original.
         const routeWithError: RouteObject = {
             ...route,
@@ -35,11 +36,11 @@ const addErrorBoundary = (routes: RouteObject[]): RouteObject[] => {
 
 //Creamos un wrapper que provee el auth context a todas las rutas
 
-const RootLayout = () =>(
+const RootLayout = () => (
     <AuthProvider>
-        <Outlet/>
+        <Outlet />
     </AuthProvider>
-)
+);
 
 // Para evitar problemas de tipos, asegúrate de que tus archivos de rutas
 // exporten un array que cumpla con el tipo `RouteObject[]`.
@@ -50,19 +51,20 @@ const RootLayout = () =>(
 
 const appRoutes: RouteObject[] = [
     {
-        element: <RootLayout/>,
+        element: <RootLayout />,
         children: [
-             ...publicRoute,
-             ...privateRoute
-        ]
-
+            ...publicRoute,
+            ...privateRoute,
+            {
+                path: "/auth/callback", // ✅ Ruta para manejar callback de Keycloak
+                element: <AuthCallback />,
+            },
+        ],
     },
     {
-        path: '*',
-        element: <NotFound />
-
-    }
-
+        path: "*",
+        element: <NotFound />,
+    },
 ];
 
 const routesWithErrorBoundary = addErrorBoundary(appRoutes);
