@@ -32,6 +32,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.23.24",
+    "history": "^5.3.0",
     "keycloak-js": "^26.2.0",
     "lucide-react": "^0.545.0",
     "next-themes": "^0.4.6",
