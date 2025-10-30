@@ -41,7 +41,7 @@ const DevLoginPage = () => {
       navigate('/admin/dashboard');
       break;
     default:
-      navigate('/dashboard'); 
+      navigate('/dashboard');
   }
 }, 1000);
 
@@ -123,7 +123,7 @@ const DevLoginPage = () => {
         setTimeout(() => {
           console.log('Redirigiendo a Keycloak...');
           // Redirigir a Keycloak real
-          const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app';
+          const keycloakUrl = import.meta.env.VITE_KEYCLOAK_URL || 'https://keycloak-production-2d31.up.railway.app/';
           const realm = import.meta.env.VITE_KEYCLOAK_REALM || 'MediLink';
           const clientId = import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'medilink-frontend';
           const redirectUri = encodeURIComponent(window.location.origin + '/dev-login');
