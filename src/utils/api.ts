@@ -10,7 +10,7 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// 🚀 PASO CRÍTICO: Interceptor para adjuntar el Access Token y manejar el refresh
+//   PASO CRÍTICO: Interceptor para adjuntar el Access Token y manejar el refresh
 api.interceptors.request.use(async (config) => {
   const token = getAccessToken();
 
