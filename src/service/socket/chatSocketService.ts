@@ -51,13 +51,13 @@ class ChatSocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('✅ Conectado al servidor de chat');
+      console.log('  Conectado al servidor de chat');
       useChatStore.getState().setConnectionStatus('connected');
       this.reconnectAttempts = 0;
     });
 
     this.socket.on('disconnect', () => {
-      console.log('❌ Desconectado del servidor');
+      console.log('  Desconectado del servidor');
       useChatStore.getState().setConnectionStatus('disconnected');
     });
 
