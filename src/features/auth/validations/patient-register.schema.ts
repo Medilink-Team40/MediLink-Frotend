@@ -8,7 +8,7 @@ export const patientRegisterSchema = z.object({
   phone: z.string().min(8, "Número de teléfono inválido"),
   birthDate: z.string().min(1, "La fecha de nacimiento es requerida"),
   gender: z.enum(['male', 'female', 'other', 'unknown']),
- 
+ dni: z.string().optional(),
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
