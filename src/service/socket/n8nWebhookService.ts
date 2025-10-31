@@ -195,32 +195,32 @@ export default N8NWebhookService;
 
 export function extractMessageFromN8NEvents(n8nResponse: any): string {
   try {
-    // Si viene como string JSON, parsearlo
-    const parsed = typeof n8nResponse === 'string' ? JSON.parse(n8nResponse) : n8nResponse;
+    // Convertir a string si no lo es
+    const responseStr = typeof n8nResponse === 'string' ? n8nResponse : JSON.stringify(n8nResponse);
 
-    // Manejar si viene como array de eventos
-    if (Array.isArray(parsed)) {
-      for (const event of parsed) {
-        if (event.content) {
-          // Intentar extraer JSON dentro de ```json ... ```
-          const match = event.content.match(/```json\s*([\s\S]*?)```/);
-          const jsonStr = match ? match[1] : event.content;
+    // Separar por líneas y parsear cada línea como JSON
+    const lines = responseStr.split(/\r?\n/);
+    const messages: string[] = [];
 
-          try {
-            const obj = JSON.parse(jsonStr);
-            if (obj.message) return obj.message;
-          } catch {
-            // No es JSON, devolver el contenido tal cual
-            return event.content;
-          }
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const obj = JSON.parse(line);
+        if (obj.type === 'item' && obj.content) {
+          messages.push(obj.content);
         }
+      } catch {
+        // Ignorar líneas que no sean JSON
       }
-    } else if (parsed.message) {
-      return parsed.message;
     }
 
-    // Fallback: devolver como string plano
-    return String(n8nResponse);
+    // Concatenar todos los contenidos de los items
+    if (messages.length > 0) {
+      return messages.join(' ');
+    }
+
+    // Fallback: devolver la cadena original
+    return responseStr;
   } catch (err) {
     console.error('Error extrayendo mensaje de N8N:', err);
     return 'Actualmente no puedo acceder a los datos necesarios, por favor inténtalo más tarde.';
